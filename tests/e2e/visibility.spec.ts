@@ -23,7 +23,9 @@ test.describe("fixture-backed public visibility", () => {
         exact: true,
       }),
     ).toBeVisible();
-    await expect(page.getByText("[Fixture] Private publication")).toHaveCount(0);
+    await expect(page.getByText("[Fixture] Private publication")).toHaveCount(
+      0,
+    );
 
     await page.goto("/people");
     await expect(page.getByText("Fixture Researcher A")).toBeVisible();
@@ -55,6 +57,16 @@ test.describe("fixture-backed public visibility", () => {
     expect(searchText).not.toContain("[Fixture] Private project");
     expect(searchText).not.toContain("[Fixture] Private publication");
     expect(searchText).not.toContain("Fixture Private Researcher");
+
+    const graph = await request.get("/api/graph");
+    expect(graph.ok()).toBe(true);
+    const graphText = JSON.stringify(await graph.json());
+    expect(graphText).not.toContain("[Fixture] Private project");
+    expect(graphText).not.toContain("fixture-private-project");
+    expect(graphText).not.toContain("[Fixture] Private publication");
+    expect(graphText).not.toContain("fixture-private-publication");
+    expect(graphText).not.toContain("Fixture Private Researcher");
+    expect(graphText).not.toContain("fixture-private-researcher");
 
     await page.goto("/");
     await expect(

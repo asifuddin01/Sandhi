@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import type { ReactNode } from "react";
 
+import { PageTransition } from "@/components/motion/PageTransition";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { siteIdentity } from "@/content/strings";
@@ -97,7 +98,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         </a>
         <SiteHeader />
         <main id="main-content" tabIndex={-1}>
-          {children}
+          <PageTransition>{children}</PageTransition>
         </main>
         <SiteFooter />
       </body>

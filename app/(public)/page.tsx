@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { SandhiFieldPoster } from "@/components/field/SandhiFieldPoster";
+import { SandhiField } from "@/components/field/SandhiField";
 import { MarginThread } from "@/components/motion/MarginThread";
 import { SequenceSteps } from "@/components/motion/SequenceSteps";
 import { ThreadDivider } from "@/components/motion/ThreadDivider";
@@ -37,28 +37,29 @@ export default async function HomePage() {
       <MarginThread />
 
       <section className="home-hero" aria-labelledby="home-title">
-        <SandhiFieldPoster />
-        <div className="home-hero__veil" aria-hidden="true" />
-        <div className="home-hero__content">
-          <h1 id="home-title">{homeCopy.hero.title}</h1>
-          <p className="home-hero__tagline">{homeCopy.hero.tagline}</p>
-          <p className="home-hero__lead">{homeCopy.hero.lead}</p>
-          <div className="home-hero__actions">
-            <Link className="button button-primary" href="/research">
-              {homeCopy.hero.primaryAction}
-            </Link>
-            <Link className="text-link" href="/join">
-              {homeCopy.hero.secondaryAction}
-            </Link>
+        <SandhiField>
+          <div className="home-hero__veil" aria-hidden="true" />
+          <div className="home-hero__content">
+            <h1 id="home-title">{homeCopy.hero.title}</h1>
+            <p className="home-hero__tagline">{homeCopy.hero.tagline}</p>
+            <p className="home-hero__lead">{homeCopy.hero.lead}</p>
+            <div className="home-hero__actions">
+              <Link className="button button-primary" href="/research">
+                {homeCopy.hero.primaryAction}
+              </Link>
+              <Link className="text-link" href="/join">
+                {homeCopy.hero.secondaryAction}
+              </Link>
+            </div>
+            <p className="home-hero__origin">
+              <span lang="sa">{siteIdentity.devanagari}</span>
+              <span aria-hidden="true"> — </span>
+              <span>
+                {siteIdentity.transliteration}: the place where two things join.
+              </span>
+            </p>
           </div>
-          <p className="home-hero__origin">
-            <span lang="sa">{siteIdentity.devanagari}</span>
-            <span aria-hidden="true"> — </span>
-            <span>
-              {siteIdentity.transliteration}: the place where two things join.
-            </span>
-          </p>
-        </div>
+        </SandhiField>
       </section>
 
       <div className="page-shell">

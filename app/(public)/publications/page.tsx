@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
+import { PublicationFilterForm } from "@/components/entries/PublicationFilterForm";
 import { PublicationEntry } from "@/components/entries/PublicationEntry";
 import { generateBibtex, type PublicationType } from "@/lib/bibtex";
 import {
@@ -122,7 +123,7 @@ export default async function PublicationsPage({
         </p>
       </header>
 
-      <form className={styles.filterForm} action="/publications" method="get">
+      <PublicationFilterForm className={styles.filterForm}>
         <div className={styles.filterField}>
           <label htmlFor="publication-search">Search publications</label>
           <input
@@ -220,9 +221,13 @@ export default async function PublicationsPage({
         </div>
         <div className={styles.filterActions}>
           <button type="submit">Apply filters</button>
-          {hasFilters ? <Link href="/publications">Clear</Link> : null}
+          {hasFilters ? (
+            <Link href="/publications" transitionTypes={["publication-filter"]}>
+              Clear
+            </Link>
+          ) : null}
         </div>
-      </form>
+      </PublicationFilterForm>
 
       {publications.length > 0 ? (
         <>

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { SharedEntityTitle } from "@/components/motion/SharedEntityTitle";
 import styles from "@/components/public/ResearchPages.module.css";
 import type { PublicationSummary } from "@/lib/public-research";
 
@@ -21,11 +22,16 @@ export function PublicationEntries({
         const venue = publication.venueShort ?? publication.venueName;
         return (
           <li key={publication.slug}>
-            <h3 className={styles.publicationTitle}>
-              <Link href={`/publications/${publication.slug}`}>
-                {publication.title}
-              </Link>
-            </h3>
+            <SharedEntityTitle kind="publication" slug={publication.slug}>
+              <h3 className={styles.publicationTitle}>
+                <Link
+                  href={`/publications/${publication.slug}`}
+                  transitionTypes={["entity-detail"]}
+                >
+                  {publication.title}
+                </Link>
+              </h3>
+            </SharedEntityTitle>
             <p className={styles.publicationMeta}>
               {publication.authors.map((author, index) => (
                 <span key={`${publication.slug}-${author.name}-${index}`}>

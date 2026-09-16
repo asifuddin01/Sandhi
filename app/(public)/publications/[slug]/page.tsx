@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { BibtexPanel } from "@/components/entries/BibtexPanel";
+import { SharedEntityTitle } from "@/components/motion/SharedEntityTitle";
 import { Prose } from "@/components/Prose";
 import { generateBibtex } from "@/lib/bibtex";
 import {
@@ -196,7 +197,9 @@ export default async function PublicationPage({ params }: PageProps) {
       </nav>
 
       <header className={styles.detailHeader}>
-        <h1>{publication.title}</h1>
+        <SharedEntityTitle kind="publication" slug={publication.slug}>
+          <h1>{publication.title}</h1>
+        </SharedEntityTitle>
         <div className={styles.detailMeta}>
           <span>{humanizeEnum(publication.type)}</span>
           {publication.venueName ? <span>{publication.venueName}</span> : null}

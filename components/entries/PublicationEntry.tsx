@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { ViewTransition } from "react";
 
 import { BibtexPanel } from "@/components/entries/BibtexPanel";
+import { SharedEntityTitle } from "@/components/motion/SharedEntityTitle";
 import { generateBibtex } from "@/lib/bibtex";
 import {
   humanizeEnum,
@@ -50,85 +52,113 @@ export function PublicationEntry({
   );
 
   return (
-    <article className={styles.publicationEntry}>
-      <div className={styles.entryMarker} aria-hidden="true">
-        <span />
-      </div>
-      <div className={styles.entryBody}>
-        <div className={styles.entryMeta}>
-          <span>{humanizeEnum(publication.type)}</span>
-          {(publication.venueShort ?? publication.venueName) ? (
-            <span>{publication.venueShort ?? publication.venueName}</span>
-          ) : null}
-          {publication.year ? <span>{publication.year}</span> : null}
+    <ViewTransition
+      name={`publication-entry-${publication.id}`}
+      default="none"
+      enter={{
+        "publication-filter": "publication-filter-enter",
+        default: "none",
+      }}
+      exit={{
+        "publication-filter": "publication-filter-exit",
+        default: "none",
+      }}
+      share={{
+        "publication-filter": "publication-filter-reflow",
+        default: "none",
+      }}
+      update={{
+        "publication-filter": "publication-filter-reflow",
+        default: "none",
+      }}
+    >
+      <article className={styles.publicationEntry}>
+        <div className={styles.entryMarker} aria-hidden="true">
+          <span />
         </div>
-        <Heading className={styles.entryTitle}>
-          <Link href={`/publications/${publication.slug}`}>
-            {publication.title}
-          </Link>
-        </Heading>
-        {publication.authors.length > 0 ? (
-          <p className={styles.authors}>
-            {publication.authors.map((author, index) => (
-              <span key={`${author.name}-${index}`}>
-                {index > 0 ? ", " : null}
-                {author.member ? (
-                  <Link href={`/people/${author.member.slug}`}>
-                    {author.name}
-                  </Link>
-                ) : (
-                  author.name
-                )}
-                {author.equalContribution ? (
-                  <sup aria-label="equal contribution">*</sup>
-                ) : null}
-                {author.corresponding ? (
-                  <sup aria-label="corresponding author">†</sup>
-                ) : null}
-              </span>
-            ))}
-          </p>
-        ) : null}
-        {hasContributionLegend ? (
-          <p className={styles.authorLegend}>
-            {publication.authors.some((author) => author.equalContribution)
-              ? "* Equal contribution. "
-              : null}
-            {publication.authors.some((author) => author.corresponding)
-              ? "† Corresponding author."
-              : null}
-          </p>
-        ) : null}
-        {publication.award ? (
-          <p className={styles.award}>{publication.award}</p>
-        ) : null}
-        <div className={styles.entryLinks} aria-label="Publication links">
-          {paperUrl ? (
-            <a href={paperUrl} rel="noreferrer">
-              Paper
-            </a>
+        <div className={styles.entryBody}>
+          <div className={styles.entryMeta}>
+            <span>{humanizeEnum(publication.type)}</span>
+            {(publication.venueShort ?? publication.venueName) ? (
+              <span>{publication.venueShort ?? publication.venueName}</span>
+            ) : null}
+            {publication.year ? <span>{publication.year}</span> : null}
+          </div>
+          <SharedEntityTitle kind="publication" slug={publication.slug}>
+            <Heading className={styles.entryTitle}>
+              <Link
+                href={`/publications/${publication.slug}`}
+                transitionTypes={["entity-detail"]}
+              >
+                {publication.title}
+              </Link>
+            </Heading>
+          </SharedEntityTitle>
+          {publication.authors.length > 0 ? (
+            <p className={styles.authors}>
+              {publication.authors.map((author, index) => (
+                <span key={`${author.name}-${index}`}>
+                  {index > 0 ? ", " : null}
+                  {author.member ? (
+                    <Link href={`/people/${author.member.slug}`}>
+                      {author.name}
+                    </Link>
+                  ) : (
+                    author.name
+                  )}
+                  {author.equalContribution ? (
+                    <sup aria-label="equal contribution">*</sup>
+                  ) : null}
+                  {author.corresponding ? (
+                    <sup aria-label="corresponding author">†</sup>
+                  ) : null}
+                </span>
+              ))}
+            </p>
           ) : null}
-          {publication.arxivId ? (
-            <a href={arxivUrl(publication.arxivId)} rel="noreferrer">
-              arXiv
-            </a>
+          {hasContributionLegend ? (
+            <p className={styles.authorLegend}>
+              {publication.authors.some((author) => author.equalContribution)
+                ? "* Equal contribution. "
+                : null}
+              {publication.authors.some((author) => author.corresponding)
+                ? "† Corresponding author."
+                : null}
+            </p>
           ) : null}
-          {publication.codeUrl ? (
-            <a href={publication.codeUrl} rel="noreferrer">
-              Code
-            </a>
+          {publication.award ? (
+            <p className={styles.award}>{publication.award}</p>
           ) : null}
-          {publication.datasetUrl ? (
-            <a href={publication.datasetUrl} rel="noreferrer">
-              Dataset
-            </a>
-          ) : null}
-          {publication.project ? (
-            <Link href={`/projects/${publication.project.slug}`}>Project</Link>
-          ) : null}
+          <div className={styles.entryLinks} aria-label="Publication links">
+            {paperUrl ? (
+              <a href={paperUrl} rel="noreferrer">
+                Paper
+              </a>
+            ) : null}
+            {publication.arxivId ? (
+              <a href={arxivUrl(publication.arxivId)} rel="noreferrer">
+                arXiv
+              </a>
+            ) : null}
+            {publication.codeUrl ? (
+              <a href={publication.codeUrl} rel="noreferrer">
+                Code
+              </a>
+            ) : null}
+            {publication.datasetUrl ? (
+              <a href={publication.datasetUrl} rel="noreferrer">
+                Dataset
+              </a>
+            ) : null}
+            {publication.project ? (
+              <Link href={`/projects/${publication.project.slug}`}>
+                Project
+              </Link>
+            ) : null}
+          </div>
+          <BibtexPanel bibtex={bibtex} />
         </div>
-        <BibtexPanel bibtex={bibtex} />
-      </div>
-    </article>
+      </article>
+    </ViewTransition>
   );
 }

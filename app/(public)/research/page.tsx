@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { ConnectionsMap } from "@/components/graph/ConnectionsMap";
 import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
+import { getPublicGraph } from "@/lib/public-graph";
 import { getResearchIndex } from "@/lib/public-research";
 
 export const dynamic = "force-dynamic";
@@ -16,7 +18,10 @@ export const metadata: Metadata = {
 };
 
 export default async function ResearchPage() {
-  const { themes } = await getResearchIndex();
+  const [{ themes }, graph] = await Promise.all([
+    getResearchIndex(),
+    getPublicGraph(),
+  ]);
 
   return (
     <div className={styles.page}>
@@ -28,7 +33,18 @@ export default async function ResearchPage() {
       <section className={styles.section} aria-labelledby="map-heading">
         <div className={styles.sectionHeader}>
           <h2 id="map-heading">Map of connections</h2>
-          <p>Every area is available in this readable map.</p>
+          <p>
+            Follow the threads between themes, areas, projects, people, and
+            publications.
+          </p>
+        </div>
+        <ConnectionsMap initialData={graph} />
+      </section>
+
+      <section className={styles.section} aria-labelledby="themes-heading">
+        <div className={styles.sectionHeader}>
+          <h2 id="themes-heading">Research themes</h2>
+          <p>Each theme gathers areas that share a central question.</p>
         </div>
         {themes.length > 0 ? (
           <ol className={styles.themeMap}>

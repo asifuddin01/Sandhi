@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
 import { StatusLabel } from "@/components/entries/StatusLabel";
+import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
 import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
@@ -49,29 +50,34 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
 
   return (
     <div className={styles.page}>
-      <PageIntro title={project.title} lead={project.gloss} />
+      <PageIntro
+        title={project.title}
+        lead={project.gloss}
+        titleTransition={{ kind: "project", slug: project.slug }}
+      />
 
-      <div className={styles.connections} aria-label="Project connections">
-        <div className={styles.connectionGroup}>
-          {project.areas.map((area) => (
-            <span key={area.slug}>{area.name}</span>
-          ))}
-        </div>
-        <div className={styles.connectionLabels} aria-hidden="true">
-          <span className={styles.connectionLine} />
-          <span className={styles.connectionNode}>{project.title}</span>
-        </div>
-        <div className={styles.connectionLabels}>
-          <span className={styles.connectionLine} aria-hidden="true" />
-          <div className={styles.connectionGroup}>
-            {project.members.map((member) => (
-              <Link href={`/people/${member.slug}`} key={member.slug}>
-                {member.name}
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
+      <ConnectionsMini
+        center={{
+          label: project.title,
+          href: `/projects/${project.slug}`,
+        }}
+        groups={[
+          {
+            label: "Research areas",
+            connections: project.areas.map((area) => ({
+              label: area.name,
+              href: `/research/areas/${area.slug}`,
+            })),
+          },
+          {
+            label: "Researchers",
+            connections: project.members.map((member) => ({
+              label: member.name,
+              href: `/people/${member.slug}`,
+            })),
+          },
+        ]}
+      />
 
       <section className={styles.section} aria-labelledby="status-heading">
         <h2 className="visually-hidden" id="status-heading">

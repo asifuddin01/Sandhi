@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PersonEntry } from "@/components/entries/PersonEntry";
 import { ProjectEntry } from "@/components/entries/ProjectEntry";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
+import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
 import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
@@ -40,6 +41,45 @@ export default async function AreaPage({ params }: AreaPageProps) {
   return (
     <div className={styles.page}>
       <PageIntro title={area.name} lead={area.summary} />
+
+      <ConnectionsMini
+        center={{
+          label: area.name,
+          href: `/research/areas/${area.slug}`,
+        }}
+        groups={[
+          {
+            label: "Theme",
+            connections: [
+              {
+                label: area.theme.name,
+                href: `/research/${area.theme.slug}`,
+              },
+            ],
+          },
+          {
+            label: "Projects",
+            connections: area.projects.map((project) => ({
+              label: project.title,
+              href: `/projects/${project.slug}`,
+            })),
+          },
+          {
+            label: "Researchers",
+            connections: area.researchers.map((person) => ({
+              label: person.name,
+              href: `/people/${person.slug}`,
+            })),
+          },
+          {
+            label: "Publications",
+            connections: area.publications.map((publication) => ({
+              label: publication.title,
+              href: `/publications/${publication.slug}`,
+            })),
+          },
+        ]}
+      />
 
       <section className={styles.section} aria-labelledby="overview-heading">
         <div className={styles.sectionHeader}>

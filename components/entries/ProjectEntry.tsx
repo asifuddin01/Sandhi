@@ -1,6 +1,9 @@
 import Link from "next/link";
 
+import entryStyles from "@/components/entries/Entries.module.css";
+import { ProjectRelationshipThreads } from "@/components/entries/ProjectRelationshipThreads";
 import { StatusLabel } from "@/components/entries/StatusLabel";
+import { SharedEntityTitle } from "@/components/motion/SharedEntityTitle";
 import styles from "@/components/public/ResearchPages.module.css";
 import type { ProjectSummary } from "@/lib/public-research";
 
@@ -19,13 +22,29 @@ export function ProjectEntry({
     : null;
 
   return (
-    <article className={styles.entry}>
+    <article
+      className={`${styles.entry} ${entryStyles.projectEntry}`}
+      data-has-relationships={
+        project.areas.length > 0 || project.members.length > 0
+      }
+    >
       <div className={styles.entryMain}>
-        <Heading>
-          <Link href={`/projects/${project.slug}`}>{project.title}</Link>
-        </Heading>
+        <SharedEntityTitle kind="project" slug={project.slug}>
+          <Heading>
+            <Link
+              href={`/projects/${project.slug}`}
+              transitionTypes={["entity-detail"]}
+            >
+              {project.title}
+            </Link>
+          </Heading>
+        </SharedEntityTitle>
         <p className={styles.entrySummary}>{project.gloss}</p>
       </div>
+      <ProjectRelationshipThreads
+        areaCount={project.areas.length}
+        researcherCount={project.members.length}
+      />
       <div className={styles.entryMeta}>
         <StatusLabel status={project.status} />
         {project.areas.length > 0 ? (

@@ -8,6 +8,103 @@
   border-block-start: 1px solid var(--ink-line);
 }
 
+.projectEntry[data-has-relationships="true"] {
+  grid-template-columns:
+    minmax(0, 1fr) minmax(6.5rem, 0.14fr)
+    minmax(13rem, 0.34fr);
+}
+
+.projectRelationships {
+  position: relative;
+  display: grid;
+  min-width: 6.5rem;
+  align-content: center;
+  gap: 1rem;
+  color: var(--mist);
+}
+
+.projectRelationships::before,
+.projectRelationships::after {
+  position: absolute;
+  inset-block: 22%;
+  inset-inline-start: 0;
+  width: 1px;
+  content: "";
+}
+
+.projectRelationships::before {
+  background: var(--ink-line);
+}
+
+.projectRelationships::after {
+  background: var(--lotus);
+  opacity: 0;
+  transform: scaleY(0);
+  transform-origin: center;
+  transition:
+    transform var(--dur-base) var(--ease-thread),
+    opacity var(--dur-quick) var(--ease-sandhi);
+}
+
+.relationshipBranch {
+  display: grid;
+  grid-template-columns: minmax(2.5rem, 1fr) auto;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.relationshipTrack {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--ink-line);
+}
+
+.relationshipActive {
+  position: absolute;
+  inset: 0;
+  background: var(--lotus);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  transition:
+    transform var(--dur-base) var(--ease-thread),
+    opacity var(--dur-quick) var(--ease-sandhi);
+}
+
+.relationshipEndpoint {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: -0.22rem;
+  width: 0.44rem;
+  height: 0.44rem;
+  border: 1px solid var(--lotus);
+  border-radius: 50%;
+  background: var(--ink);
+  opacity: 0.62;
+  transform: translateY(-50%) scale(0.82);
+  transition:
+    transform var(--dur-base) var(--ease-sandhi),
+    opacity var(--dur-quick) var(--ease-sandhi);
+}
+
+.relationshipLabel {
+  color: var(--mist);
+  font-size: 0.72rem;
+  white-space: nowrap;
+}
+
+.projectEntry:is(:hover, :focus-within) .projectRelationships::after,
+.projectEntry:is(:hover, :focus-within) .relationshipActive {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.projectEntry:is(:hover, :focus-within) .relationshipEndpoint {
+  opacity: 1;
+  transform: translateY(-50%) scale(1);
+}
+
 .entryMarker {
   position: relative;
   display: flex;
@@ -240,5 +337,15 @@
 
   .entryLinks {
     gap-inline: 0.8rem;
+  }
+}
+
+@media (max-width: 48rem) {
+  .projectEntry[data-has-relationships="true"] {
+    grid-template-columns: 1fr;
+  }
+
+  .projectRelationships {
+    display: none;
   }
 }

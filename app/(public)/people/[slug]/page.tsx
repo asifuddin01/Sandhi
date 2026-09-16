@@ -5,6 +5,7 @@ import { notFound } from "next/navigation";
 import { PersonPortrait, rankLabels } from "@/components/entries/PersonEntry";
 import { ProjectEntry } from "@/components/entries/ProjectEntry";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
+import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
 import { EmptyState } from "@/components/public/EmptyState";
 import styles from "@/components/public/ResearchPages.module.css";
 import { Prose } from "@/components/Prose";
@@ -103,6 +104,33 @@ export default async function PersonPage({ params }: PersonPageProps) {
           ) : null}
         </div>
       </header>
+
+      <ConnectionsMini
+        center={{ label: person.name, href: `/people/${person.slug}` }}
+        groups={[
+          {
+            label: "Research areas",
+            connections: person.areas.map((area) => ({
+              label: area.name,
+              href: `/research/areas/${area.slug}`,
+            })),
+          },
+          {
+            label: "Projects",
+            connections: person.projects.map((project) => ({
+              label: project.title,
+              href: `/projects/${project.slug}`,
+            })),
+          },
+          {
+            label: "Publications",
+            connections: person.publications.map((publication) => ({
+              label: publication.title,
+              href: `/publications/${publication.slug}`,
+            })),
+          },
+        ]}
+      />
 
       <section className={styles.section} aria-labelledby="interests-heading">
         <div className={styles.sectionHeader}>
