@@ -6,6 +6,6 @@
     <path d="M5 36c9 0 13-4 19-12"/>
     <path d="M43 12c-9 0-13 4-19 12"/>
   </g>
-  <circle cx="24" cy="24" r="6" fill="none" stroke="#8a6a2b" stroke-opacity=".32"/>
-  <circle cx="24" cy="24" r="3" fill="#8a6a2b"/>
+  <circle cx="24" cy="24" r="6" fill="none" stroke="#836323" stroke-opacity=".32"/>
+  <circle cx="24" cy="24" r="3" fill="#836323"/>
 </svg>

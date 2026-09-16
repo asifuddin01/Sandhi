@@ -1,0 +1,474 @@
+.wrapper {
+  display: grid;
+  grid-template-columns: minmax(11rem, 15rem) minmax(0, 45rem);
+  gap: clamp(2.5rem, 7vw, 7rem);
+  align-items: start;
+}
+
+.progress {
+  position: sticky;
+  top: calc(var(--header-height) + 2rem);
+  display: grid;
+  gap: 0;
+}
+
+.progressItem {
+  position: relative;
+  display: grid;
+  min-height: 5rem;
+  grid-template-columns: 2rem 1fr;
+  gap: 0.85rem;
+  align-items: start;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.progressItem:not(:last-child)::after {
+  position: absolute;
+  top: 2rem;
+  bottom: 0;
+  left: 0.94rem;
+  width: 1px;
+  background: var(--ink-line);
+  content: "";
+}
+
+.progressItem[data-state="complete"]:not(:last-child)::after {
+  background: var(--lamplight);
+}
+
+.progressNode {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: 1.9rem;
+  height: 1.9rem;
+  place-items: center;
+  border: 1px solid var(--ink-line);
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--mist);
+  font-family: var(--font-code);
+  font-size: 0.72rem;
+}
+
+.progressItem[data-state="active"] {
+  color: var(--moonstone);
+}
+
+.progressItem[data-state="active"] .progressNode,
+.progressItem[data-state="complete"] .progressNode {
+  border-color: var(--lamplight);
+  color: var(--lamplight);
+}
+
+.form,
+.success {
+  min-width: 0;
+  padding-inline-start: clamp(1.25rem, 3vw, 2.5rem);
+  border-inline-start: 1px solid var(--ink-line);
+}
+
+.fieldset {
+  display: grid;
+  min-width: 0;
+  gap: 1.5rem;
+  padding: 0;
+  border: 0;
+}
+
+.fieldset > legend {
+  margin-block-end: 1.75rem;
+  color: var(--moonstone);
+  font-family: var(--font-display);
+  font-size: var(--text-h2);
+  font-weight: 300;
+}
+
+.requiredNote,
+.hint,
+.contextNote,
+.counter,
+.formMessage,
+.turnstile p {
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.optionList {
+  display: grid;
+  border-top: 1px solid var(--ink-line);
+}
+
+.option {
+  display: grid;
+  min-height: 4.25rem;
+  grid-template-columns: 1.1rem minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  padding: 0.9rem 0.2rem;
+  border-bottom: 1px solid var(--ink-line);
+  color: var(--mist);
+  cursor: pointer;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  transition:
+    color var(--dur-quick) var(--ease-sandhi),
+    padding-inline var(--dur-base) var(--ease-sandhi);
+}
+
+.option:hover,
+.option[data-selected="true"] {
+  padding-inline: 0.75rem;
+  color: var(--moonstone);
+}
+
+.option input {
+  width: 1.1rem;
+  height: 1.1rem;
+  flex: 0 0 auto;
+  accent-color: var(--lamplight);
+}
+
+.optionCopy {
+  display: grid;
+  gap: 0.22rem;
+}
+
+.optionCopy strong {
+  color: inherit;
+  font: inherit;
+  font-weight: 500;
+}
+
+.optionCopy small {
+  color: var(--mist);
+  font-family: var(--font-ui);
+  font-size: var(--text-meta);
+  line-height: 1.45;
+}
+
+.option[data-selected="true"] .optionCopy small {
+  color: var(--moonstone);
+}
+
+.grid,
+.linkGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+
+.field,
+.subField {
+  display: grid;
+  min-width: 0;
+  gap: 0.5rem;
+}
+
+.label,
+.subField > span {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  font-weight: 550;
+}
+
+.field input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.subField input,
+.field textarea,
+.proposal textarea,
+.proposal input:not([type="file"]):not([type="checkbox"]):not([type="radio"]) {
+  width: 100%;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+  font: inherit;
+  transition: border-color var(--dur-quick) var(--ease-sandhi);
+}
+
+.field input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
+.subField input,
+.proposal input:not([type="file"]):not([type="checkbox"]):not([type="radio"]) {
+  min-height: 2.9rem;
+  padding: 0.65rem 0.75rem;
+}
+
+.field textarea,
+.proposal textarea {
+  resize: vertical;
+  padding: 0.75rem;
+  line-height: 1.55;
+}
+
+.field input:hover,
+.field textarea:hover,
+.subField input:hover,
+.proposal input:hover,
+.proposal textarea:hover {
+  border-color: var(--mist);
+}
+
+.field input[aria-invalid="true"],
+.field textarea[aria-invalid="true"] {
+  border-color: var(--signal-warn);
+}
+
+.checkGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.25rem 2rem;
+  max-width: 40rem;
+  margin-block: 0.25rem 0.75rem;
+}
+
+.checkOption,
+.consent {
+  display: grid;
+  grid-template-columns: 1rem minmax(0, 1fr);
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--mist);
+  cursor: pointer;
+  line-height: 1.45;
+}
+
+.checkOption {
+  min-height: 2.35rem;
+  padding-block: 0.4rem;
+}
+
+.checkOption input,
+.consent input {
+  display: grid;
+  width: 1rem;
+  min-width: 1rem;
+  max-width: 1rem;
+  height: 1rem;
+  min-height: 1rem;
+  max-height: 1rem;
+  place-content: center;
+  margin: 0.15rem 0 0;
+  padding: 0;
+  border: 1px solid var(--mist);
+  border-radius: var(--radius-control);
+  appearance: none;
+  background: transparent;
+}
+
+.checkOption input::before,
+.consent input::before {
+  width: 0.5rem;
+  height: 0.5rem;
+  background: var(--lamplight);
+  content: "";
+  transform: scale(0);
+  transition: transform var(--dur-quick) var(--ease-sandhi);
+}
+
+.checkOption input:checked::before,
+.consent input:checked::before {
+  transform: scale(1);
+}
+
+.checkOption span,
+.consent span {
+  min-width: 0;
+}
+
+.fileInput {
+  width: 100%;
+  padding: 0.65rem;
+  border: 1px dashed var(--ink-line);
+  background: transparent;
+  color: var(--mist);
+}
+
+.fileInput::file-selector-button {
+  margin-inline-end: 0.8rem;
+  padding: 0.45rem 0.65rem;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+  cursor: pointer;
+}
+
+.counter {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.proposal {
+  display: grid;
+  gap: 1.25rem;
+  margin-block: 0.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--ink-line);
+  background: color-mix(in srgb, var(--lotus) 5%, transparent);
+}
+
+.proposal h3 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.consent {
+  padding-block: 0.35rem;
+  color: var(--moonstone);
+}
+
+.turnstile {
+  min-height: 4rem;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-block-start: 2.5rem;
+  padding-block-start: 1.25rem;
+  border-top: 1px solid var(--ink-line);
+}
+
+.primaryButton,
+.secondaryButton {
+  min-height: 2.8rem;
+  padding: 0.65rem 1rem;
+  border-radius: var(--radius-control);
+  font: inherit;
+  font-weight: 550;
+}
+
+.primaryButton {
+  border: 1px solid var(--lamplight);
+  background: color-mix(in srgb, var(--lamplight) 12%, transparent);
+  color: var(--moonstone);
+}
+
+.secondaryButton {
+  border: 1px solid var(--ink-line);
+  background: transparent;
+  color: var(--mist);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  color: var(--moonstone);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled {
+  opacity: 0.55;
+}
+
+.formMessage {
+  min-height: 1.4em;
+  margin-block: 0.8rem 0;
+  text-align: end;
+}
+
+.error {
+  margin: 0;
+  color: var(--signal-warn);
+  font-size: var(--text-meta);
+}
+
+.errorSummary {
+  margin-block-end: 1.5rem;
+  padding: 1rem;
+  border-inline-start: 2px solid var(--signal-warn);
+  background: color-mix(in srgb, var(--signal-warn) 7%, transparent);
+}
+
+.errorSummary p {
+  margin-block-end: 0.5rem;
+  color: var(--moonstone);
+  font-weight: 550;
+}
+
+.errorSummary ul {
+  display: grid;
+  gap: 0.25rem;
+  color: var(--signal-warn);
+  font-size: var(--text-meta);
+}
+
+.errorSummary a {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.success {
+  position: relative;
+  padding-block: 1rem 4rem;
+}
+
+.successNode {
+  display: block;
+  width: 0.7rem;
+  height: 0.7rem;
+  margin-block-end: 2rem;
+  border-radius: 50%;
+  background: var(--lamplight);
+  outline: 1px solid color-mix(in srgb, var(--lamplight) 45%, transparent);
+  outline-offset: 0.35rem;
+}
+
+.success h2 {
+  margin-block-end: 1rem;
+}
+
+.success > p:last-child {
+  max-width: 34rem;
+  color: var(--mist);
+  font-family: var(--font-display);
+  font-size: var(--text-body-lg);
+}
+
+@media (max-width: 48rem) {
+  .wrapper {
+    grid-template-columns: 1fr;
+    gap: 2.25rem;
+  }
+
+  .progress {
+    position: static;
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .progressItem {
+    min-height: auto;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    text-align: center;
+  }
+
+  .progressItem:not(:last-child)::after {
+    top: 0.94rem;
+    right: 0;
+    bottom: auto;
+    left: calc(50% + 0.95rem);
+    width: calc(100% - 1.9rem);
+    height: 1px;
+  }
+
+  .progressNode {
+    justify-self: center;
+  }
+
+  .form,
+  .success {
+    padding-block-start: 1.5rem;
+    padding-inline-start: 0;
+    border-block-start: 1px solid var(--ink-line);
+    border-inline-start: 0;
+  }
+
+  .grid,
+  .linkGrid,
+  .checkGrid {
+    grid-template-columns: 1fr;
+  }
+}

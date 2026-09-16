@@ -40,7 +40,12 @@ export function ThemeToggle() {
   }, []);
 
   function toggleTheme() {
-    const next: Theme = theme === "dark" ? "light" : "dark";
+    // Read the applied theme instead of relying on React state. The inline
+    // preference script can update the document before this component has
+    // finished hydrating, so the state may briefly lag behind the page.
+    const current: Theme =
+      document.documentElement.dataset.theme === "light" ? "light" : "dark";
+    const next: Theme = current === "dark" ? "light" : "dark";
     window.localStorage.setItem(STORAGE_KEY, next);
     document.documentElement.dataset.theme = next;
     setTheme(next);

@@ -26,6 +26,25 @@ export function SandhiFieldPoster() {
         <path d="M1097 657C952 590 871 487 744 420" />
       </g>
 
+      <g className="sandhi-field-poster__motion-traces" aria-hidden="true">
+        <path
+          pathLength="1000"
+          d="M-60 178C208 144 346 255 554 340C714 405 806 413 957 362C1114 308 1250 206 1500 238"
+        />
+        <path
+          pathLength="1000"
+          d="M-50 648C234 694 368 569 558 485C718 414 806 403 953 442C1118 486 1266 637 1490 602"
+        />
+        <path
+          pathLength="1000"
+          d="M-70 282C214 248 351 302 539 378C708 446 821 455 970 400C1149 334 1261 303 1504 330"
+        />
+        <path
+          pathLength="1000"
+          d="M-40 554C233 596 367 534 548 462C717 395 820 389 968 430C1131 476 1270 553 1492 526"
+        />
+      </g>
+
       <g className="sandhi-field-poster__points">
         <circle cx="130" cy="205" r="2" />
         <circle cx="222" cy="247" r="1.7" />

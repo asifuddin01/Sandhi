@@ -12,7 +12,7 @@
 export const SystemRole = {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
-  EDITOR: 'EDITOR',
+  REVIEWER: 'REVIEWER',
   MEMBER: 'MEMBER'
 } as const
 

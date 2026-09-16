@@ -1,0 +1,125 @@
+.errorPage {
+  position: relative;
+  display: grid;
+  min-height: calc(100vh - var(--header-height));
+  place-items: center;
+  overflow: hidden;
+  padding: clamp(4rem, 9vw, 8rem) var(--page-gutter);
+}
+
+.content {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  max-width: 42rem;
+  justify-items: center;
+  text-align: center;
+}
+
+.code {
+  margin-block-end: 1rem;
+  color: var(--lotus);
+  font-family: var(--font-code);
+  font-size: var(--text-meta);
+  letter-spacing: 0.14em;
+}
+
+.content h1 {
+  margin-block-end: 1rem;
+}
+
+.content p {
+  max-width: 34rem;
+  margin-block-end: 2rem;
+  color: var(--mist);
+  font-family: var(--font-display);
+  font-size: var(--text-body-lg);
+  line-height: 1.65;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.primary,
+.secondary {
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 1rem;
+  border: 1px solid var(--lamplight);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--moonstone);
+  font-size: var(--text-ui);
+}
+
+.secondary {
+  border-color: var(--ink-line);
+  color: var(--mist);
+}
+
+.stoppedThreads {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.threadLeft,
+.threadRight {
+  position: absolute;
+  inset-block-start: 50%;
+  width: calc(50% - 2.5rem);
+  height: 1px;
+  background: var(--lotus);
+  opacity: 0.52;
+}
+
+.threadLeft {
+  inset-inline-start: 0;
+}
+
+.threadRight {
+  inset-inline-end: 0;
+}
+
+.threadLeft::after,
+.threadRight::before {
+  position: absolute;
+  inset-block-start: 50%;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--mist);
+  border-radius: 50%;
+  background: var(--ink);
+  content: "";
+  transform: translateY(-50%);
+}
+
+.threadLeft::after {
+  inset-inline-end: -0.25rem;
+}
+
+.threadRight::before {
+  inset-inline-start: -0.25rem;
+}
+
+.errorNode {
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-block-end: 1.35rem;
+  border: 1px solid var(--signal-warn);
+  border-radius: 50%;
+  background: transparent;
+}
+
+@media (max-width: 38rem) {
+  .threadLeft,
+  .threadRight {
+    width: calc(50% - 1.4rem);
+  }
+}

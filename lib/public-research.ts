@@ -1,0 +1,832 @@
+import "server-only";
+
+import { cache } from "react";
+
+import type { Prisma } from "@/generated/prisma/client";
+import { getDb, isDatabaseConfigured } from "@/lib/db";
+import {
+  publicAreaWhere,
+  publicInsightWhere,
+  publicMemberWhere,
+  publicProjectResearch,
+  publicProjectWhere,
+  publicPublicationWhere,
+  publicResourceWhere,
+  publicThemeWhere,
+} from "@/lib/visibility";
+
+export const PROJECT_STATUSES = [
+  "PROPOSED",
+  "ACTIVE",
+  "COMPLETED",
+  "SUBMITTED",
+  "PUBLISHED",
+  "ARCHIVED",
+] as const;
+
+export type ProjectStatusValue = (typeof PROJECT_STATUSES)[number];
+
+export interface AreaLink {
+  slug: string;
+  name: string;
+  theme: { slug: string; name: string };
+}
+
+export interface PersonSummary {
+  slug: string;
+  name: string;
+  rank: string;
+  status: string;
+  title: string | null;
+  interests: string[];
+  photoUrl: string | null;
+  photoAlt: string;
+  areas: Array<{ slug: string; name: string }>;
+}
+
+export interface ProjectSummary {
+  slug: string;
+  title: string;
+  gloss: string;
+  status: ProjectStatusValue;
+  startedAt: string | null;
+  areas: AreaLink[];
+  members: Array<{
+    slug: string;
+    name: string;
+    role: string;
+    isLead: boolean;
+  }>;
+}
+
+export interface PublicationSummary {
+  slug: string;
+  title: string;
+  type: string;
+  venueName: string | null;
+  venueShort: string | null;
+  year: number | null;
+  authors: Array<{
+    name: string;
+    memberSlug: string | null;
+  }>;
+}
+
+export interface ResearchIndexData {
+  themes: Array<{
+    slug: string;
+    name: string;
+    gloss: string;
+    areas: Array<{ slug: string; name: string; summary: string }>;
+    projectCount: number;
+    publicationCount: number;
+  }>;
+}
+
+export interface ThemeDetailData {
+  slug: string;
+  name: string;
+  gloss: string;
+  overview: string | null;
+  areas: Array<{
+    slug: string;
+    name: string;
+    summary: string;
+    overview: string | null;
+  }>;
+  projects: ProjectSummary[];
+  publications: PublicationSummary[];
+}
+
+export interface AreaDetailData {
+  slug: string;
+  name: string;
+  summary: string;
+  overview: string | null;
+  questions: string[];
+  theme: { slug: string; name: string; gloss: string };
+  projects: ProjectSummary[];
+  publications: PublicationSummary[];
+  researchers: PersonSummary[];
+  resources: Array<{
+    slug: string;
+    name: string;
+    kind: string;
+    description: string;
+  }>;
+  relatedAreas: Array<{ slug: string; name: string }>;
+}
+
+export interface ProjectFilters {
+  status?: ProjectStatusValue;
+  theme?: string;
+  area?: string;
+  researcher?: string;
+}
+
+export interface ProjectsIndexData {
+  projects: ProjectSummary[];
+  options: {
+    themes: Array<{ slug: string; name: string }>;
+    areas: Array<{ slug: string; name: string }>;
+    researchers: Array<{ slug: string; name: string }>;
+  };
+}
+
+export interface ProjectDetailData extends ProjectSummary {
+  abstract: string;
+  question: string;
+  motivation: string | null;
+  approach: string | null;
+  experiments: string | null;
+  results: string | null;
+  resultsPublic: boolean;
+  endedAt: string | null;
+  links: Array<{ label: string; href: string }>;
+  publications: PublicationSummary[];
+  relatedProjects: Array<{ slug: string; title: string; gloss: string }>;
+}
+
+export interface PeopleIndexData {
+  people: PersonSummary[];
+  areas: Array<{ slug: string; name: string }>;
+}
+
+export interface PersonDetailData extends PersonSummary {
+  bio: string | null;
+  orgEmail: string | null;
+  links: Array<{ label: string; href: string }>;
+  projects: ProjectSummary[];
+  publications: PublicationSummary[];
+  notes: Array<{
+    slug: string;
+    title: string;
+    summary: string;
+    publishedAt: string | null;
+  }>;
+}
+
+export interface AboutData {
+  milestones: Array<{
+    id: string;
+    date: string;
+    title: string;
+    body: string | null;
+  }>;
+  leadership: PersonSummary[];
+}
+
+const memberSummarySelect = {
+  slug: true,
+  name: true,
+  rank: true,
+  status: true,
+  title: true,
+  interests: true,
+  photoKey: true,
+  photoAlt: true,
+  areas: {
+    where: { area: publicAreaWhere },
+    orderBy: { area: { sortOrder: "asc" } },
+    select: { area: { select: { slug: true, name: true } } },
+  },
+} satisfies Prisma.MemberSelect;
+
+const projectSummarySelect = {
+  slug: true,
+  title: true,
+  gloss: true,
+  status: true,
+  startedAt: true,
+  areas: {
+    where: { area: publicAreaWhere },
+    orderBy: { area: { sortOrder: "asc" } },
+    select: {
+      area: {
+        select: {
+          slug: true,
+          name: true,
+          theme: { select: { slug: true, name: true } },
+        },
+      },
+    },
+  },
+  members: {
+    where: { member: publicMemberWhere },
+    orderBy: [{ isLead: "desc" }, { sortOrder: "asc" }],
+    select: {
+      role: true,
+      isLead: true,
+      member: { select: { slug: true, name: true } },
+    },
+  },
+} satisfies Prisma.ProjectSelect;
+
+const publicationSummarySelect = {
+  slug: true,
+  title: true,
+  type: true,
+  venueName: true,
+  venueShort: true,
+  year: true,
+  authors: {
+    orderBy: { position: "asc" },
+    select: {
+      externalName: true,
+      member: {
+        select: {
+          slug: true,
+          name: true,
+          isPublic: true,
+          status: true,
+        },
+      },
+    },
+  },
+} satisfies Prisma.PublicationSelect;
+
+type ProjectSummaryRecord = Prisma.ProjectGetPayload<{
+  select: typeof projectSummarySelect;
+}>;
+type PublicationSummaryRecord = Prisma.PublicationGetPayload<{
+  select: typeof publicationSummarySelect;
+}>;
+type MemberSummaryRecord = Prisma.MemberGetPayload<{
+  select: typeof memberSummarySelect;
+}>;
+
+async function queryPublic<T>(
+  fallback: T,
+  query: () => Promise<T>,
+): Promise<T> {
+  if (!isDatabaseConfigured()) return fallback;
+  return query();
+}
+
+function mediaUrl(key: string | null): string | null {
+  const base = process.env.R2_PUBLIC_BASE_URL?.trim();
+  if (!key || !base) return null;
+
+  try {
+    const normalizedBase = new URL(base);
+    if (!["http:", "https:"].includes(normalizedBase.protocol)) return null;
+    const encodedKey = key
+      .split("/")
+      .map((part) => encodeURIComponent(part))
+      .join("/");
+    return new URL(
+      encodedKey,
+      `${normalizedBase.toString().replace(/\/$/, "")}/`,
+    ).toString();
+  } catch {
+    return null;
+  }
+}
+
+function externalUrl(value: string | null): string | null {
+  if (!value) return null;
+
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) ? url.toString() : null;
+  } catch {
+    return null;
+  }
+}
+
+function mapMember(record: MemberSummaryRecord): PersonSummary {
+  return {
+    slug: record.slug,
+    name: record.name,
+    rank: record.rank,
+    status: record.status,
+    title: record.title,
+    interests: record.interests,
+    photoUrl: mediaUrl(record.photoKey),
+    photoAlt: record.photoAlt?.trim() || `${record.name}, SANDHI researcher`,
+    areas: record.areas.map(({ area }) => area),
+  };
+}
+
+function mapProject(record: ProjectSummaryRecord): ProjectSummary {
+  return {
+    slug: record.slug,
+    title: record.title,
+    gloss: record.gloss,
+    status: record.status,
+    startedAt: record.startedAt?.toISOString() ?? null,
+    areas: record.areas.map(({ area }) => area),
+    members: record.members.map(({ member, role, isLead }) => ({
+      slug: member.slug,
+      name: member.name,
+      role,
+      isLead,
+    })),
+  };
+}
+
+function mapPublication(record: PublicationSummaryRecord): PublicationSummary {
+  return {
+    slug: record.slug,
+    title: record.title,
+    type: record.type,
+    venueName: record.venueName,
+    venueShort: record.venueShort,
+    year: record.year,
+    authors: record.authors.map((author) => {
+      const memberIsPublic =
+        author.member?.isPublic &&
+        ["ACTIVE", "ALUMNI"].includes(author.member.status);
+
+      return {
+        name:
+          (memberIsPublic ? author.member?.name : null) ??
+          author.externalName ??
+          "Author profile unavailable",
+        memberSlug: memberIsPublic ? (author.member?.slug ?? null) : null,
+      };
+    }),
+  };
+}
+
+function uniqueBySlug<T extends { slug: string }>(records: T[]): T[] {
+  return [...new Map(records.map((record) => [record.slug, record])).values()];
+}
+
+export const getResearchIndex = cache(async (): Promise<ResearchIndexData> => {
+  return queryPublic({ themes: [] }, async () => {
+    const themes = await getDb().researchTheme.findMany({
+      where: publicThemeWhere,
+      orderBy: { sortOrder: "asc" },
+      select: {
+        slug: true,
+        name: true,
+        gloss: true,
+        areas: {
+          where: publicAreaWhere,
+          orderBy: { sortOrder: "asc" },
+          select: {
+            slug: true,
+            name: true,
+            summary: true,
+            projects: {
+              where: { project: publicProjectWhere },
+              select: { projectId: true },
+            },
+            publications: {
+              where: { publication: publicPublicationWhere },
+              select: { publicationId: true },
+            },
+          },
+        },
+      },
+    });
+
+    return {
+      themes: themes.map((theme) => ({
+        slug: theme.slug,
+        name: theme.name,
+        gloss: theme.gloss,
+        areas: theme.areas.map(({ slug, name, summary }) => ({
+          slug,
+          name,
+          summary,
+        })),
+        projectCount: new Set(
+          theme.areas.flatMap((area) =>
+            area.projects.map(({ projectId }) => projectId),
+          ),
+        ).size,
+        publicationCount: new Set(
+          theme.areas.flatMap((area) =>
+            area.publications.map(({ publicationId }) => publicationId),
+          ),
+        ).size,
+      })),
+    };
+  });
+});
+
+export const getThemeBySlug = cache(
+  async (slug: string): Promise<ThemeDetailData | null> =>
+    queryPublic(null, async () => {
+      const theme = await getDb().researchTheme.findFirst({
+        where: { slug, ...publicThemeWhere },
+        select: {
+          slug: true,
+          name: true,
+          gloss: true,
+          overview: true,
+          areas: {
+            where: publicAreaWhere,
+            orderBy: { sortOrder: "asc" },
+            select: {
+              slug: true,
+              name: true,
+              summary: true,
+              overview: true,
+              projects: {
+                where: { project: publicProjectWhere },
+                select: { project: { select: projectSummarySelect } },
+              },
+              publications: {
+                where: { publication: publicPublicationWhere },
+                select: {
+                  publication: { select: publicationSummarySelect },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!theme) return null;
+
+      return {
+        slug: theme.slug,
+        name: theme.name,
+        gloss: theme.gloss,
+        overview: theme.overview,
+        areas: theme.areas.map((area) => ({
+          slug: area.slug,
+          name: area.name,
+          summary: area.summary,
+          overview: area.overview,
+        })),
+        projects: uniqueBySlug(
+          theme.areas.flatMap((area) =>
+            area.projects.map(({ project }) => mapProject(project)),
+          ),
+        ),
+        publications: uniqueBySlug(
+          theme.areas.flatMap((area) =>
+            area.publications.map(({ publication }) =>
+              mapPublication(publication),
+            ),
+          ),
+        ),
+      };
+    }),
+);
+
+export const getAreaBySlug = cache(
+  async (slug: string): Promise<AreaDetailData | null> =>
+    queryPublic(null, async () => {
+      const area = await getDb().researchArea.findFirst({
+        where: { slug, ...publicAreaWhere },
+        select: {
+          slug: true,
+          name: true,
+          summary: true,
+          overview: true,
+          questions: true,
+          theme: {
+            select: { slug: true, name: true, gloss: true },
+          },
+          projects: {
+            where: { project: publicProjectWhere },
+            select: { project: { select: projectSummarySelect } },
+          },
+          publications: {
+            where: { publication: publicPublicationWhere },
+            select: { publication: { select: publicationSummarySelect } },
+          },
+          members: {
+            where: { member: publicMemberWhere },
+            select: { member: { select: memberSummarySelect } },
+          },
+          resources: {
+            where: { resource: publicResourceWhere },
+            select: {
+              resource: {
+                select: {
+                  slug: true,
+                  name: true,
+                  kind: true,
+                  description: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!area) return null;
+
+      const relatedAreas = await getDb().researchArea.findMany({
+        where: {
+          ...publicAreaWhere,
+          theme: { ...publicThemeWhere, slug: area.theme.slug },
+          slug: { not: area.slug },
+        },
+        orderBy: { sortOrder: "asc" },
+        select: { slug: true, name: true },
+      });
+
+      return {
+        slug: area.slug,
+        name: area.name,
+        summary: area.summary,
+        overview: area.overview,
+        questions: area.questions,
+        theme: area.theme,
+        projects: area.projects.map(({ project }) => mapProject(project)),
+        publications: area.publications.map(({ publication }) =>
+          mapPublication(publication),
+        ),
+        researchers: area.members.map(({ member }) => mapMember(member)),
+        resources: area.resources.map(({ resource }) => resource),
+        relatedAreas,
+      };
+    }),
+);
+
+export async function getProjectsIndex(
+  filters: ProjectFilters,
+): Promise<ProjectsIndexData> {
+  return queryPublic(
+    { projects: [], options: { themes: [], areas: [], researchers: [] } },
+    async () => {
+      const relationFilters: Prisma.ProjectWhereInput[] = [];
+      if (filters.theme) {
+        relationFilters.push({
+          areas: {
+            some: {
+              area: {
+                ...publicAreaWhere,
+                theme: { ...publicThemeWhere, slug: filters.theme },
+              },
+            },
+          },
+        });
+      }
+      if (filters.area) {
+        relationFilters.push({
+          areas: {
+            some: { area: { ...publicAreaWhere, slug: filters.area } },
+          },
+        });
+      }
+      if (filters.researcher) {
+        relationFilters.push({
+          members: {
+            some: {
+              member: {
+                ...publicMemberWhere,
+                slug: filters.researcher,
+              },
+            },
+          },
+        });
+      }
+
+      const where: Prisma.ProjectWhereInput = {
+        ...publicProjectWhere,
+        status: filters.status ?? { not: "ARCHIVED" },
+        ...(relationFilters.length > 0 ? { AND: relationFilters } : {}),
+      };
+
+      const [projects, themes, areas, researchers] = await Promise.all([
+        getDb().project.findMany({
+          where,
+          orderBy: [
+            { featured: "desc" },
+            { startedAt: "desc" },
+            { title: "asc" },
+          ],
+          select: projectSummarySelect,
+        }),
+        getDb().researchTheme.findMany({
+          where: publicThemeWhere,
+          orderBy: { sortOrder: "asc" },
+          select: { slug: true, name: true },
+        }),
+        getDb().researchArea.findMany({
+          where: publicAreaWhere,
+          orderBy: [{ theme: { sortOrder: "asc" } }, { sortOrder: "asc" }],
+          select: { slug: true, name: true },
+        }),
+        getDb().member.findMany({
+          where: publicMemberWhere,
+          orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+          select: { slug: true, name: true },
+        }),
+      ]);
+
+      return {
+        projects: projects.map(mapProject),
+        options: { themes, areas, researchers },
+      };
+    },
+  );
+}
+
+export const getProjectBySlug = cache(
+  async (slug: string): Promise<ProjectDetailData | null> =>
+    queryPublic(null, async () => {
+      const project = await getDb().project.findFirst({
+        where: { slug, ...publicProjectWhere },
+        select: {
+          ...projectSummarySelect,
+          abstract: true,
+          question: true,
+          motivation: true,
+          approach: true,
+          experiments: true,
+          results: true,
+          resultsPublic: true,
+          endedAt: true,
+          codeUrl: true,
+          datasetUrl: true,
+          demoUrl: true,
+          publications: {
+            where: publicPublicationWhere,
+            orderBy: [{ year: "desc" }, { title: "asc" }],
+            select: publicationSummarySelect,
+          },
+          relatedFrom: {
+            where: { to: publicProjectWhere },
+            select: {
+              to: { select: { slug: true, title: true, gloss: true } },
+            },
+          },
+          relatedTo: {
+            where: { from: publicProjectWhere },
+            select: {
+              from: { select: { slug: true, title: true, gloss: true } },
+            },
+          },
+        },
+      });
+
+      if (!project) return null;
+
+      const safeProject = publicProjectResearch(project);
+      const links = [
+        { label: "Code", href: externalUrl(project.codeUrl) },
+        { label: "Dataset", href: externalUrl(project.datasetUrl) },
+        { label: "Demo", href: externalUrl(project.demoUrl) },
+      ].flatMap(({ label, href }) => (href ? [{ label, href }] : []));
+
+      return {
+        ...mapProject(project),
+        abstract: project.abstract,
+        question: project.question,
+        motivation: project.motivation,
+        approach: project.approach,
+        experiments: safeProject.experiments,
+        results: safeProject.results,
+        resultsPublic: project.resultsPublic,
+        endedAt: project.endedAt?.toISOString() ?? null,
+        links,
+        publications: project.publications.map(mapPublication),
+        relatedProjects: uniqueBySlug([
+          ...project.relatedFrom.map(({ to }) => to),
+          ...project.relatedTo.map(({ from }) => from),
+        ]),
+      };
+    }),
+);
+
+export async function getPeopleIndex(area?: string): Promise<PeopleIndexData> {
+  return queryPublic({ people: [], areas: [] }, async () => {
+    const [people, areas] = await Promise.all([
+      getDb().member.findMany({
+        where: {
+          ...publicMemberWhere,
+          ...(area
+            ? {
+                areas: {
+                  some: { area: { ...publicAreaWhere, slug: area } },
+                },
+              }
+            : {}),
+        },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        select: memberSummarySelect,
+      }),
+      getDb().researchArea.findMany({
+        where: publicAreaWhere,
+        orderBy: [{ theme: { sortOrder: "asc" } }, { sortOrder: "asc" }],
+        select: { slug: true, name: true },
+      }),
+    ]);
+
+    return { people: people.map(mapMember), areas };
+  });
+}
+
+export const getPersonBySlug = cache(
+  async (slug: string): Promise<PersonDetailData | null> =>
+    queryPublic(null, async () => {
+      const person = await getDb().member.findFirst({
+        where: { slug, ...publicMemberWhere },
+        select: {
+          ...memberSummarySelect,
+          bio: true,
+          orgEmail: true,
+          showOrgEmail: true,
+          scholarUrl: true,
+          orcid: true,
+          githubUrl: true,
+          linkedinUrl: true,
+          websiteUrl: true,
+          projects: {
+            where: { project: publicProjectWhere },
+            orderBy: [{ isLead: "desc" }, { sortOrder: "asc" }],
+            select: { project: { select: projectSummarySelect } },
+          },
+          authorships: {
+            where: { publication: publicPublicationWhere },
+            orderBy: { position: "asc" },
+            select: {
+              publication: { select: publicationSummarySelect },
+            },
+          },
+          insights: {
+            where: { insight: publicInsightWhere },
+            orderBy: { position: "asc" },
+            select: {
+              insight: {
+                select: {
+                  slug: true,
+                  title: true,
+                  summary: true,
+                  publishedAt: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!person) return null;
+
+      const links = [
+        { label: "Google Scholar", href: externalUrl(person.scholarUrl) },
+        {
+          label: "ORCID",
+          href: person.orcid
+            ? externalUrl(
+                person.orcid.startsWith("http")
+                  ? person.orcid
+                  : `https://orcid.org/${person.orcid}`,
+              )
+            : null,
+        },
+        { label: "GitHub", href: externalUrl(person.githubUrl) },
+        { label: "LinkedIn", href: externalUrl(person.linkedinUrl) },
+        { label: "Personal site", href: externalUrl(person.websiteUrl) },
+      ].flatMap(({ label, href }) => (href ? [{ label, href }] : []));
+
+      return {
+        ...mapMember(person),
+        bio: person.bio,
+        orgEmail: person.showOrgEmail ? person.orgEmail : null,
+        links,
+        projects: person.projects.map(({ project }) => mapProject(project)),
+        publications: uniqueBySlug(
+          person.authorships.map(({ publication }) =>
+            mapPublication(publication),
+          ),
+        ),
+        notes: person.insights.map(({ insight }) => ({
+          ...insight,
+          publishedAt: insight.publishedAt?.toISOString() ?? null,
+        })),
+      };
+    }),
+);
+
+export const getAboutData = cache(async (): Promise<AboutData> => {
+  return queryPublic({ milestones: [], leadership: [] }, async () => {
+    const [milestones, leadership] = await Promise.all([
+      getDb().milestone.findMany({
+        where: { isPublic: true },
+        orderBy: { date: "asc" },
+        select: { id: true, date: true, title: true, body: true },
+      }),
+      getDb().member.findMany({
+        where: {
+          ...publicMemberWhere,
+          status: "ACTIVE",
+          rank: { in: ["DIRECTOR", "RESEARCH_LEAD"] },
+        },
+        orderBy: [{ sortOrder: "asc" }, { name: "asc" }],
+        select: memberSummarySelect,
+      }),
+    ]);
+
+    return {
+      milestones: milestones.map((milestone) => ({
+        ...milestone,
+        date: milestone.date.toISOString(),
+      })),
+      leadership: leadership.map(mapMember),
+    };
+  });
+});
+
+export function isProjectStatus(value: string): value is ProjectStatusValue {
+  return PROJECT_STATUSES.some((status) => status === value);
+}

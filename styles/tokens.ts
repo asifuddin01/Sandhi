@@ -1,6 +1,6 @@
 export const themeMetadataColors = {
   dark: "#141a2e",
-  light: "#e9ecf1",
+  light: "#eee8dc",
 } as const;
 
 export const darkBrandColors = {

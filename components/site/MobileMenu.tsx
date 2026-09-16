@@ -111,13 +111,22 @@ export function MobileMenu() {
             </ul>
           </nav>
 
-          <Link
-            className="button button-primary"
-            href="/join"
-            onClick={closeMenu}
-          >
-            Join SANDHI
-          </Link>
+          <div className="mobile-menu__actions">
+            <Link
+              className="text-link"
+              href="/portal/sign-in"
+              onClick={closeMenu}
+            >
+              Sign in
+            </Link>
+            <Link
+              className="button button-primary"
+              href="/join"
+              onClick={closeMenu}
+            >
+              Join SANDHI
+            </Link>
+          </div>
         </div>
       )}
     </div>

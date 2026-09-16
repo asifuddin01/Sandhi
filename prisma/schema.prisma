@@ -12,7 +12,7 @@ datasource db {
 enum SystemRole {
   OWNER
   ADMIN
-  EDITOR
+  REVIEWER
   MEMBER
 }
 
@@ -165,7 +165,7 @@ enum ChangeStatus {
 
 // The role is a string because Better Auth's admin plugin stores role names as a
 // comma-separated string. Milestone 5 configures the plugin with SANDHI's
-// OWNER/ADMIN/EDITOR/MEMBER role names and prevents role input from clients.
+// OWNER/ADMIN/REVIEWER/MEMBER role names and prevents role input from clients.
 model User {
   id                   String       @id @default(cuid())
   name                 String
@@ -352,13 +352,16 @@ model ResearchArea {
 }
 
 model MemberArea {
-  memberId String
-  areaId   String
-  member   Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
-  area     ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+  memberId  String
+  areaId    String
+  role      String       @default("Researcher")
+  isLead    Boolean      @default(false)
+  sortOrder Int          @default(0)
+  member    Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  area      ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
 
   @@id([memberId, areaId])
-  @@index([areaId])
+  @@index([areaId, isLead, sortOrder])
 }
 
 // ---------- Projects ----------
@@ -683,6 +686,7 @@ model Application {
   status          ApplicationStatus @default(NEW)
   name            String
   email           String
+  phone           String?
   institution     String
   currentRole     String
   interests       String[]          @default([])
@@ -691,7 +695,7 @@ model Application {
   githubUrl       String?
   linkedinUrl     String?
   websiteUrl      String?
-  cvKey           String
+  cvKey           String?
   motivation      String
   experience      String?
   proposalTitle   String?

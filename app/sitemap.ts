@@ -1,0 +1,46 @@
+import type { MetadataRoute } from "next";
+
+import { getPublicSitemapEntries } from "@/lib/public-content";
+
+export const dynamic = "force-dynamic";
+
+const origin = "https://sandhiresearch.org";
+
+const staticPages: Array<{
+  path: string;
+  changeFrequency: NonNullable<
+    MetadataRoute.Sitemap[number]["changeFrequency"]
+  >;
+  priority: number;
+}> = [
+  { path: "/", changeFrequency: "weekly", priority: 1 },
+  { path: "/about", changeFrequency: "yearly", priority: 0.7 },
+  { path: "/research", changeFrequency: "monthly", priority: 0.9 },
+  { path: "/projects", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/publications", changeFrequency: "weekly", priority: 0.9 },
+  { path: "/people", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/news", changeFrequency: "weekly", priority: 0.8 },
+  { path: "/join", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
+  { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
+  { path: "/terms", changeFrequency: "yearly", priority: 0.3 },
+];
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const dynamicPages = await getPublicSitemapEntries();
+  const pages: MetadataRoute.Sitemap = [
+    ...staticPages.map((page) => ({
+      url: `${origin}${page.path}`,
+      changeFrequency: page.changeFrequency,
+      priority: page.priority,
+    })),
+    ...dynamicPages.map((page) => ({
+      url: `${origin}${page.path}`,
+      lastModified: page.updatedAt,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    })),
+  ];
+
+  return Array.from(new Map(pages.map((page) => [page.url, page])).values());
+}

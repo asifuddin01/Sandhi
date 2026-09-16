@@ -254,7 +254,10 @@ export type ResearchAreaScalarFieldEnum = (typeof ResearchAreaScalarFieldEnum)[k
 
 export const MemberAreaScalarFieldEnum = {
   memberId: 'memberId',
-  areaId: 'areaId'
+  areaId: 'areaId',
+  role: 'role',
+  isLead: 'isLead',
+  sortOrder: 'sortOrder'
 } as const
 
 export type MemberAreaScalarFieldEnum = (typeof MemberAreaScalarFieldEnum)[keyof typeof MemberAreaScalarFieldEnum]
@@ -522,6 +525,7 @@ export const ApplicationScalarFieldEnum = {
   status: 'status',
   name: 'name',
   email: 'email',
+  phone: 'phone',
   institution: 'institution',
   currentRole: 'currentRole',
   interests: 'interests',

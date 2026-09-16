@@ -32,6 +32,12 @@ export function SiteHeader() {
           <ThemeToggle />
           <CommandPalette />
           <Link
+            className="site-header__signin text-link"
+            href="/portal/sign-in"
+          >
+            Sign in
+          </Link>
+          <Link
             className="button button-primary site-header__join"
             href="/join"
           >

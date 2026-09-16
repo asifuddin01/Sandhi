@@ -4,10 +4,17 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { commandNavigation } from "@/content/strings";
+import type { PublicSearchResult } from "@/lib/search";
+
+type SearchResponse = { results: PublicSearchResult[] };
 
 export function CommandPalette() {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
+  const [remote, setRemote] = useState<{
+    query: string;
+    results: PublicSearchResult[];
+  }>({ query: "", results: [] });
   const dialogRef = useRef<HTMLDialogElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -35,13 +42,50 @@ export function CommandPalette() {
     }
   }, [open]);
 
+  useEffect(() => {
+    const normalizedQuery = query.trim();
+    if (!open || normalizedQuery.length < 2) return;
+
+    const controller = new AbortController();
+    const timer = window.setTimeout(async () => {
+      try {
+        const response = await fetch(
+          `/api/search?q=${encodeURIComponent(normalizedQuery)}`,
+          { signal: controller.signal },
+        );
+        if (!response.ok) return;
+
+        const data = (await response.json()) as SearchResponse;
+        setRemote({ query: normalizedQuery, results: data.results });
+      } catch (error) {
+        if (!(error instanceof DOMException && error.name === "AbortError")) {
+          setRemote({ query: normalizedQuery, results: [] });
+        }
+      }
+    }, 180);
+
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [open, query]);
+
   const results = useMemo(() => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
     if (!normalizedQuery) return commandNavigation;
+
+    if (normalizedQuery.length >= 2 && remote.query === query.trim()) {
+      return remote.results.map((item) => ({
+        label: item.title,
+        href: item.href,
+        context: item.kind,
+      }));
+    }
+
     return commandNavigation.filter((item) =>
       item.label.toLocaleLowerCase().includes(normalizedQuery),
     );
-  }, [query]);
+  }, [query, remote]);
 
   function closePalette() {
     setOpen(false);
@@ -63,7 +107,6 @@ export function CommandPalette() {
           <path d="m15 15 4.5 4.5" />
         </svg>
         <span className="command-trigger__label">Search</span>
-        <kbd aria-hidden="true">⌘K</kbd>
       </button>
 
       <dialog
@@ -117,7 +160,9 @@ export function CommandPalette() {
                 <li key={item.href}>
                   <Link href={item.href} onClick={closePalette}>
                     <span>{item.label}</span>
-                    <span className="command-palette__path">{item.href}</span>
+                    <span className="command-palette__path">
+                      {"context" in item ? item.context : item.href}
+                    </span>
                   </Link>
                 </li>
               ))}

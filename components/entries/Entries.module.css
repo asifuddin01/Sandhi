@@ -1,0 +1,244 @@
+.publicationEntry,
+.newsEntry {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.8rem;
+  border-block-start: 1px solid var(--ink-line);
+}
+
+.entryMarker {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.entryMarker::before {
+  position: absolute;
+  inset-block: -1.8rem;
+  width: 1px;
+  background: var(--ink-line);
+  content: "";
+}
+
+.entryMarker span {
+  position: relative;
+  z-index: 1;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-block-start: 0.42rem;
+  border: 1px solid var(--lotus);
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.entryBody {
+  min-width: 0;
+}
+
+.entryMeta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin-block-end: 0.65rem;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.entryMeta > * + * {
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid var(--ink-line);
+}
+
+.entryTitle {
+  max-width: 52rem;
+  margin-block-end: 0.7rem;
+  font-size: clamp(1.35rem, 2.4vw, 1.75rem);
+}
+
+.entryTitle a {
+  text-decoration-color: transparent;
+  text-decoration-line: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: text-decoration-color var(--dur-quick) var(--ease-sandhi);
+}
+
+.entryTitle a:hover,
+.entryTitle a:focus-visible {
+  text-decoration-color: var(--lotus);
+}
+
+.authors,
+.excerpt {
+  max-width: 47rem;
+  margin-block-end: 0.75rem;
+  color: var(--mist);
+  font-size: var(--text-ui);
+  line-height: 1.65;
+}
+
+.authors a {
+  color: var(--moonstone);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line);
+  text-underline-offset: 0.18em;
+}
+
+.authors sup {
+  margin-inline-start: 0.1em;
+  color: var(--lamplight);
+}
+
+.authorLegend {
+  margin-block: -0.35rem 0.75rem;
+  color: var(--mist);
+  font-size: 0.78rem;
+}
+
+.award {
+  width: fit-content;
+  margin-block: 0.25rem 0.8rem;
+  padding-inline-start: 0.6rem;
+  border-inline-start: 1px solid var(--lamplight);
+  color: var(--lamplight);
+  font-size: var(--text-meta);
+}
+
+.entryLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem 1rem;
+  margin-block-start: 0.85rem;
+}
+
+.entryLinks a,
+.readLink,
+.emptyState a {
+  color: var(--lotus);
+  font-size: var(--text-meta);
+  font-weight: 500;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 0.2em;
+}
+
+.entryLinks a:hover,
+.entryLinks a:focus-visible,
+.readLink:hover,
+.readLink:focus-visible,
+.emptyState a:hover,
+.emptyState a:focus-visible {
+  text-decoration-color: currentColor;
+}
+
+.bibtexPanel {
+  max-width: 52rem;
+  margin-block-start: 1rem;
+  border: 1px solid var(--ink-line);
+  background: color-mix(in srgb, var(--ink-raised) 66%, transparent);
+}
+
+.bibtexPanel summary {
+  width: fit-content;
+  padding: 0.62rem 0.8rem;
+  color: var(--mist);
+  cursor: pointer;
+  font-family: var(--font-code);
+  font-size: 0.78rem;
+  list-style-position: inside;
+}
+
+.bibtexPanel[open] summary {
+  color: var(--moonstone);
+}
+
+.bibtexContent {
+  padding: 0 0.8rem 0.8rem;
+}
+
+.bibtexContent pre {
+  max-height: 22rem;
+  padding: 1rem;
+  margin: 0;
+  overflow: auto;
+  border: 1px solid var(--ink-line);
+  background: var(--ink);
+  color: var(--moonstone);
+  font-size: 0.78rem;
+  line-height: 1.6;
+  white-space: pre-wrap;
+}
+
+.copyRow {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  gap: 0.8rem;
+  margin-block-start: 0.65rem;
+}
+
+.copyRow button {
+  min-height: 2.25rem;
+  padding-inline: 0.75rem;
+  border: 1px solid var(--lamplight);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+}
+
+.copyRow span {
+  color: var(--mist);
+  font-size: 0.78rem;
+}
+
+.emptyState {
+  display: grid;
+  min-height: 14rem;
+  align-content: center;
+  justify-items: start;
+  padding-block: 2.5rem;
+  border-block: 1px solid var(--ink-line);
+}
+
+.emptyState p {
+  max-width: 34rem;
+  margin-block: 1rem 0.8rem;
+  color: var(--mist);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+  font-weight: 300;
+}
+
+.emptyThread {
+  position: relative;
+  width: min(12rem, 45vw);
+  height: 1px;
+  background: var(--ink-line);
+}
+
+.emptyThread span {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: -0.25rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border: 1px solid var(--mist);
+  border-radius: 50%;
+  background: var(--ink);
+  transform: translateY(-50%);
+}
+
+@media (max-width: 40rem) {
+  .publicationEntry,
+  .newsEntry {
+    grid-template-columns: 0.8rem minmax(0, 1fr);
+    gap: 0.7rem;
+  }
+
+  .entryLinks {
+    gap-inline: 0.8rem;
+  }
+}

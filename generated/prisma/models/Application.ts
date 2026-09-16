@@ -42,6 +42,7 @@ export type ApplicationMinAggregateOutputType = {
   status: $Enums.ApplicationStatus | null
   name: string | null
   email: string | null
+  phone: string | null
   institution: string | null
   currentRole: string | null
   scholarUrl: string | null
@@ -69,6 +70,7 @@ export type ApplicationMaxAggregateOutputType = {
   status: $Enums.ApplicationStatus | null
   name: string | null
   email: string | null
+  phone: string | null
   institution: string | null
   currentRole: string | null
   scholarUrl: string | null
@@ -96,6 +98,7 @@ export type ApplicationCountAggregateOutputType = {
   status: number
   name: number
   email: number
+  phone: number
   institution: number
   currentRole: number
   interests: number
@@ -136,6 +139,7 @@ export type ApplicationMinAggregateInputType = {
   status?: true
   name?: true
   email?: true
+  phone?: true
   institution?: true
   currentRole?: true
   scholarUrl?: true
@@ -163,6 +167,7 @@ export type ApplicationMaxAggregateInputType = {
   status?: true
   name?: true
   email?: true
+  phone?: true
   institution?: true
   currentRole?: true
   scholarUrl?: true
@@ -190,6 +195,7 @@ export type ApplicationCountAggregateInputType = {
   status?: true
   name?: true
   email?: true
+  phone?: true
   institution?: true
   currentRole?: true
   interests?: true
@@ -305,6 +311,7 @@ export type ApplicationGroupByOutputType = {
   status: $Enums.ApplicationStatus
   name: string
   email: string
+  phone: string | null
   institution: string
   currentRole: string
   interests: string[]
@@ -313,7 +320,7 @@ export type ApplicationGroupByOutputType = {
   githubUrl: string | null
   linkedinUrl: string | null
   websiteUrl: string | null
-  cvKey: string
+  cvKey: string | null
   motivation: string
   experience: string | null
   proposalTitle: string | null
@@ -356,6 +363,7 @@ export type ApplicationWhereInput = {
   status?: Prisma.EnumApplicationStatusFilter<"Application"> | $Enums.ApplicationStatus
   name?: Prisma.StringFilter<"Application"> | string
   email?: Prisma.StringFilter<"Application"> | string
+  phone?: Prisma.StringNullableFilter<"Application"> | string | null
   institution?: Prisma.StringFilter<"Application"> | string
   currentRole?: Prisma.StringFilter<"Application"> | string
   interests?: Prisma.StringNullableListFilter<"Application">
@@ -364,7 +372,7 @@ export type ApplicationWhereInput = {
   githubUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   linkedinUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Application"> | string | null
-  cvKey?: Prisma.StringFilter<"Application"> | string
+  cvKey?: Prisma.StringNullableFilter<"Application"> | string | null
   motivation?: Prisma.StringFilter<"Application"> | string
   experience?: Prisma.StringNullableFilter<"Application"> | string | null
   proposalTitle?: Prisma.StringNullableFilter<"Application"> | string | null
@@ -386,6 +394,7 @@ export type ApplicationOrderByWithRelationInput = {
   status?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   institution?: Prisma.SortOrder
   currentRole?: Prisma.SortOrder
   interests?: Prisma.SortOrder
@@ -394,7 +403,7 @@ export type ApplicationOrderByWithRelationInput = {
   githubUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  cvKey?: Prisma.SortOrder
+  cvKey?: Prisma.SortOrderInput | Prisma.SortOrder
   motivation?: Prisma.SortOrder
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
   proposalTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -419,6 +428,7 @@ export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumApplicationStatusFilter<"Application"> | $Enums.ApplicationStatus
   name?: Prisma.StringFilter<"Application"> | string
   email?: Prisma.StringFilter<"Application"> | string
+  phone?: Prisma.StringNullableFilter<"Application"> | string | null
   institution?: Prisma.StringFilter<"Application"> | string
   currentRole?: Prisma.StringFilter<"Application"> | string
   interests?: Prisma.StringNullableListFilter<"Application">
@@ -427,7 +437,7 @@ export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
   githubUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   linkedinUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Application"> | string | null
-  cvKey?: Prisma.StringFilter<"Application"> | string
+  cvKey?: Prisma.StringNullableFilter<"Application"> | string | null
   motivation?: Prisma.StringFilter<"Application"> | string
   experience?: Prisma.StringNullableFilter<"Application"> | string | null
   proposalTitle?: Prisma.StringNullableFilter<"Application"> | string | null
@@ -449,6 +459,7 @@ export type ApplicationOrderByWithAggregationInput = {
   status?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrderInput | Prisma.SortOrder
   institution?: Prisma.SortOrder
   currentRole?: Prisma.SortOrder
   interests?: Prisma.SortOrder
@@ -457,7 +468,7 @@ export type ApplicationOrderByWithAggregationInput = {
   githubUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   linkedinUrl?: Prisma.SortOrderInput | Prisma.SortOrder
   websiteUrl?: Prisma.SortOrderInput | Prisma.SortOrder
-  cvKey?: Prisma.SortOrder
+  cvKey?: Prisma.SortOrderInput | Prisma.SortOrder
   motivation?: Prisma.SortOrder
   experience?: Prisma.SortOrderInput | Prisma.SortOrder
   proposalTitle?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -485,6 +496,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
   status?: Prisma.EnumApplicationStatusWithAggregatesFilter<"Application"> | $Enums.ApplicationStatus
   name?: Prisma.StringWithAggregatesFilter<"Application"> | string
   email?: Prisma.StringWithAggregatesFilter<"Application"> | string
+  phone?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   institution?: Prisma.StringWithAggregatesFilter<"Application"> | string
   currentRole?: Prisma.StringWithAggregatesFilter<"Application"> | string
   interests?: Prisma.StringNullableListFilter<"Application">
@@ -493,7 +505,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
   githubUrl?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   linkedinUrl?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   websiteUrl?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
-  cvKey?: Prisma.StringWithAggregatesFilter<"Application"> | string
+  cvKey?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   motivation?: Prisma.StringWithAggregatesFilter<"Application"> | string
   experience?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   proposalTitle?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
@@ -513,6 +525,7 @@ export type ApplicationCreateInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -521,7 +534,7 @@ export type ApplicationCreateInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -542,6 +555,7 @@ export type ApplicationUncheckedCreateInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -550,7 +564,7 @@ export type ApplicationUncheckedCreateInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -571,6 +585,7 @@ export type ApplicationUpdateInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -579,7 +594,7 @@ export type ApplicationUpdateInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -600,6 +615,7 @@ export type ApplicationUncheckedUpdateInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -608,7 +624,7 @@ export type ApplicationUncheckedUpdateInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -629,6 +645,7 @@ export type ApplicationCreateManyInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -637,7 +654,7 @@ export type ApplicationCreateManyInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -657,6 +674,7 @@ export type ApplicationUpdateManyMutationInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -665,7 +683,7 @@ export type ApplicationUpdateManyMutationInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -684,6 +702,7 @@ export type ApplicationUncheckedUpdateManyInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -692,7 +711,7 @@ export type ApplicationUncheckedUpdateManyInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -722,6 +741,7 @@ export type ApplicationCountOrderByAggregateInput = {
   status?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   institution?: Prisma.SortOrder
   currentRole?: Prisma.SortOrder
   interests?: Prisma.SortOrder
@@ -755,6 +775,7 @@ export type ApplicationMaxOrderByAggregateInput = {
   status?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   institution?: Prisma.SortOrder
   currentRole?: Prisma.SortOrder
   scholarUrl?: Prisma.SortOrder
@@ -782,6 +803,7 @@ export type ApplicationMinOrderByAggregateInput = {
   status?: Prisma.SortOrder
   name?: Prisma.SortOrder
   email?: Prisma.SortOrder
+  phone?: Prisma.SortOrder
   institution?: Prisma.SortOrder
   currentRole?: Prisma.SortOrder
   scholarUrl?: Prisma.SortOrder
@@ -892,6 +914,7 @@ export type ApplicationCreateWithoutOpportunityInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -900,7 +923,7 @@ export type ApplicationCreateWithoutOpportunityInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -920,6 +943,7 @@ export type ApplicationUncheckedCreateWithoutOpportunityInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -928,7 +952,7 @@ export type ApplicationUncheckedCreateWithoutOpportunityInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -977,6 +1001,7 @@ export type ApplicationScalarWhereInput = {
   status?: Prisma.EnumApplicationStatusFilter<"Application"> | $Enums.ApplicationStatus
   name?: Prisma.StringFilter<"Application"> | string
   email?: Prisma.StringFilter<"Application"> | string
+  phone?: Prisma.StringNullableFilter<"Application"> | string | null
   institution?: Prisma.StringFilter<"Application"> | string
   currentRole?: Prisma.StringFilter<"Application"> | string
   interests?: Prisma.StringNullableListFilter<"Application">
@@ -985,7 +1010,7 @@ export type ApplicationScalarWhereInput = {
   githubUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   linkedinUrl?: Prisma.StringNullableFilter<"Application"> | string | null
   websiteUrl?: Prisma.StringNullableFilter<"Application"> | string | null
-  cvKey?: Prisma.StringFilter<"Application"> | string
+  cvKey?: Prisma.StringNullableFilter<"Application"> | string | null
   motivation?: Prisma.StringFilter<"Application"> | string
   experience?: Prisma.StringNullableFilter<"Application"> | string | null
   proposalTitle?: Prisma.StringNullableFilter<"Application"> | string | null
@@ -1005,6 +1030,7 @@ export type ApplicationCreateWithoutNotesInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -1013,7 +1039,7 @@ export type ApplicationCreateWithoutNotesInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -1033,6 +1059,7 @@ export type ApplicationUncheckedCreateWithoutNotesInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -1041,7 +1068,7 @@ export type ApplicationUncheckedCreateWithoutNotesInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -1077,6 +1104,7 @@ export type ApplicationUpdateWithoutNotesInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -1085,7 +1113,7 @@ export type ApplicationUpdateWithoutNotesInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1105,6 +1133,7 @@ export type ApplicationUncheckedUpdateWithoutNotesInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -1113,7 +1142,7 @@ export type ApplicationUncheckedUpdateWithoutNotesInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1133,6 +1162,7 @@ export type ApplicationCreateManyOpportunityInput = {
   status?: $Enums.ApplicationStatus
   name: string
   email: string
+  phone?: string | null
   institution: string
   currentRole: string
   interests?: Prisma.ApplicationCreateinterestsInput | string[]
@@ -1141,7 +1171,7 @@ export type ApplicationCreateManyOpportunityInput = {
   githubUrl?: string | null
   linkedinUrl?: string | null
   websiteUrl?: string | null
-  cvKey: string
+  cvKey?: string | null
   motivation: string
   experience?: string | null
   proposalTitle?: string | null
@@ -1160,6 +1190,7 @@ export type ApplicationUpdateWithoutOpportunityInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -1168,7 +1199,7 @@ export type ApplicationUpdateWithoutOpportunityInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1188,6 +1219,7 @@ export type ApplicationUncheckedUpdateWithoutOpportunityInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -1196,7 +1228,7 @@ export type ApplicationUncheckedUpdateWithoutOpportunityInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1216,6 +1248,7 @@ export type ApplicationUncheckedUpdateManyWithoutOpportunityInput = {
   status?: Prisma.EnumApplicationStatusFieldUpdateOperationsInput | $Enums.ApplicationStatus
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
+  phone?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   institution?: Prisma.StringFieldUpdateOperationsInput | string
   currentRole?: Prisma.StringFieldUpdateOperationsInput | string
   interests?: Prisma.ApplicationUpdateinterestsInput | string[]
@@ -1224,7 +1257,7 @@ export type ApplicationUncheckedUpdateManyWithoutOpportunityInput = {
   githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  cvKey?: Prisma.StringFieldUpdateOperationsInput | string
+  cvKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   motivation?: Prisma.StringFieldUpdateOperationsInput | string
   experience?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   proposalTitle?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1274,6 +1307,7 @@ export type ApplicationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   status?: boolean
   name?: boolean
   email?: boolean
+  phone?: boolean
   institution?: boolean
   currentRole?: boolean
   interests?: boolean
@@ -1305,6 +1339,7 @@ export type ApplicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   status?: boolean
   name?: boolean
   email?: boolean
+  phone?: boolean
   institution?: boolean
   currentRole?: boolean
   interests?: boolean
@@ -1334,6 +1369,7 @@ export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   status?: boolean
   name?: boolean
   email?: boolean
+  phone?: boolean
   institution?: boolean
   currentRole?: boolean
   interests?: boolean
@@ -1363,6 +1399,7 @@ export type ApplicationSelectScalar = {
   status?: boolean
   name?: boolean
   email?: boolean
+  phone?: boolean
   institution?: boolean
   currentRole?: boolean
   interests?: boolean
@@ -1385,7 +1422,7 @@ export type ApplicationSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "status" | "name" | "email" | "institution" | "currentRole" | "interests" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "cvKey" | "motivation" | "experience" | "proposalTitle" | "proposalSummary" | "proposalKey" | "hoursPerWeek" | "consent" | "opportunityId" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["application"]>
+export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "status" | "name" | "email" | "phone" | "institution" | "currentRole" | "interests" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "cvKey" | "motivation" | "experience" | "proposalTitle" | "proposalSummary" | "proposalKey" | "hoursPerWeek" | "consent" | "opportunityId" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["application"]>
 export type ApplicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   opportunity?: boolean | Prisma.Application$opportunityArgs<ExtArgs>
   notes?: boolean | Prisma.Application$notesArgs<ExtArgs>
@@ -1410,6 +1447,7 @@ export type $ApplicationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     status: $Enums.ApplicationStatus
     name: string
     email: string
+    phone: string | null
     institution: string
     currentRole: string
     interests: string[]
@@ -1418,7 +1456,7 @@ export type $ApplicationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     githubUrl: string | null
     linkedinUrl: string | null
     websiteUrl: string | null
-    cvKey: string
+    cvKey: string | null
     motivation: string
     experience: string | null
     proposalTitle: string | null
@@ -1860,6 +1898,7 @@ export interface ApplicationFieldRefs {
   readonly status: Prisma.FieldRef<"Application", 'ApplicationStatus'>
   readonly name: Prisma.FieldRef<"Application", 'String'>
   readonly email: Prisma.FieldRef<"Application", 'String'>
+  readonly phone: Prisma.FieldRef<"Application", 'String'>
   readonly institution: Prisma.FieldRef<"Application", 'String'>
   readonly currentRole: Prisma.FieldRef<"Application", 'String'>
   readonly interests: Prisma.FieldRef<"Application", 'String[]'>

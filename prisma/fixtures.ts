@@ -49,6 +49,20 @@ async function main(): Promise<void> {
       },
     });
 
+    const privateMember = await db.member.upsert({
+      where: { slug: "fixture-private-researcher" },
+      update: { isPublic: false },
+      create: {
+        slug: "fixture-private-researcher",
+        name: "Fixture Private Researcher",
+        rank: "RESEARCHER",
+        status: "ACTIVE",
+        isPublic: false,
+        interests: [area.name],
+        areas: { create: { areaId: area.id } },
+      },
+    });
+
     const project = await db.project.upsert({
       where: { slug: "fixture-public-project" },
       update: {},
@@ -60,6 +74,7 @@ async function main(): Promise<void> {
         question: "Can fixture visibility be tested safely?",
         status: "ACTIVE",
         state: "PUBLISHED",
+        featured: true,
         results: "Private fixture result.",
         resultsPublic: false,
         areas: { create: { areaId: area.id } },
@@ -104,6 +119,42 @@ async function main(): Promise<void> {
         },
         areas: { create: { areaId: area.id } },
       },
+    });
+
+    await db.publication.upsert({
+      where: { slug: "fixture-private-publication" },
+      update: { state: "DRAFT" },
+      create: {
+        slug: "fixture-private-publication",
+        title: "[Fixture] Private publication",
+        abstract: "Fixture content used only by automated tests.",
+        type: "JOURNAL",
+        stage: "DRAFT",
+        state: "DRAFT",
+        authors: {
+          create: { position: 0, memberId: privateMember.id },
+        },
+        areas: { create: { areaId: area.id } },
+      },
+    });
+
+    await db.newsPost.upsert({
+      where: { slug: "fixture-private-news" },
+      update: { state: "DRAFT" },
+      create: {
+        slug: "fixture-private-news",
+        title: "[Fixture] Private news",
+        excerpt: "Fixture content used only by automated tests.",
+        body: "Fixture content used only by automated tests.",
+        category: "RESEARCH",
+        state: "DRAFT",
+      },
+    });
+
+    await db.siteSetting.upsert({
+      where: { key: "features.showNumbers" },
+      update: { value: true },
+      create: { key: "features.showNumbers", value: true },
     });
   } finally {
     await db.$disconnect();

@@ -17,14 +17,15 @@ This checklist follows the supplied build specification. Milestones are complete
 
 ## Milestone 2 — Public website core
 
-- [ ] Build Home with its complete static poster and data-driven sections.
-- [ ] Build About, Research and area/theme pages, Projects, Publications, People, News, and Contact.
-- [ ] Build the three-step Join SANDHI flow with validation, private uploads, Turnstile, rate limiting, and two-email notification.
-- [ ] Add all required empty states, not-found and error pages, Privacy, and Terms.
-- [ ] Add page metadata, Open Graph output, JSON-LD, Scholar metadata, sitemap, robots, and RSS.
-- [ ] Prove centralized public visibility excludes unpublished records everywhere and protects private project results.
-- [ ] Prove the numbers section remains hidden until all specified thresholds are met.
-- [ ] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
+- [x] Build Home with its complete static poster and data-driven sections.
+- [x] Build About, Research and area/theme pages, Projects, Publications, People, News, and Contact.
+- [x] Build the three-step Join SANDHI flow with validation, private uploads, Turnstile, rate limiting, and two-email notification.
+- [x] Add all required empty states, not-found and error pages, Privacy, and Terms.
+- [x] Add page metadata, Open Graph output, JSON-LD, Scholar metadata, sitemap, robots, and RSS.
+- [x] Prove centralized public visibility excludes unpublished records everywhere and protects private project results.
+- [x] Prove the numbers section remains hidden until all specified thresholds are met.
+- [x] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
+- [x] Remove the decorative route-level loading skeleton; retain only meaningful junction, focus, and action accents, with one ceremony at most per page.
 
 ## Milestone 3 — Signature motion
 

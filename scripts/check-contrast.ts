@@ -36,12 +36,12 @@ const SPECIFIED_TOKENS: Record<ThemeName, Partial<ThemeTokens>> = {
     "signal-warn": "#c98a6b",
   },
   light: {
-    ink: "#e9ecf1",
-    "ink-raised": "#f5f7fa",
-    "ink-line": "#c7cedb",
+    ink: "#eee8dc",
+    "ink-raised": "#f7f1e6",
+    "ink-line": "#d2c8b8",
     moonstone: "#1a2138",
     mist: "#56607a",
-    lamplight: "#8a6a2b",
+    lamplight: "#836323",
     lotus: "#5e5282",
   },
 };

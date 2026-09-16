@@ -43,7 +43,7 @@ export function SiteFooter() {
           <nav aria-label="Legal and member links">
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
-            <Link href="/portal/sign-in">Member sign in</Link>
+            <Link href="/portal/sign-in">Sign in</Link>
           </nav>
           <ReduceMotionToggle />
         </div>

@@ -85,6 +85,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html
       lang="en"
       suppressHydrationWarning
+      data-scroll-behavior="smooth"
       className={`${spectral.variable} ${hanken.variable} ${devanagari.variable} ${mono.variable}`}
     >
       <head>

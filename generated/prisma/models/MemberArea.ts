@@ -20,40 +20,76 @@ export type MemberAreaModel = runtime.Types.Result.DefaultSelection<Prisma.$Memb
 
 export type AggregateMemberArea = {
   _count: MemberAreaCountAggregateOutputType | null
+  _avg: MemberAreaAvgAggregateOutputType | null
+  _sum: MemberAreaSumAggregateOutputType | null
   _min: MemberAreaMinAggregateOutputType | null
   _max: MemberAreaMaxAggregateOutputType | null
+}
+
+export type MemberAreaAvgAggregateOutputType = {
+  sortOrder: number | null
+}
+
+export type MemberAreaSumAggregateOutputType = {
+  sortOrder: number | null
 }
 
 export type MemberAreaMinAggregateOutputType = {
   memberId: string | null
   areaId: string | null
+  role: string | null
+  isLead: boolean | null
+  sortOrder: number | null
 }
 
 export type MemberAreaMaxAggregateOutputType = {
   memberId: string | null
   areaId: string | null
+  role: string | null
+  isLead: boolean | null
+  sortOrder: number | null
 }
 
 export type MemberAreaCountAggregateOutputType = {
   memberId: number
   areaId: number
+  role: number
+  isLead: number
+  sortOrder: number
   _all: number
 }
 
 
+export type MemberAreaAvgAggregateInputType = {
+  sortOrder?: true
+}
+
+export type MemberAreaSumAggregateInputType = {
+  sortOrder?: true
+}
+
 export type MemberAreaMinAggregateInputType = {
   memberId?: true
   areaId?: true
+  role?: true
+  isLead?: true
+  sortOrder?: true
 }
 
 export type MemberAreaMaxAggregateInputType = {
   memberId?: true
   areaId?: true
+  role?: true
+  isLead?: true
+  sortOrder?: true
 }
 
 export type MemberAreaCountAggregateInputType = {
   memberId?: true
   areaId?: true
+  role?: true
+  isLead?: true
+  sortOrder?: true
   _all?: true
 }
 
@@ -94,6 +130,18 @@ export type MemberAreaAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   _count?: true | MemberAreaCountAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to average
+  **/
+  _avg?: MemberAreaAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   *
+   * Select which fields to sum
+  **/
+  _sum?: MemberAreaSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
    * Select which fields to find the minimum value
   **/
@@ -125,6 +173,8 @@ export type MemberAreaGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   _count?: MemberAreaCountAggregateInputType | true
+  _avg?: MemberAreaAvgAggregateInputType
+  _sum?: MemberAreaSumAggregateInputType
   _min?: MemberAreaMinAggregateInputType
   _max?: MemberAreaMaxAggregateInputType
 }
@@ -132,7 +182,12 @@ export type MemberAreaGroupByArgs<ExtArgs extends runtime.Types.Extensions.Inter
 export type MemberAreaGroupByOutputType = {
   memberId: string
   areaId: string
+  role: string
+  isLead: boolean
+  sortOrder: number
   _count: MemberAreaCountAggregateOutputType | null
+  _avg: MemberAreaAvgAggregateOutputType | null
+  _sum: MemberAreaSumAggregateOutputType | null
   _min: MemberAreaMinAggregateOutputType | null
   _max: MemberAreaMaxAggregateOutputType | null
 }
@@ -158,6 +213,9 @@ export type MemberAreaWhereInput = {
   NOT?: Prisma.MemberAreaWhereInput | Prisma.MemberAreaWhereInput[]
   memberId?: Prisma.StringFilter<"MemberArea"> | string
   areaId?: Prisma.StringFilter<"MemberArea"> | string
+  role?: Prisma.StringFilter<"MemberArea"> | string
+  isLead?: Prisma.BoolFilter<"MemberArea"> | boolean
+  sortOrder?: Prisma.IntFilter<"MemberArea"> | number
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   area?: Prisma.XOR<Prisma.ResearchAreaScalarRelationFilter, Prisma.ResearchAreaWhereInput>
 }
@@ -165,6 +223,9 @@ export type MemberAreaWhereInput = {
 export type MemberAreaOrderByWithRelationInput = {
   memberId?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  isLead?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
   member?: Prisma.MemberOrderByWithRelationInput
   area?: Prisma.ResearchAreaOrderByWithRelationInput
 }
@@ -176,6 +237,9 @@ export type MemberAreaWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.MemberAreaWhereInput | Prisma.MemberAreaWhereInput[]
   memberId?: Prisma.StringFilter<"MemberArea"> | string
   areaId?: Prisma.StringFilter<"MemberArea"> | string
+  role?: Prisma.StringFilter<"MemberArea"> | string
+  isLead?: Prisma.BoolFilter<"MemberArea"> | boolean
+  sortOrder?: Prisma.IntFilter<"MemberArea"> | number
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   area?: Prisma.XOR<Prisma.ResearchAreaScalarRelationFilter, Prisma.ResearchAreaWhereInput>
 }, "memberId_areaId">
@@ -183,9 +247,14 @@ export type MemberAreaWhereUniqueInput = Prisma.AtLeast<{
 export type MemberAreaOrderByWithAggregationInput = {
   memberId?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  isLead?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
   _count?: Prisma.MemberAreaCountOrderByAggregateInput
+  _avg?: Prisma.MemberAreaAvgOrderByAggregateInput
   _max?: Prisma.MemberAreaMaxOrderByAggregateInput
   _min?: Prisma.MemberAreaMinOrderByAggregateInput
+  _sum?: Prisma.MemberAreaSumOrderByAggregateInput
 }
 
 export type MemberAreaScalarWhereWithAggregatesInput = {
@@ -194,9 +263,15 @@ export type MemberAreaScalarWhereWithAggregatesInput = {
   NOT?: Prisma.MemberAreaScalarWhereWithAggregatesInput | Prisma.MemberAreaScalarWhereWithAggregatesInput[]
   memberId?: Prisma.StringWithAggregatesFilter<"MemberArea"> | string
   areaId?: Prisma.StringWithAggregatesFilter<"MemberArea"> | string
+  role?: Prisma.StringWithAggregatesFilter<"MemberArea"> | string
+  isLead?: Prisma.BoolWithAggregatesFilter<"MemberArea"> | boolean
+  sortOrder?: Prisma.IntWithAggregatesFilter<"MemberArea"> | number
 }
 
 export type MemberAreaCreateInput = {
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
   member: Prisma.MemberCreateNestedOneWithoutAreasInput
   area: Prisma.ResearchAreaCreateNestedOneWithoutMembersInput
 }
@@ -204,9 +279,15 @@ export type MemberAreaCreateInput = {
 export type MemberAreaUncheckedCreateInput = {
   memberId: string
   areaId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaUpdateInput = {
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   member?: Prisma.MemberUpdateOneRequiredWithoutAreasNestedInput
   area?: Prisma.ResearchAreaUpdateOneRequiredWithoutMembersNestedInput
 }
@@ -214,20 +295,31 @@ export type MemberAreaUpdateInput = {
 export type MemberAreaUncheckedUpdateInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaCreateManyInput = {
   memberId: string
   areaId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaUpdateManyMutationInput = {
-
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaUncheckedUpdateManyInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaListRelationFilter = {
@@ -248,16 +340,33 @@ export type MemberAreaMemberIdAreaIdCompoundUniqueInput = {
 export type MemberAreaCountOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  isLead?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+}
+
+export type MemberAreaAvgOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
 }
 
 export type MemberAreaMaxOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  isLead?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
 }
 
 export type MemberAreaMinOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   areaId?: Prisma.SortOrder
+  role?: Prisma.SortOrder
+  isLead?: Prisma.SortOrder
+  sortOrder?: Prisma.SortOrder
+}
+
+export type MemberAreaSumOrderByAggregateInput = {
+  sortOrder?: Prisma.SortOrder
 }
 
 export type MemberAreaCreateNestedManyWithoutMemberInput = {
@@ -345,11 +454,17 @@ export type MemberAreaUncheckedUpdateManyWithoutAreaNestedInput = {
 }
 
 export type MemberAreaCreateWithoutMemberInput = {
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
   area: Prisma.ResearchAreaCreateNestedOneWithoutMembersInput
 }
 
 export type MemberAreaUncheckedCreateWithoutMemberInput = {
   areaId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaCreateOrConnectWithoutMemberInput = {
@@ -384,14 +499,23 @@ export type MemberAreaScalarWhereInput = {
   NOT?: Prisma.MemberAreaScalarWhereInput | Prisma.MemberAreaScalarWhereInput[]
   memberId?: Prisma.StringFilter<"MemberArea"> | string
   areaId?: Prisma.StringFilter<"MemberArea"> | string
+  role?: Prisma.StringFilter<"MemberArea"> | string
+  isLead?: Prisma.BoolFilter<"MemberArea"> | boolean
+  sortOrder?: Prisma.IntFilter<"MemberArea"> | number
 }
 
 export type MemberAreaCreateWithoutAreaInput = {
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
   member: Prisma.MemberCreateNestedOneWithoutAreasInput
 }
 
 export type MemberAreaUncheckedCreateWithoutAreaInput = {
   memberId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaCreateOrConnectWithoutAreaInput = {
@@ -422,34 +546,58 @@ export type MemberAreaUpdateManyWithWhereWithoutAreaInput = {
 
 export type MemberAreaCreateManyMemberInput = {
   areaId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaUpdateWithoutMemberInput = {
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   area?: Prisma.ResearchAreaUpdateOneRequiredWithoutMembersNestedInput
 }
 
 export type MemberAreaUncheckedUpdateWithoutMemberInput = {
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaUncheckedUpdateManyWithoutMemberInput = {
   areaId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaCreateManyAreaInput = {
   memberId: string
+  role?: string
+  isLead?: boolean
+  sortOrder?: number
 }
 
 export type MemberAreaUpdateWithoutAreaInput = {
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   member?: Prisma.MemberUpdateOneRequiredWithoutAreasNestedInput
 }
 
 export type MemberAreaUncheckedUpdateWithoutAreaInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 export type MemberAreaUncheckedUpdateManyWithoutAreaInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
 
@@ -457,6 +605,9 @@ export type MemberAreaUncheckedUpdateManyWithoutAreaInput = {
 export type MemberAreaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   memberId?: boolean
   areaId?: boolean
+  role?: boolean
+  isLead?: boolean
+  sortOrder?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   area?: boolean | Prisma.ResearchAreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["memberArea"]>
@@ -464,6 +615,9 @@ export type MemberAreaSelect<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type MemberAreaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   memberId?: boolean
   areaId?: boolean
+  role?: boolean
+  isLead?: boolean
+  sortOrder?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   area?: boolean | Prisma.ResearchAreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["memberArea"]>
@@ -471,6 +625,9 @@ export type MemberAreaSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type MemberAreaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   memberId?: boolean
   areaId?: boolean
+  role?: boolean
+  isLead?: boolean
+  sortOrder?: boolean
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   area?: boolean | Prisma.ResearchAreaDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["memberArea"]>
@@ -478,9 +635,12 @@ export type MemberAreaSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Ex
 export type MemberAreaSelectScalar = {
   memberId?: boolean
   areaId?: boolean
+  role?: boolean
+  isLead?: boolean
+  sortOrder?: boolean
 }
 
-export type MemberAreaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"memberId" | "areaId", ExtArgs["result"]["memberArea"]>
+export type MemberAreaOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"memberId" | "areaId" | "role" | "isLead" | "sortOrder", ExtArgs["result"]["memberArea"]>
 export type MemberAreaInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   area?: boolean | Prisma.ResearchAreaDefaultArgs<ExtArgs>
@@ -503,6 +663,9 @@ export type $MemberAreaPayload<ExtArgs extends runtime.Types.Extensions.Internal
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     memberId: string
     areaId: string
+    role: string
+    isLead: boolean
+    sortOrder: number
   }, ExtArgs["result"]["memberArea"]>
   composites: {}
 }
@@ -930,6 +1093,9 @@ export interface Prisma__MemberAreaClient<T, Null = never, ExtArgs extends runti
 export interface MemberAreaFieldRefs {
   readonly memberId: Prisma.FieldRef<"MemberArea", 'String'>
   readonly areaId: Prisma.FieldRef<"MemberArea", 'String'>
+  readonly role: Prisma.FieldRef<"MemberArea", 'String'>
+  readonly isLead: Prisma.FieldRef<"MemberArea", 'Boolean'>
+  readonly sortOrder: Prisma.FieldRef<"MemberArea", 'Int'>
 }
     
 
