@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" role="img" aria-labelledby="title">
+  <title id="title">SANDHI junction mark for light backgrounds</title>
+  <g fill="none" stroke="#5e5282" stroke-linecap="round" stroke-width="1.5">
+    <path d="M5 12c9 0 13 4 19 12"/>
+    <path d="M43 36c-9 0-13-4-19-12"/>
+    <path d="M5 36c9 0 13-4 19-12"/>
+    <path d="M43 12c-9 0-13 4-19 12"/>
+  </g>
+  <circle cx="24" cy="24" r="6" fill="none" stroke="#8a6a2b" stroke-opacity=".32"/>
+  <circle cx="24" cy="24" r="3" fill="#8a6a2b"/>
+</svg>

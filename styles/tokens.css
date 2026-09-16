@@ -1,0 +1,100 @@
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* Lapis Night */
+  --ink: #141a2e;
+  --ink-raised: #1b2340;
+  --ink-line: #2c3657;
+  --moonstone: #d9dee8;
+  --mist: #8c95ab;
+  --lamplight: #c9a55c;
+  --lotus: #9c8fb8;
+  --signal-ok: #7fa88f;
+  --signal-warn: #c98a6b;
+
+  /* Typography */
+  --font-display: var(--font-spectral), Georgia, serif;
+  --font-interface: var(--font-hanken), Arial, sans-serif;
+  --font-devanagari: var(--font-tiro-devanagari), serif;
+  --font-code: var(--font-ibm-plex-mono), monospace;
+  --text-display: clamp(3rem, 7vw, 5.6rem);
+  --text-h1: clamp(2.2rem, 4.5vw, 3.2rem);
+  --text-h2: 1.95rem;
+  --text-h3: 1.45rem;
+  --text-body-lg: 1.25rem;
+  --text-body: 1.125rem;
+  --text-ui: 1rem;
+  --text-meta: 0.875rem;
+
+  /* Layout */
+  --content-max: 80rem;
+  --reading-max: 45rem;
+  --header-height: 4.75rem;
+  --page-gutter: clamp(1.25rem, 4vw, 3rem);
+  --section-space: clamp(5rem, 10vw, 9rem);
+  --radius-control: 2px;
+
+  /* Motion */
+  --ease-sandhi: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-thread: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-quick: 160ms;
+  --dur-base: 320ms;
+  --dur-slow: 640ms;
+  --dur-ceremony: 1600ms;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --ink: #e9ecf1;
+  --ink-raised: #f5f7fa;
+  --ink-line: #c7cedb;
+  --moonstone: #1a2138;
+  --mist: #56607a;
+  --lamplight: #8a6a2b;
+  --lotus: #5e5282;
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) {
+    color-scheme: light;
+    --ink: #e9ecf1;
+    --ink-raised: #f5f7fa;
+    --ink-line: #c7cedb;
+    --moonstone: #1a2138;
+    --mist: #56607a;
+    --lamplight: #8a6a2b;
+    --lotus: #5e5282;
+  }
+}
+
+@theme inline {
+  --color-ink: var(--ink);
+  --color-ink-raised: var(--ink-raised);
+  --color-ink-line: var(--ink-line);
+  --color-moonstone: var(--moonstone);
+  --color-mist: var(--mist);
+  --color-lamplight: var(--lamplight);
+  --color-lotus: var(--lotus);
+  --color-signal-ok: var(--signal-ok);
+  --color-signal-warn: var(--signal-warn);
+  --font-serif: var(--font-display);
+  --font-sans: var(--font-interface);
+  --font-mono: var(--font-code);
+}
+
+:root[data-reduce-motion="true"] {
+  --dur-quick: 0ms;
+  --dur-base: 0ms;
+  --dur-slow: 0ms;
+  --dur-ceremony: 0ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --dur-quick: 0ms;
+    --dur-base: 0ms;
+    --dur-slow: 0ms;
+    --dur-ceremony: 0ms;
+  }
+}

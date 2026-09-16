@@ -1,0 +1,912 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ---------- Enums ----------
+
+enum SystemRole {
+  OWNER
+  ADMIN
+  EDITOR
+  MEMBER
+}
+
+enum MemberRank {
+  DIRECTOR
+  RESEARCH_LEAD
+  RESEARCHER
+  RESEARCH_ASSISTANT
+  INTERN
+  COLLABORATOR
+}
+
+enum MemberStatus {
+  INVITED
+  ACTIVE
+  ALUMNI
+  SUSPENDED
+}
+
+enum PublishState {
+  DRAFT
+  IN_REVIEW
+  SCHEDULED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum ProjectStatus {
+  PROPOSED
+  ACTIVE
+  COMPLETED
+  SUBMITTED
+  PUBLISHED
+  ARCHIVED
+}
+
+enum PublicationType {
+  CONFERENCE
+  JOURNAL
+  WORKSHOP
+  PREPRINT
+  TECHNICAL_REPORT
+  DATASET
+  BENCHMARK
+  THESIS
+}
+
+enum PublicationStage {
+  DRAFT
+  INTERNAL_REVIEW
+  SUBMITTED
+  ACCEPTED
+  PUBLISHED
+}
+
+enum ResourceKind {
+  DATASET
+  BENCHMARK
+  CODE
+  MODEL
+  TOOL
+  TUTORIAL
+  REPORT
+}
+
+enum NewsCategory {
+  RESEARCH
+  PUBLICATIONS
+  EVENTS
+  TEAM
+  ANNOUNCEMENTS
+  OPPORTUNITIES
+}
+
+enum EventKind {
+  SEMINAR
+  WORKSHOP
+  TALK
+  READING_GROUP
+  CONFERENCE
+  INTERNAL
+}
+
+enum InsightKind {
+  TECHNICAL_NOTE
+  EXPLAINER
+  TUTORIAL
+  BENCHMARK_ANALYSIS
+  FINDING
+  REPRODUCIBILITY
+  LITERATURE_REVIEW
+}
+
+enum OpportunityKind {
+  RESEARCH_POSITION
+  INTERNSHIP
+  COLLABORATION
+  PROJECT_OPENING
+}
+
+enum ApplicationType {
+  RESEARCHER
+  INTERNSHIP
+  COLLABORATION
+  PROJECT_PROPOSAL
+  ACADEMIC_COLLABORATION
+  INDUSTRY_COLLABORATION
+}
+
+enum ApplicationStatus {
+  NEW
+  IN_REVIEW
+  SHORTLISTED
+  INTERVIEW
+  ACCEPTED
+  REJECTED
+  INVITED
+  WITHDRAWN
+}
+
+enum PartnerKind {
+  UNIVERSITY
+  LAB
+  COMPANY
+  OPEN_SOURCE
+  FUNDER
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  BLOCKED
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum ChangeStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ---------- Better Auth ----------
+
+// The role is a string because Better Auth's admin plugin stores role names as a
+// comma-separated string. Milestone 5 configures the plugin with SANDHI's
+// OWNER/ADMIN/EDITOR/MEMBER role names and prevents role input from clients.
+model User {
+  id                   String       @id @default(cuid())
+  name                 String
+  email                String       @unique
+  emailVerified        Boolean      @default(false)
+  image                String?
+  role                 String       @default("MEMBER")
+  banned               Boolean      @default(false)
+  banReason            String?
+  banExpires           DateTime?
+  sessions             Session[]    @relation("SessionUser")
+  impersonatedSessions Session[]    @relation("SessionImpersonator")
+  accounts             Account[]
+  member               Member?
+  invitationsSent      Invitation[] @relation("InvitationInviter")
+  invitationsAccepted  Invitation[] @relation("InvitationAcceptor")
+  auditLogs            AuditLog[]
+  createdAt            DateTime     @default(now())
+  updatedAt            DateTime     @updatedAt
+
+  @@map("user")
+}
+
+model Session {
+  id             String   @id @default(cuid())
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
+  impersonatedBy String?
+  user           User     @relation("SessionUser", fields: [userId], references: [id], onDelete: Cascade)
+  impersonator   User?    @relation("SessionImpersonator", fields: [impersonatedBy], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id @default(cuid())
+  accountId             String
+  providerId            String
+  userId                String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([providerId, accountId])
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id @default(cuid())
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@index([expiresAt])
+  @@map("verification")
+}
+
+model Invitation {
+  id           String     @id @default(cuid())
+  email        String
+  tokenHash    String     @unique
+  role         SystemRole @default(MEMBER)
+  rank         MemberRank @default(RESEARCHER)
+  invitedById  String
+  acceptedById String?
+  memberId     String?    @unique
+  expiresAt    DateTime
+  acceptedAt   DateTime?
+  revokedAt    DateTime?
+  invitedBy    User       @relation("InvitationInviter", fields: [invitedById], references: [id], onDelete: Restrict)
+  acceptedBy   User?      @relation("InvitationAcceptor", fields: [acceptedById], references: [id], onDelete: SetNull)
+  member       Member?    @relation(fields: [memberId], references: [id], onDelete: SetNull)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@index([email, expiresAt])
+  @@index([invitedById])
+  @@index([acceptedById])
+}
+
+// ---------- People ----------
+
+model Member {
+  id                     String                   @id @default(cuid())
+  userId                 String?                  @unique
+  slug                   String                   @unique
+  name                   String
+  rank                   MemberRank
+  status                 MemberStatus             @default(INVITED)
+  title                  String?
+  bio                    String?
+  photoKey               String?
+  photoAlt               String?
+  interests              String[]                 @default([])
+  orgEmail               String?                  @unique
+  showOrgEmail           Boolean                  @default(false)
+  scholarUrl             String?
+  orcid                  String?
+  githubUrl              String?
+  linkedinUrl            String?
+  websiteUrl             String?
+  sortOrder              Int                      @default(0)
+  isPublic               Boolean                  @default(false)
+  joinedAt               DateTime?
+  leftAt                 DateTime?
+  searchVector           Unsupported("tsvector")? @map("search_vector")
+  user                   User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  invitation             Invitation?
+  areas                  MemberArea[]
+  projects               ProjectMember[]
+  authorships            PublicationAuthor[]
+  publicationReviews     PublicationReview[]      @relation("PublicationReviewer")
+  newsPosts              NewsPost[]
+  insights               InsightAuthor[]
+  tasks                  Task[]                   @relation("TaskAssignee")
+  createdTasks           Task[]                   @relation("TaskCreator")
+  changeRequests         ChangeRequest[]          @relation("ChangeRequestMember")
+  reviewedChangeRequests ChangeRequest[]          @relation("ChangeRequestReviewer")
+  experiments            Experiment[]
+  applicationNotes       ApplicationNote[]        @relation("ApplicationNoteAuthor")
+  uploadedDocuments      Document[]               @relation("DocumentUploader")
+  announcements          Announcement[]           @relation("AnnouncementAuthor")
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @updatedAt
+
+  @@index([isPublic, status, sortOrder])
+  @@index([rank, sortOrder])
+}
+
+// ---------- Research structure ----------
+
+model ResearchTheme {
+  id        String         @id @default(cuid())
+  slug      String         @unique
+  name      String
+  gloss     String
+  overview  String?
+  sortOrder Int            @default(0)
+  state     PublishState   @default(PUBLISHED)
+  areas     ResearchArea[]
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@index([state, sortOrder])
+}
+
+model ResearchArea {
+  id           String            @id @default(cuid())
+  slug         String            @unique
+  name         String
+  summary      String
+  overview     String?
+  questions    String[]          @default([])
+  sortOrder    Int               @default(0)
+  state        PublishState      @default(PUBLISHED)
+  themeId      String
+  theme        ResearchTheme     @relation(fields: [themeId], references: [id], onDelete: Restrict)
+  projects     ProjectArea[]
+  publications PublicationArea[]
+  members      MemberArea[]
+  resources    ResourceArea[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  @@index([themeId, state, sortOrder])
+}
+
+model MemberArea {
+  memberId String
+  areaId   String
+  member   Member       @relation(fields: [memberId], references: [id], onDelete: Cascade)
+  area     ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@id([memberId, areaId])
+  @@index([areaId])
+}
+
+// ---------- Projects ----------
+
+model Project {
+  id             String                   @id @default(cuid())
+  slug           String                   @unique
+  title          String
+  gloss          String
+  abstract       String
+  question       String
+  motivation     String?
+  approach       String?
+  experiments    String?
+  results        String?
+  resultsPublic  Boolean                  @default(false)
+  status         ProjectStatus            @default(PROPOSED)
+  state          PublishState             @default(DRAFT)
+  featured       Boolean                  @default(false)
+  coverKey       String?
+  coverAlt       String?
+  codeUrl        String?
+  datasetUrl     String?
+  demoUrl        String?
+  startedAt      DateTime?
+  endedAt        DateTime?
+  searchVector   Unsupported("tsvector")? @map("search_vector")
+  areas          ProjectArea[]
+  members        ProjectMember[]
+  publications   Publication[]
+  resources      Resource[]
+  relatedFrom    ProjectRelation[]        @relation("ProjectRelationFrom")
+  relatedTo      ProjectRelation[]        @relation("ProjectRelationTo")
+  tasks          Task[]
+  meetings       Meeting[]
+  documents      Document[]
+  experimentsLog Experiment[]
+  newsPosts      NewsPost[]
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  @@index([state, status])
+  @@index([state, featured])
+  @@index([startedAt])
+}
+
+model ProjectArea {
+  projectId String
+  areaId    String
+  project   Project      @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  area      ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, areaId])
+  @@index([areaId])
+}
+
+model ProjectMember {
+  projectId String
+  memberId  String
+  role      String
+  isLead    Boolean @default(false)
+  sortOrder Int     @default(0)
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@id([projectId, memberId])
+  @@index([memberId])
+}
+
+model ProjectRelation {
+  fromId String
+  toId   String
+  from   Project @relation("ProjectRelationFrom", fields: [fromId], references: [id], onDelete: Cascade)
+  to     Project @relation("ProjectRelationTo", fields: [toId], references: [id], onDelete: Cascade)
+
+  @@id([fromId, toId])
+  @@index([toId])
+}
+
+// ---------- Publications ----------
+
+model Publication {
+  id             String                   @id @default(cuid())
+  slug           String                   @unique
+  title          String
+  abstract       String
+  type           PublicationType
+  stage          PublicationStage         @default(DRAFT)
+  state          PublishState             @default(DRAFT)
+  venueName      String?
+  venueShort     String?
+  year           Int?
+  publishedAt    DateTime?
+  doi            String?                  @unique
+  arxivId        String?                  @unique
+  pdfUrl         String?
+  manuscriptKey  String?
+  codeUrl        String?
+  datasetUrl     String?
+  pageUrl        String?
+  bibtexOverride String?
+  award          String?
+  featured       Boolean                  @default(false)
+  projectId      String?
+  searchAuthors  String                   @default("") @map("search_authors")
+  searchVector   Unsupported("tsvector")? @map("search_vector")
+  project        Project?                 @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  authors        PublicationAuthor[]
+  areas          PublicationArea[]
+  resources      Resource[]
+  reviews        PublicationReview[]
+  newsPosts      NewsPost[]
+  createdAt      DateTime                 @default(now())
+  updatedAt      DateTime                 @updatedAt
+
+  @@index([state, stage, publishedAt])
+  @@index([state, type, year])
+  @@index([projectId])
+}
+
+model PublicationAuthor {
+  id                  String      @id @default(cuid())
+  publicationId       String
+  position            Int
+  memberId            String?
+  externalName        String?
+  externalAffiliation String?
+  equalContribution   Boolean     @default(false)
+  corresponding       Boolean     @default(false)
+  publication         Publication @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  member              Member?     @relation(fields: [memberId], references: [id], onDelete: SetNull)
+
+  @@unique([publicationId, position])
+  @@index([memberId])
+}
+
+model PublicationArea {
+  publicationId String
+  areaId        String
+  publication   Publication  @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  area          ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@id([publicationId, areaId])
+  @@index([areaId])
+}
+
+model PublicationReview {
+  id            String       @id @default(cuid())
+  publicationId String
+  reviewerId    String?
+  comment       String
+  decision      ChangeStatus @default(PENDING)
+  publication   Publication  @relation(fields: [publicationId], references: [id], onDelete: Cascade)
+  reviewer      Member?      @relation("PublicationReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  createdAt     DateTime     @default(now())
+
+  @@index([publicationId, createdAt])
+  @@index([reviewerId])
+}
+
+// ---------- Outputs and communication ----------
+
+model Resource {
+  id            String         @id @default(cuid())
+  slug          String         @unique
+  name          String
+  kind          ResourceKind
+  description   String
+  license       String?
+  version       String?
+  downloadUrl   String?
+  repoUrl       String?
+  docsUrl       String?
+  hfUrl         String?
+  bibtex        String?
+  changelog     String?
+  state         PublishState   @default(DRAFT)
+  projectId     String?
+  publicationId String?
+  project       Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  publication   Publication?   @relation(fields: [publicationId], references: [id], onDelete: SetNull)
+  areas         ResourceArea[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([state, kind])
+  @@index([projectId])
+  @@index([publicationId])
+}
+
+model ResourceArea {
+  resourceId String
+  areaId     String
+  resource   Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  area       ResearchArea @relation(fields: [areaId], references: [id], onDelete: Cascade)
+
+  @@id([resourceId, areaId])
+  @@index([areaId])
+}
+
+model NewsPost {
+  id            String                   @id @default(cuid())
+  slug          String                   @unique
+  title         String
+  excerpt       String
+  body          String
+  category      NewsCategory
+  coverKey      String?
+  coverAlt      String?
+  state         PublishState             @default(DRAFT)
+  publishAt     DateTime?
+  authorId      String?
+  projectId     String?
+  publicationId String?
+  searchVector  Unsupported("tsvector")? @map("search_vector")
+  author        Member?                  @relation(fields: [authorId], references: [id], onDelete: SetNull)
+  project       Project?                 @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  publication   Publication?             @relation(fields: [publicationId], references: [id], onDelete: SetNull)
+  createdAt     DateTime                 @default(now())
+  updatedAt     DateTime                 @updatedAt
+
+  @@index([state, publishAt])
+  @@index([category, publishAt])
+  @@index([authorId])
+  @@index([projectId])
+  @@index([publicationId])
+}
+
+model Insight {
+  id           String                   @id @default(cuid())
+  slug         String                   @unique
+  title        String
+  summary      String
+  body         String
+  kind         InsightKind
+  state        PublishState             @default(DRAFT)
+  publishedAt  DateTime?
+  searchVector Unsupported("tsvector")? @map("search_vector")
+  authors      InsightAuthor[]
+  createdAt    DateTime                 @default(now())
+  updatedAt    DateTime                 @updatedAt
+
+  @@index([state, publishedAt])
+  @@index([kind, publishedAt])
+}
+
+model InsightAuthor {
+  insightId String
+  memberId  String
+  position  Int
+  insight   Insight @relation(fields: [insightId], references: [id], onDelete: Cascade)
+  member    Member  @relation(fields: [memberId], references: [id], onDelete: Restrict)
+
+  @@id([insightId, memberId])
+  @@unique([insightId, position])
+  @@index([memberId])
+}
+
+model Event {
+  id                String              @id @default(cuid())
+  slug              String              @unique
+  title             String
+  kind              EventKind
+  abstract          String
+  speakers          String[]            @default([])
+  startsAt          DateTime
+  endsAt            DateTime?
+  timeZone          String              @default("Asia/Dhaka")
+  location          String?
+  isOnline          Boolean             @default(true)
+  registerUrl       String?
+  allowRegistration Boolean             @default(false)
+  recordingUrl      String?
+  slidesUrl         String?
+  state             PublishState        @default(DRAFT)
+  registrations     EventRegistration[]
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  @@index([state, startsAt])
+  @@index([kind, startsAt])
+}
+
+model EventRegistration {
+  id          String   @id @default(cuid())
+  eventId     String
+  name        String
+  email       String
+  affiliation String?
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([eventId, email])
+  @@index([createdAt])
+}
+
+model Opportunity {
+  id               String          @id @default(cuid())
+  slug             String          @unique
+  title            String
+  kind             OpportunityKind
+  areaSlugs        String[]        @default([])
+  description      String
+  responsibilities String[]        @default([])
+  requirements     String[]        @default([])
+  duration         String?
+  location         String?
+  isRemote         Boolean         @default(true)
+  deadline         DateTime?
+  state            PublishState    @default(DRAFT)
+  applications     Application[]
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@index([state, deadline])
+  @@index([kind, deadline])
+}
+
+model Application {
+  id              String            @id @default(cuid())
+  type            ApplicationType
+  status          ApplicationStatus @default(NEW)
+  name            String
+  email           String
+  institution     String
+  currentRole     String
+  interests       String[]          @default([])
+  scholarUrl      String?
+  orcid           String?
+  githubUrl       String?
+  linkedinUrl     String?
+  websiteUrl      String?
+  cvKey           String
+  motivation      String
+  experience      String?
+  proposalTitle   String?
+  proposalSummary String?
+  proposalKey     String?
+  hoursPerWeek    Int?
+  consent         Boolean
+  opportunityId   String?
+  opportunity     Opportunity?      @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
+  notes           ApplicationNote[]
+  rating          Int?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([status, createdAt])
+  @@index([email])
+  @@index([opportunityId])
+}
+
+model ApplicationNote {
+  id            String      @id @default(cuid())
+  applicationId String
+  authorId      String?
+  body          String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  author        Member?     @relation("ApplicationNoteAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt     DateTime    @default(now())
+
+  @@index([applicationId, createdAt])
+  @@index([authorId])
+}
+
+model Partner {
+  id           String       @id @default(cuid())
+  name         String
+  kind         PartnerKind
+  description  String
+  relationship String?
+  url          String?
+  logoKey      String?
+  logoAlt      String?
+  sortOrder    Int          @default(0)
+  state        PublishState @default(DRAFT)
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([state, sortOrder])
+}
+
+model Milestone {
+  id        String   @id @default(cuid())
+  date      DateTime
+  title     String
+  body      String?
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([isPublic, date])
+}
+
+model ContactMessage {
+  id        String   @id @default(cuid())
+  name      String
+  email     String
+  topic     String
+  message   String
+  handled   Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([handled, createdAt])
+}
+
+// ---------- Portal ----------
+
+model Task {
+  id          String     @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  sortOrder   Int        @default(0)
+  dueAt       DateTime?
+  projectId   String?
+  assigneeId  String?
+  createdById String?
+  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  assignee    Member?    @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+  createdBy   Member?    @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([projectId, status, sortOrder])
+  @@index([assigneeId, status, dueAt])
+  @@index([createdById])
+}
+
+model Meeting {
+  id          String    @id @default(cuid())
+  title       String
+  startsAt    DateTime
+  endsAt      DateTime?
+  link        String?
+  agenda      String?
+  notes       String?
+  projectId   String?
+  project     Project?  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  attendeeIds String[]  @default([])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([projectId, startsAt])
+  @@index([startsAt])
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  title     String
+  body      String
+  pinned    Boolean  @default(false)
+  authorId  String?
+  author    Member?  @relation("AnnouncementAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  readBy    String[] @default([])
+
+  @@index([pinned, createdAt])
+  @@index([authorId])
+}
+
+model Experiment {
+  id          String          @id @default(cuid())
+  projectId   String
+  ownerId     String
+  name        String
+  hypothesis  String?
+  config      Json?
+  datasetRefs String[]        @default([])
+  modelInfo   String?
+  results     Json?
+  notes       String?
+  milestone   String?
+  trackingUrl String?
+  project     Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  owner       Member          @relation(fields: [ownerId], references: [id], onDelete: Restrict)
+  logs        ExperimentLog[]
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  @@index([projectId, createdAt])
+  @@index([ownerId])
+}
+
+model ExperimentLog {
+  id           String     @id @default(cuid())
+  experimentId String
+  body         String
+  experiment   Experiment @relation(fields: [experimentId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@index([experimentId, createdAt])
+}
+
+model Document {
+  id           String   @id @default(cuid())
+  projectId    String
+  title        String
+  fileKey      String?
+  url          String?
+  uploadedById String?
+  project      Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  uploadedBy   Member?  @relation("DocumentUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([projectId, createdAt])
+  @@index([uploadedById])
+}
+
+model ChangeRequest {
+  id         String       @id @default(cuid())
+  memberId   String
+  field      String
+  oldValue   String?
+  newValue   String
+  status     ChangeStatus @default(PENDING)
+  reviewerId String?
+  member     Member       @relation("ChangeRequestMember", fields: [memberId], references: [id], onDelete: Cascade)
+  reviewer   Member?      @relation("ChangeRequestReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  createdAt  DateTime     @default(now())
+  decidedAt  DateTime?
+
+  @@index([memberId, status])
+  @@index([reviewerId])
+  @@index([status, createdAt])
+}
+
+// ---------- System ----------
+
+model SiteSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  action    String
+  entity    String
+  entityId  String
+  diff      Json?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([entity, entityId, createdAt])
+}

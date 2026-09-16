@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">SANDHI Research Lab app icon</title>
+  <rect width="512" height="512" fill="#141a2e"/>
+  <g fill="none" stroke="#9c8fb8" stroke-linecap="round" stroke-width="12">
+    <path d="M80 144c82 0 116 34 176 112"/><path d="M432 368c-82 0-116-34-176-112"/>
+    <path d="M80 368c82 0 116-34 176-112"/><path d="M432 144c-82 0-116 34-176 112"/>
+  </g>
+  <circle cx="256" cy="256" r="52" fill="none" stroke="#c9a55c" stroke-opacity=".32" stroke-width="8"/>
+  <circle cx="256" cy="256" r="23" fill="#c9a55c"/>
+</svg>
