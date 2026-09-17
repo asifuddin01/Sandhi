@@ -11,7 +11,8 @@ The governing detailed specification remains `SANDHI_Codex_Build_Prompt.md`. `PL
 - **Milestones 1–3:** complete, tested, committed, and pushed.
 - **Milestone 4:** complete. Every gate passes (lint, typecheck, 87 unit tests, 62 end-to-end tests with fixture-backed visibility enabled, contrast, production build). Committed and pushed with the owner's standing approval.
 - **Latest user refinements:** implemented and tested — Join path context, optional-link removal, form-step history, proposal/CV rules, removable PDF attachments, exact route scroll restoration, and the layered neural-network research map with signal motion.
-- **Milestones 5–8:** not started. These contain authentication/admin, the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
+- **Security hardening (first Milestone 8 items):** implemented, tested against a production build, committed, and pushed — see section 11.
+- **Milestones 5–8:** otherwise not started. These contain authentication/admin, the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
 - **Production launch:** not yet complete. The current site is a local development build, not the live finished service.
 
 ## 1. Product being built
@@ -333,6 +334,20 @@ Required member workflows still to build:
 
 ## 11. Hardening and launch work still required (Milestone 8)
 
+### Security hardening completed (17 September 2026)
+
+- **Content Security Policy** (`proxy.ts`, `lib/security-headers.ts`): a fresh nonce per page request; scripts need the nonce, and `'strict-dynamic'` extends trust to the scripts they load; `object-src 'none'`, `base-uri 'self'`, `form-action 'self'`, `frame-ancestors 'none'`; Turnstile allowed for scripts and frames; direct uploads allowed only to the configured R2 account host; `upgrade-insecure-requests` only over HTTPS; `'unsafe-eval'` only in development. Styles allow inline attributes because KaTeX, Shiki and motion require them. The root layout applies the nonce to its inline theme script.
+- **Static headers** on every response (`next.config.ts`): `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, a minimal `Permissions-Policy`, `Cross-Origin-Opener-Policy: same-origin`, and HSTS (`max-age=63072000; includeSubDomains`) from production builds. `preload` is left for the owner to decide.
+- **Cross-site request refusal:** contact, join, upload and event registration share `isSameOriginRequest` (refuses `Sec-Fetch-Site: cross-site` and foreign `Origin`; a missing `Origin` is refused in production). It runs before rate limiting so forged requests cannot spend real visitors' quota.
+- **Search rate limit:** 60 requests per minute per client; search stays available (and logs) if the limiter is unreachable, since it is read-only and bounded.
+- **Zod runs without JIT** (`lib/zod.ts`): its `new Function` probe otherwise reported a CSP violation on every form page in production.
+- **Dependencies:** `lodash` and `mysql2` pinned to patched releases through `pnpm-workspace.yaml` overrides. One advisory remains: `deepmerge-ts` (stack exhaustion on recursive objects) inside the Prisma CLI's config loader, a development tool that reads only local files; its fix is a major version Prisma must adopt, so it is not forced.
+- **Verification:** unit tests for the policy builder and origin checks; a join-route test proving cross-site posts do no work; an end-to-end security spec (headers, unique nonces, zero violations on Home, Research, Join, Publications, Contact, 403 for cross-site posts) that also passed against a production build, where an injected script without the nonce was blocked and recorded, and an insight with KaTeX and highlighted code rendered with no violations.
+
+Remaining for launch hardening:
+
+- Verify Turnstile with a live site key under the policy; add Plausible's origin when analytics is integrated.
+
 - Nonce-aware Content Security Policy compatible with KaTeX, WebGL, Turnstile and Plausible.
 - `frame-ancestors 'none'`, HSTS, referrer and permissions headers.
 - CSRF review for every mutation.
@@ -427,8 +442,8 @@ Local environment notes:
 
 Safe next sequence:
 
-1. Security hardening: HTTP security headers and nonce CSP, same-origin checks on every mutation, search rate limiting, dependency audit.
-2. Implement data-level caching (section 11) with tests proving time-based visibility stays exact.
+1. Data-level caching (section 11): cache published records with tags, apply time-based visibility after the cache, with tests.
+2. Verify Turnstile with a live key under the CSP once credentials exist.
 3. Begin Milestone 5 with authentication/authz first, then admin foundations, then manager modules, including tag revalidation on every mutation.
 
 ## 14. Definition of complete

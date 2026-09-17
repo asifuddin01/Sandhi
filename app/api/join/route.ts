@@ -7,6 +7,8 @@ import {
 } from "@/lib/forms";
 import { getContactAddresses } from "@/lib/forms-contact";
 import {
+  crossSiteResponse,
+  isSameOriginRequest,
   rateLimitResponse,
   readJson,
   serviceErrorResponse,
@@ -21,6 +23,10 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    if (!isSameOriginRequest(request)) {
+      return crossSiteResponse("This application was not accepted.");
+    }
+
     const rateLimit = await checkRateLimit({
       scope: "join-submit",
       identifier: requestIdentifier(request),

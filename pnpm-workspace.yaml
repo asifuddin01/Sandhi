@@ -8,3 +8,9 @@ allowBuilds:
   sharp: false
   unrs-resolver: false
   workerd: false
+
+# Patched releases for advisories reached only through the Prisma CLI
+# (Studio's charts and MySQL support); both stay within their major version.
+overrides:
+  lodash: ^4.18.1
+  mysql2: ^3.23.4

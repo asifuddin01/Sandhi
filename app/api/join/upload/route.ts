@@ -1,5 +1,7 @@
 import { uploadRequestSchema } from "@/lib/forms";
 import {
+  crossSiteResponse,
+  isSameOriginRequest,
   rateLimitResponse,
   readJson,
   serviceErrorResponse,
@@ -12,6 +14,10 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    if (!isSameOriginRequest(request)) {
+      return crossSiteResponse("This upload was not accepted.");
+    }
+
     const rateLimit = await checkRateLimit({
       scope: "join-upload",
       identifier: requestIdentifier(request),

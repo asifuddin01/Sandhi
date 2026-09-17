@@ -68,6 +68,23 @@ describe("join submission route", () => {
     mocks.assertPrivateUploadExists.mockResolvedValue(undefined);
   });
 
+  it("refuses a cross-site submission before doing any work", async () => {
+    const response = await POST(
+      new Request("http://localhost/api/join", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Origin: "https://evil.example",
+        },
+        body: JSON.stringify({ type: "RESEARCHER" }),
+      }),
+    );
+
+    expect(response.status).toBe(403);
+    expect(mocks.applicationCreate).not.toHaveBeenCalled();
+    expect(mocks.sendApplicationEmails).not.toHaveBeenCalled();
+  });
+
   it("verifies the private CV key, persists it, and triggers both application emails", async () => {
     const response = await POST(
       new Request("http://localhost/api/join", {

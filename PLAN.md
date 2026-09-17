@@ -77,6 +77,7 @@ This checklist follows the supplied build specification. Milestones are complete
 ## Milestone 8 — Hardening and launch readiness
 
 - [ ] Add nonce-aware CSP and all required security headers without breaking approved integrations.
+  - Progress (17 September 2026): per-request nonce CSP in `proxy.ts`, static security headers, same-origin checks on every public mutation, search rate limiting, and dependency overrides are implemented and verified against a production build (WebGL, KaTeX, code highlighting, forms). Still to do before checking: verify Turnstile with a live site key, add Plausible's origin when analytics is integrated.
 - [ ] Add retention cleanup for application records and private files.
 - [ ] Complete axe coverage for every public route and critical-flow end-to-end tests.
 - [ ] Meet Lighthouse, LCP, CLS, INP, and JavaScript budgets.

@@ -5,6 +5,7 @@ import {
   Spectral,
   Tiro_Devanagari_Sanskrit,
 } from "next/font/google";
+import { headers } from "next/headers";
 import { Suspense, type ReactNode } from "react";
 
 import { PageTransition } from "@/components/motion/PageTransition";
@@ -82,7 +83,15 @@ const preferenceScript = `(() => {
   } catch {}
 })();`;
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({
+  children,
+}: {
+  children: ReactNode;
+}) {
+  // Set by proxy.ts for every page request; the policy only allows scripts
+  // carrying this nonce.
+  const nonce = (await headers()).get("x-nonce") ?? undefined;
+
   return (
     <html
       lang="en"
@@ -91,7 +100,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       className={`${spectral.variable} ${hanken.variable} ${devanagari.variable} ${mono.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: preferenceScript }} />
+        <script
+          nonce={nonce}
+          dangerouslySetInnerHTML={{ __html: preferenceScript }}
+        />
       </head>
       <body>
         <Suspense fallback={null}>

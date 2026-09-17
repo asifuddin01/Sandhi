@@ -2,6 +2,8 @@ import { assertEmailConfigured, sendContactEmail } from "@/lib/email";
 import { contactSubmissionSchema, flattenZodErrors } from "@/lib/forms";
 import { getContactRecipient } from "@/lib/forms-contact";
 import {
+  crossSiteResponse,
+  isSameOriginRequest,
   rateLimitResponse,
   readJson,
   serviceErrorResponse,
@@ -14,6 +16,10 @@ export const runtime = "nodejs";
 
 export async function POST(request: Request) {
   try {
+    if (!isSameOriginRequest(request)) {
+      return crossSiteResponse("This inquiry was not accepted.");
+    }
+
     const rateLimit = await checkRateLimit({
       scope: "contact-submit",
       identifier: requestIdentifier(request),

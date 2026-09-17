@@ -1,6 +1,7 @@
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { eventRegistrationSchema } from "@/lib/forms-event";
 import {
+  isSameOriginRequest,
   rateLimitResponse,
   readJson,
   serviceErrorResponse,
@@ -25,17 +26,6 @@ function errorResponse(
   );
 }
 
-function isSameOrigin(request: Request): boolean {
-  const origin = request.headers.get("origin");
-  if (!origin) return process.env.NODE_ENV !== "production";
-
-  try {
-    return new URL(origin).origin === new URL(request.url).origin;
-  } catch {
-    return false;
-  }
-}
-
 function isUniqueRegistrationError(error: unknown): boolean {
   return (
     typeof error === "object" &&
@@ -47,7 +37,7 @@ function isUniqueRegistrationError(error: unknown): boolean {
 
 export async function POST(request: Request, context: RouteContext) {
   try {
-    if (!isSameOrigin(request)) {
+    if (!isSameOriginRequest(request)) {
       return errorResponse("This registration request was not accepted.", 403);
     }
 
