@@ -62,6 +62,27 @@ export function publicOpportunityWhere(now = new Date()) {
   } satisfies Prisma.OpportunityWhereInput;
 }
 
+export interface OpportunityVisibilityInput {
+  state: string;
+  deadline?: Date | string | null;
+}
+
+/** An opportunity is public only while its published application window is open. */
+export function isOpportunityPublic(
+  opportunity: OpportunityVisibilityInput,
+  now = new Date(),
+): boolean {
+  if (opportunity.state !== "PUBLISHED") return false;
+  if (!opportunity.deadline) return true;
+
+  const deadline =
+    opportunity.deadline instanceof Date
+      ? opportunity.deadline
+      : new Date(opportunity.deadline);
+
+  return !Number.isNaN(deadline.getTime()) && deadline >= now;
+}
+
 export interface PublicationVisibilityInput {
   state: string;
   stage: string;

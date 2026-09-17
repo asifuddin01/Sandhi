@@ -5,9 +5,10 @@ import {
   Spectral,
   Tiro_Devanagari_Sanskrit,
 } from "next/font/google";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 
 import { PageTransition } from "@/components/motion/PageTransition";
+import { ScrollRestoration } from "@/components/navigation/ScrollRestoration";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { siteIdentity } from "@/content/strings";
@@ -93,6 +94,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script dangerouslySetInnerHTML={{ __html: preferenceScript }} />
       </head>
       <body>
+        <Suspense fallback={null}>
+          <ScrollRestoration />
+        </Suspense>
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>

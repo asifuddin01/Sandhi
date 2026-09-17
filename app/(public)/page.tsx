@@ -8,6 +8,10 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { homeCopy, researchThemes, siteIdentity } from "@/content/strings";
 import { getHomeData } from "@/lib/public-home";
 
+// Home lists scheduled news and live counts, so it must not be frozen at build
+// time; this also keeps it compatible with the per-request CSP nonce.
+export const dynamic = "force-dynamic";
+
 function humanize(value: string) {
   const words = value.toLocaleLowerCase().replaceAll("_", " ");
   return words.charAt(0).toLocaleUpperCase() + words.slice(1);
@@ -230,7 +234,7 @@ export default async function HomePage() {
               ))}
             </ol>
           ) : (
-            <EmptyState message="Our first papers are in progress." />
+            <EmptyState message="Our first paper will appear here soon." />
           )}
         </section>
 

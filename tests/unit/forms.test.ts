@@ -8,6 +8,8 @@ import {
   joinSubmissionSchema,
   requiresCv,
   requiresProposal,
+  requiresProposalFile,
+  uploadRequestSchema,
 } from "@/lib/forms";
 
 const motivation =
@@ -35,9 +37,9 @@ describe("join form validation", () => {
     expect(descriptions.INDUSTRY_COLLABORATION).toContain("organizations");
   });
 
-  it("does not require a CV for academic or industry collaboration", () => {
+  it("does not require a CV for project, academic, or industry paths", () => {
     expect(requiresCv("RESEARCHER")).toBe(true);
-    expect(requiresCv("PROJECT_PROPOSAL")).toBe(true);
+    expect(requiresCv("PROJECT_PROPOSAL")).toBe(false);
     expect(requiresCv("ACADEMIC_COLLABORATION")).toBe(false);
     expect(requiresCv("INDUSTRY_COLLABORATION")).toBe(false);
 
@@ -92,6 +94,71 @@ describe("join form validation", () => {
     }
   });
 
+  it("requires a proposal PDF only for project proposals", () => {
+    expect(requiresProposalFile("PROJECT_PROPOSAL")).toBe(true);
+    expect(requiresProposalFile("COLLABORATION")).toBe(false);
+    expect(requiresProposalFile("ACADEMIC_COLLABORATION")).toBe(false);
+    expect(requiresProposalFile("INDUSTRY_COLLABORATION")).toBe(false);
+
+    const base = {
+      name: "Fixture Applicant",
+      email: "applicant@example.org",
+      phone: "",
+      institution: "Example University",
+      currentRole: "Researcher",
+      interests: ["computer-vision"],
+      scholarUrl: "",
+      orcid: "",
+      githubUrl: "",
+      linkedinUrl: "",
+      websiteUrl: "",
+      motivation,
+      experience: "",
+      proposalTitle: "A focused research project",
+      proposalSummary:
+        "This proposal defines a focused question, a feasible method, and a useful intended contribution.",
+      hoursPerWeek: "",
+      consent: true,
+      turnstileToken: "verified-token",
+    };
+
+    const missingProjectPdf = joinSubmissionSchema.safeParse({
+      ...base,
+      type: "PROJECT_PROPOSAL",
+    });
+    expect(missingProjectPdf.success).toBe(false);
+    if (!missingProjectPdf.success) {
+      expect(missingProjectPdf.error.issues).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            path: ["proposalKey"],
+            message: "Upload the project proposal as a PDF.",
+          }),
+        ]),
+      );
+    }
+
+    expect(
+      joinSubmissionSchema.safeParse({
+        ...base,
+        type: "PROJECT_PROPOSAL",
+        proposalKey:
+          "applications/pending/00000000-0000-4000-8000-000000000000/proposal.pdf",
+        proposalUploadToken: "p".repeat(32),
+      }).success,
+    ).toBe(true);
+
+    expect(
+      joinSubmissionSchema.safeParse({
+        ...base,
+        type: "COLLABORATION",
+        cvKey:
+          "applications/pending/00000000-0000-4000-8000-000000000000/cv.pdf",
+        cvUploadToken: "c".repeat(32),
+      }).success,
+    ).toBe(true);
+  });
+
   it("accepts a complete researcher submission", () => {
     const result = joinSubmissionSchema.safeParse({
       type: "RESEARCHER",
@@ -119,6 +186,48 @@ describe("join form validation", () => {
 
     expect(result.success).toBe(true);
     if (result.success) expect(result.data.hoursPerWeek).toBe(10);
+  });
+
+  it("accepts submissions without profile links and still validates legacy links", () => {
+    const current = {
+      type: "RESEARCHER",
+      name: "Ada Researcher",
+      email: "ada@example.org",
+      phone: "",
+      institution: "Example University",
+      currentRole: "Researcher",
+      interests: ["computer-vision"],
+      motivation,
+      experience: "",
+      proposalTitle: "",
+      proposalSummary: "",
+      hoursPerWeek: "",
+      consent: true,
+      cvKey: "applications/pending/00000000-0000-4000-8000-000000000000/cv.pdf",
+      cvUploadToken: "x".repeat(32),
+      turnstileToken: "verified-token",
+    };
+
+    const withoutLinks = joinSubmissionSchema.safeParse(current);
+    expect(withoutLinks.success).toBe(true);
+    if (withoutLinks.success) {
+      expect(withoutLinks.data).toMatchObject({
+        scholarUrl: "",
+        orcid: "",
+        githubUrl: "",
+        linkedinUrl: "",
+        websiteUrl: "",
+      });
+    }
+
+    expect(
+      joinSubmissionSchema.safeParse({ ...current, githubUrl: "not a url" })
+        .success,
+    ).toBe(false);
+    expect(
+      joinSubmissionSchema.safeParse({ ...current, orcid: "0000-0000" })
+        .success,
+    ).toBe(false);
   });
 
   it("accepts international contact notation and rejects clearly invalid numbers", () => {
@@ -195,6 +304,25 @@ describe("join form validation", () => {
         "proposal",
       ),
     ).toBe("The PDF must be 10 MB or smaller.");
+  });
+
+  it("enforces the ten megabyte proposal limit on upload requests", () => {
+    expect(
+      uploadRequestSchema.safeParse({
+        kind: "proposal",
+        name: "proposal.pdf",
+        size: 10 * 1024 * 1024,
+        mime: "application/pdf",
+      }).success,
+    ).toBe(true);
+    expect(
+      uploadRequestSchema.safeParse({
+        kind: "proposal",
+        name: "proposal.pdf",
+        size: 10 * 1024 * 1024 + 1,
+        mime: "application/pdf",
+      }).success,
+    ).toBe(false);
   });
 });
 

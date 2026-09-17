@@ -1,18 +1,8 @@
 "use client";
 
-import {
-  forceCenter,
-  forceCollide,
-  forceLink,
-  forceManyBody,
-  forceSimulation,
-  forceX,
-  forceY,
-  type SimulationLinkDatum,
-  type SimulationNodeDatum,
-} from "d3-force";
 import Link from "next/link";
 import {
+  type CSSProperties,
   useEffect,
   useMemo,
   useRef,
@@ -24,27 +14,17 @@ import { useReducedMotion } from "@/components/motion/useReducedMotion";
 import type { GraphEdge, GraphNode, PublicGraphData } from "@/lib/graph-types";
 
 import styles from "./ConnectionsMap.module.css";
+import {
+  estimateTextWidth,
+  layerHeadings,
+  layerOrder,
+  layoutGraph,
+  placeFocusLabel,
+  type MeasureText,
+} from "./graph-layout";
+import { startNeuralSignals } from "./neural-signals";
 
 type View = "map" | "list";
-
-interface PositionedNode extends GraphNode, SimulationNodeDatum {
-  x: number;
-  y: number;
-}
-
-type PositionedEdge = Omit<GraphEdge, "source" | "target"> &
-  SimulationLinkDatum<PositionedNode> & {
-    source: string | PositionedNode;
-    target: string | PositionedNode;
-  };
-
-const kindOrder: GraphNode["kind"][] = [
-  "theme",
-  "area",
-  "project",
-  "person",
-  "publication",
-];
 
 const kindLabels: Record<GraphNode["kind"], string> = {
   theme: "Theme",
@@ -66,24 +46,22 @@ function useHydrated(): boolean {
   );
 }
 
-function nodeRadius(kind: GraphNode["kind"]): number {
-  if (kind === "theme") return 8;
-  if (kind === "area") return 6;
-  if (kind === "project") return 5;
-  return 4;
-}
+function createTextMeasure(font: string | null): MeasureText {
+  const context = font
+    ? document.createElement("canvas").getContext("2d")
+    : null;
+  if (context && font) context.font = font;
+  const widths = new Map<string, number>();
 
-function initialPosition(
-  node: GraphNode,
-  index: number,
-  width: number,
-  height: number,
-): { x: number; y: number } {
-  const column = kindOrder.indexOf(node.kind);
-  const sameKindOffset = ((index * 67) % Math.max(80, height - 100)) + 50;
-  return {
-    x: 60 + (column / Math.max(1, kindOrder.length - 1)) * (width - 120),
-    y: sameKindOffset,
+  return (text) => {
+    let width = widths.get(text);
+    if (width === undefined) {
+      width = context
+        ? context.measureText(text).width
+        : estimateTextWidth(text);
+      widths.set(text, width);
+    }
+    return width;
   };
 }
 
@@ -121,7 +99,7 @@ function GraphList({ data }: { data: PublicGraphData }) {
   return (
     <div className={styles.list} aria-label="Research connections list">
       <ul>
-        {kindOrder.flatMap((kind) =>
+        {layerOrder.flatMap((kind) =>
           data.nodes
             .filter((node) => node.kind === kind)
             .map((node) => (
@@ -156,15 +134,17 @@ export function ConnectionsMap({
   const hydrated = useHydrated();
   const reducedMotion = useReducedMotion();
   const containerRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const signalsRef = useRef<SVGGElement>(null);
+  const probeRef = useRef<SVGTextElement>(null);
   const [data, setData] = useState(initialData);
   const [view, setView] = useState<View>("map");
   const [theme, setTheme] = useState("all");
   const [activeId, setActiveId] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [size, setSize] = useState({ width: 900, height: 540 });
-  const [positions, setPositions] = useState<
-    Record<string, { x: number; y: number }>
-  >({});
+  const [width, setWidth] = useState(900);
+  // Replaced (not mutated) once web fonts load, so labels are re-measured.
+  const [labelFont, setLabelFont] = useState<{ font: string } | null>(null);
 
   const effectiveView: View = hydrated ? view : "list";
   const filtered = useMemo(() => {
@@ -180,10 +160,60 @@ export function ConnectionsMap({
     };
   }, [data, theme]);
   const selected = data.nodes.find((node) => node.id === selectedId) ?? null;
+  const selectedConnections = useMemo(() => {
+    if (!selectedId) return [];
+    const nodeById = new Map(data.nodes.map((node) => [node.id, node]));
+    const connected = new Map<string, GraphNode>();
+    for (const edge of data.edges) {
+      const otherId =
+        edge.source === selectedId
+          ? edge.target
+          : edge.target === selectedId
+            ? edge.source
+            : null;
+      const other = otherId ? nodeById.get(otherId) : undefined;
+      if (other) connected.set(other.id, other);
+    }
+    return layerOrder
+      .map((kind) => ({
+        kind,
+        nodes: [...connected.values()].filter((node) => node.kind === kind),
+      }))
+      .filter((group) => group.nodes.length > 0);
+  }, [data, selectedId]);
+  const layerCounts = layerOrder
+    .map((kind) => ({
+      kind,
+      count: filtered.nodes.filter((node) => node.kind === kind).length,
+    }))
+    .filter((layer) => layer.count > 0);
+  const focusId = activeId ?? selectedId;
   const related = useMemo(
-    () => relatedIds(activeId ?? selectedId, filtered.edges),
-    [activeId, selectedId, filtered.edges],
+    () => relatedIds(focusId, filtered.edges),
+    [focusId, filtered.edges],
   );
+  const measure = useMemo(
+    () => createTextMeasure(labelFont?.font ?? null),
+    [labelFont],
+  );
+  const layout = useMemo(
+    () =>
+      effectiveView === "map"
+        ? layoutGraph(filtered.nodes, filtered.edges, width, measure)
+        : null,
+    [effectiveView, filtered.nodes, filtered.edges, width, measure],
+  );
+  const focusNode = focusId ? layout?.nodes.get(focusId) : undefined;
+  const focusLabel =
+    layout && focusNode
+      ? placeFocusLabel(
+          focusNode,
+          data.nodes.find((node) => node.id === focusId)?.label ?? "",
+          layout.width,
+          measure,
+        )
+      : null;
+  const signalFocus = focusNode ? focusNode.id : null;
 
   useEffect(() => {
     const controller = new AbortController();
@@ -200,96 +230,58 @@ export function ConnectionsMap({
     const container = containerRef.current;
     if (!container) return;
     const update = () => {
-      const width = Math.max(320, Math.round(container.clientWidth));
-      const height = width < 720 ? 450 : 540;
-      setSize((current) =>
-        current.width === width && current.height === height
-          ? current
-          : { width, height },
-      );
+      if (!container.isConnected || container.clientWidth < 1) return;
+      const next = Math.max(320, Math.round(container.clientWidth));
+      setWidth((current) => (current === next ? current : next));
     };
     const observer = new ResizeObserver(update);
     observer.observe(container);
     update();
     return () => observer.disconnect();
-  }, []);
+  }, [effectiveView]);
 
   useEffect(() => {
-    const graphNodes: PositionedNode[] = filtered.nodes.map((node, index) => ({
-      ...node,
-      ...initialPosition(node, index, size.width, size.height),
-    }));
-    const graphEdges: PositionedEdge[] = filtered.edges.map((edge) => ({
-      ...edge,
-      source: edge.source,
-      target: edge.target,
-    }));
-
-    const commit = () =>
-      setPositions(
-        Object.fromEntries(
-          graphNodes.map((node) => [
-            node.id,
-            {
-              x: Math.max(20, Math.min(size.width - 20, node.x)),
-              y: Math.max(20, Math.min(size.height - 20, node.y)),
-            },
-          ]),
-        ),
+    const probe = probeRef.current;
+    if (!probe) return;
+    let active = true;
+    const readFont = (fontsLoaded: boolean) => {
+      if (!active) return;
+      const style = window.getComputedStyle(probe);
+      const font = `${style.fontWeight} ${style.fontSize} ${style.fontFamily}`;
+      setLabelFont((current) =>
+        current?.font === font && !fontsLoaded ? current : { font },
       );
-
-    if (reducedMotion || effectiveView !== "map") {
-      commit();
-      return;
-    }
-
-    const simulation = forceSimulation<PositionedNode>(graphNodes)
-      .force(
-        "link",
-        forceLink<PositionedNode, PositionedEdge>(graphEdges)
-          .id((node) => node.id)
-          .distance((edge) => (edge.relationship === "contains" ? 70 : 92))
-          .strength(0.42),
-      )
-      .force("charge", forceManyBody().strength(-105).distanceMax(260))
-      .force("center", forceCenter(size.width / 2, size.height / 2))
-      .force(
-        "x",
-        forceX<PositionedNode>((node) => {
-          const column = kindOrder.indexOf(node.kind);
-          return 60 + (column / 4) * (size.width - 120);
-        }).strength(0.14),
-      )
-      .force("y", forceY(size.height / 2).strength(0.035))
-      .force(
-        "collide",
-        forceCollide<PositionedNode>((node) => nodeRadius(node.kind) + 14),
-      )
-      .alphaDecay(0.045)
-      .velocityDecay(0.48)
-      .on("tick", commit);
-
-    let inView = true;
-    const syncActivity = () => {
-      if (document.hidden || !inView) simulation.stop();
-      else if (simulation.alpha() > 0.015) simulation.restart();
     };
-    const intersection = new IntersectionObserver(
-      ([entry]) => {
-        inView = Boolean(entry?.isIntersecting);
-        syncActivity();
-      },
-      { rootMargin: "120px" },
-    );
-    if (containerRef.current) intersection.observe(containerRef.current);
-    document.addEventListener("visibilitychange", syncActivity);
-
+    readFont(false);
+    document.fonts?.ready.then(() => readFont(true));
     return () => {
-      simulation.stop();
-      intersection.disconnect();
-      document.removeEventListener("visibilitychange", syncActivity);
+      active = false;
     };
-  }, [effectiveView, filtered.edges, filtered.nodes, reducedMotion, size]);
+  }, [effectiveView]);
+
+  useEffect(() => {
+    const svg = svgRef.current;
+    const signals = signalsRef.current;
+    const container = containerRef.current;
+    if (reducedMotion || !layout || !svg || !signals || !container) return;
+
+    return startNeuralSignals({
+      svg,
+      layer: signals,
+      viewport: container,
+      edges: layout.edges,
+      nodes: layout.nodes,
+      sources: layout.layers[0] ?? [],
+      focusId: signalFocus,
+      classNames: {
+        signal: styles.signal!,
+        core: styles.signalCore!,
+        halo: styles.signalHalo!,
+        trail: styles.signalTrail!,
+        ring: styles.signalRing!,
+      },
+    });
+  }, [layout, reducedMotion, signalFocus]);
 
   return (
     <div className={styles.shell}>
@@ -332,69 +324,117 @@ export function ConnectionsMap({
         </p>
       ) : null}
 
-      {effectiveView === "list" ? (
+      {effectiveView === "list" || !layout ? (
         <GraphList data={filtered} />
       ) : (
-        <div className={styles.canvasLayout}>
-          <div className={styles.canvas} ref={containerRef}>
+        <div
+          className={styles.canvasLayout}
+          style={
+            {
+              "--network-width": `${layout.naturalWidth}px`,
+            } as CSSProperties
+          }
+        >
+          <div
+            className={styles.canvas}
+            ref={containerRef}
+            style={{ height: `${layout.height}px` }}
+          >
             <svg
-              viewBox={`0 0 ${size.width} ${size.height}`}
+              ref={svgRef}
+              viewBox={`0 0 ${layout.width} ${layout.height}`}
               role="img"
               aria-label={filtered.summary}
               preserveAspectRatio="xMidYMid meet"
             >
+              <g className={styles.layerLabels} aria-hidden="true">
+                {layout.headings.map((heading) =>
+                  heading.text ? (
+                    <text
+                      key={heading.kind}
+                      x={heading.x}
+                      y={heading.y}
+                      textAnchor={heading.anchor}
+                    >
+                      {heading.text}
+                    </text>
+                  ) : null,
+                )}
+              </g>
               <g aria-hidden="true">
-                {filtered.edges.map((edge) => {
-                  const source = positions[edge.source];
-                  const target = positions[edge.target];
-                  if (!source || !target) return null;
+                {layout.edges.map((edge) => {
                   const isRelated =
-                    Boolean(activeId ?? selectedId) &&
-                    (edge.source === (activeId ?? selectedId) ||
-                      edge.target === (activeId ?? selectedId));
+                    Boolean(focusId) &&
+                    (edge.from === focusId || edge.to === focusId);
                   return (
-                    <line
+                    <path
                       className={styles.edge}
+                      data-edge-id={edge.id}
                       data-related={isRelated}
-                      data-dimmed={
-                        Boolean(activeId ?? selectedId) && !isRelated
-                      }
+                      data-dimmed={Boolean(focusId) && !isRelated}
+                      d={edge.path}
                       key={edge.id}
-                      x1={source.x}
-                      y1={source.y}
-                      x2={target.x}
-                      y2={target.y}
                     />
                   );
                 })}
               </g>
+              <g
+                className={styles.signals}
+                data-layer="signals"
+                ref={signalsRef}
+                aria-hidden="true"
+              />
               <g>
                 {filtered.nodes.map((node) => {
-                  const position =
-                    positions[node.id] ??
-                    initialPosition(node, 0, size.width, size.height);
-                  const isActive = (activeId ?? selectedId) === node.id;
+                  const placed = layout.nodes.get(node.id);
+                  if (!placed) return null;
+                  const isFocus = focusId === node.id;
                   return (
                     <g
                       className={styles.node}
+                      data-node-id={node.id}
                       data-kind={node.kind}
-                      data-active={isActive}
+                      data-active={isFocus}
                       data-selected={selectedId === node.id}
                       data-dimmed={related.size > 0 && !related.has(node.id)}
                       key={node.id}
-                      transform={`translate(${position.x} ${position.y})`}
+                      transform={`translate(${placed.x} ${placed.y})`}
                       onClick={() => setSelectedId(node.id)}
                       onMouseEnter={() => setActiveId(node.id)}
                       onMouseLeave={() => setActiveId(null)}
                     >
-                      <circle r={nodeRadius(node.kind)} />
-                      <text x={nodeRadius(node.kind) + 6} y={4}>
-                        {node.label}
-                      </text>
+                      <circle r={placed.radius} />
+                      {placed.label && !isFocus ? (
+                        <text
+                          x={placed.labelDx}
+                          y={placed.labelDy}
+                          textAnchor={placed.labelAnchor}
+                        >
+                          {placed.label}
+                        </text>
+                      ) : null}
                     </g>
                   );
                 })}
               </g>
+              {focusLabel?.text ? (
+                <text
+                  className={styles.focusLabel}
+                  x={focusLabel.x}
+                  y={focusLabel.y}
+                  textAnchor={focusLabel.anchor}
+                  aria-hidden="true"
+                >
+                  {focusLabel.text}
+                </text>
+              ) : null}
+              <text
+                className={styles.labelProbe}
+                ref={probeRef}
+                aria-hidden="true"
+              >
+                M
+              </text>
             </svg>
           </div>
           <aside className={styles.panel} aria-live="polite">
@@ -404,12 +444,39 @@ export function ConnectionsMap({
                 <h3>{selected.label}</h3>
                 <p>{selected.description}</p>
                 <Link href={selected.href}>Open {selected.label}</Link>
+                {selectedConnections.length > 0 ? (
+                  <div className={styles.connections}>
+                    {selectedConnections.map(({ kind, nodes }) => (
+                      <div key={kind}>
+                        <h4>{layerHeadings[kind]}</h4>
+                        <ul>
+                          {nodes.map((node) => (
+                            <li key={node.id}>
+                              <Link href={node.href}>{node.label}</Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
               </>
             ) : (
-              <p className={styles.instruction}>
-                Select a junction to read its description and follow it into the
-                research archive.
-              </p>
+              <>
+                <p className={styles.instruction}>
+                  Select a junction to read its description and follow it into
+                  the research archive.
+                </p>
+                <p className={styles.kind}>Layers</p>
+                <ol className={styles.legend}>
+                  {layerCounts.map(({ kind, count }) => (
+                    <li key={kind}>
+                      <span>{layerHeadings[kind]}</span>
+                      <span>{count}</span>
+                    </li>
+                  ))}
+                </ol>
+              </>
             )}
           </aside>
         </div>

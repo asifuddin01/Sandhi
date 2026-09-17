@@ -33,7 +33,10 @@
   border-block-start: 1px solid var(--ink-line);
 }
 
+/* The intro's margin already separates the first section; without its rule,
+   top padding would only add empty space. */
 .section:first-of-type {
+  padding-block-start: 0;
   border-block-start: 0;
 }
 

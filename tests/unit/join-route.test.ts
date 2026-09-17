@@ -121,4 +121,71 @@ describe("join submission route", () => {
       "join@sandhiresearch.org",
     );
   });
+
+  it("retains an optional project CV alongside the required proposal", async () => {
+    const cvKey =
+      "applications/pending/00000000-0000-4000-8000-000000000000/cv.pdf";
+    const proposalKey =
+      "applications/pending/00000000-0000-4000-8000-000000000000/proposal.pdf";
+    const response = await POST(
+      new Request("http://localhost/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "PROJECT_PROPOSAL",
+          name: "Fixture Project Lead",
+          email: "project@example.org",
+          phone: "",
+          institution: "Fixture University",
+          currentRole: "Researcher",
+          interests: ["computer-vision"],
+          motivation,
+          experience: "",
+          proposalTitle: "A focused project proposal",
+          proposalSummary:
+            "A complete project summary with a clear question, method, and intended contribution.",
+          hoursPerWeek: "",
+          consent: true,
+          cvKey,
+          cvUploadToken: "c".repeat(32),
+          proposalKey,
+          proposalUploadToken: "p".repeat(32),
+          turnstileToken: "verified-token",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(201);
+    expect(mocks.assertPrivateUploadExists).toHaveBeenCalledWith({
+      key: cvKey,
+      kind: "cv",
+      uploadToken: "c".repeat(32),
+    });
+    expect(mocks.assertPrivateUploadExists).toHaveBeenCalledWith({
+      key: proposalKey,
+      kind: "proposal",
+      uploadToken: "p".repeat(32),
+    });
+    expect(mocks.applicationCreate).toHaveBeenCalledWith(
+      expect.objectContaining({
+        data: expect.objectContaining({
+          cvKey,
+          proposalKey,
+          scholarUrl: null,
+          orcid: null,
+          githubUrl: null,
+          linkedinUrl: null,
+          websiteUrl: null,
+        }),
+      }),
+    );
+    expect(mocks.sendApplicationEmails).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: "fixture-application-id",
+        cvKey,
+        proposalKey,
+      }),
+      "join@sandhiresearch.org",
+    );
+  });
 });

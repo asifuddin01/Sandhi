@@ -118,11 +118,12 @@ export const joinAboutSchema = z.object({
     .array(z.string().trim().min(1).max(160))
     .min(1, "Choose or write at least one research interest.")
     .max(12),
-  scholarUrl: optionalUrl,
-  orcid: optionalOrcid,
-  githubUrl: optionalUrl,
-  linkedinUrl: optionalUrl,
-  websiteUrl: optionalUrl,
+  // Profile links are no longer collected; older payloads are still validated.
+  scholarUrl: optionalUrl.optional().default(""),
+  orcid: optionalOrcid.optional().default(""),
+  githubUrl: optionalUrl.optional().default(""),
+  linkedinUrl: optionalUrl.optional().default(""),
+  websiteUrl: optionalUrl.optional().default(""),
 });
 
 export const proposalRequiredTypes = new Set<JoinInterestType>([
@@ -137,12 +138,17 @@ export function requiresProposal(type: JoinInterestType): boolean {
 }
 
 const cvOptionalTypes = new Set<JoinInterestType>([
+  "PROJECT_PROPOSAL",
   "ACADEMIC_COLLABORATION",
   "INDUSTRY_COLLABORATION",
 ]);
 
 export function requiresCv(type: JoinInterestType): boolean {
   return !cvOptionalTypes.has(type);
+}
+
+export function requiresProposalFile(type: JoinInterestType): boolean {
+  return type === "PROJECT_PROPOSAL";
 }
 
 export const joinMotivationSchema = z
@@ -237,6 +243,17 @@ export const joinSubmissionSchema = joinInterestSchema
         code: "custom",
         path: ["proposalKey"],
         message: "The proposal upload is incomplete.",
+      });
+    }
+
+    if (
+      requiresProposalFile(value.type) &&
+      (!value.proposalKey || !value.proposalUploadToken)
+    ) {
+      context.addIssue({
+        code: "custom",
+        path: ["proposalKey"],
+        message: "Upload the project proposal as a PDF.",
       });
     }
   });

@@ -35,4 +35,26 @@ describe("Prose", () => {
     expect(html).toContain('data-language="ts"');
     expect(html).toContain("--shiki-dark");
   });
+
+  it("renders GFM footnotes with accessible references and back links", async () => {
+    const html = await renderMarkdown(
+      "A result worth checking.[^method]\n\n[^method]: Measured on the held-out split.",
+    );
+
+    expect(html).toContain("data-footnote-ref");
+    expect(html).toContain("data-footnotes");
+    expect(html).toContain("Measured on the held-out split.");
+    expect(html).toContain("data-footnote-backref");
+  });
+
+  it("adds stable heading anchors and turns titled images into figures", async () => {
+    const html = await renderMarkdown(
+      '## Error analysis\n\n![Confusion matrix](/figure.png "Figure 1. Errors by class.")',
+    );
+
+    expect(html).toContain('<h2 id="error-analysis">');
+    expect(html).toContain("<figure>");
+    expect(html).toContain("<figcaption>Figure 1. Errors by class.</figcaption>");
+    expect(html).toContain('alt="Confusion matrix"');
+  });
 });

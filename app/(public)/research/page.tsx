@@ -72,10 +72,7 @@ export default async function ResearchPage() {
                     </li>
                   ))}
                 </ol>
-                <div
-                  className={styles.themeCounts}
-                  aria-label="Public output counts"
-                >
+                <div className={styles.themeCounts}>
                   {theme.projectCount > 0 ? (
                     <span>
                       {theme.projectCount}{" "}

@@ -38,13 +38,14 @@ This checklist follows the supplied build specification. Milestones are complete
 
 ## Milestone 4 — Remaining public pages
 
-- [ ] Build Events with registration, local/original time zones, recordings, slides, and ICS.
-- [ ] Build Opportunities with deadline visibility and Join preselection.
-- [ ] Build Resources and their linked output pages.
-- [ ] Build Insights with table of contents, KaTeX, code, footnotes, reading time, and citation.
-- [ ] Build Open science and Partners with their conditional states.
-- [ ] Include all public types in command-palette search.
-- [ ] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
+- [x] Build Events with registration, local/original time zones, recordings, slides, and ICS.
+- [x] Build Opportunities with deadline visibility and Join preselection.
+- [x] Build Resources and their linked output pages.
+- [x] Build Insights with table of contents, KaTeX, code, footnotes, reading time, and citation.
+- [x] Build Open science and Partners with their conditional states.
+- [x] Include all public types in command-palette search.
+- [x] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
+- [x] Verify every Milestone 4 visibility rule in the browser against an isolated fixture database, and fix the contrast, ARIA, undefined-token, and doubled-rule defects the review found.
 
 ## Milestone 5 — Authentication and admin portal
 
@@ -90,6 +91,6 @@ This checklist follows the supplied build specification. Milestones are complete
 - `katex`, `shiki`, and the Radix packages are direct runtime packages required by the specified Markdown and UI stacks.
 - `@prisma/adapter-pg`, `pg`, and `dotenv` are required by the current stable Prisma PostgreSQL runtime and CLI configuration; `@types/pg` supplies strict types.
 - `better-auth` and its Prisma adapter are installed in Milestone 1 so `seed:owner` writes a credential hash in the exact format the specified authentication system will verify in Milestone 5.
-- `three`, `@react-three/fiber`, `@react-three/drei`, and `d3-force` are the specification's Milestone 3 rendering stack; React and React DOM are pinned to 19.2.8 because the stable Fiber release does not yet support React 19.3.
+- `three`, `@react-three/fiber`, and `@react-three/drei` are the specification's Milestone 3 rendering stack. `d3-force` was removed in Milestone 4 when the connections map became a deterministic layered layout at the user's direction (strict layers cannot come from a force simulation); React and React DOM are pinned to 19.2.8 because the stable Fiber release does not yet support React 19.3.
 - Prisma CLI is pinned to `7.10.0` to match the latest stable `@prisma/client`; the registry's current CLI `latest` tag resolves to an 8.0 release candidate rather than a stable release.
 - ESLint remains on the newest v9 release because Next.js 16's bundled React, import, and accessibility plugins do not yet declare compatibility with ESLint 10.

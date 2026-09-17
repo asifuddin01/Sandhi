@@ -25,6 +25,7 @@ import {
   researchInterestOptions,
   requiresCv,
   requiresProposal,
+  requiresProposalFile,
   type FieldErrors,
   type JoinInterestType,
 } from "@/lib/forms";
@@ -40,11 +41,6 @@ type Draft = {
   currentRole: string;
   interests: string[];
   customInterest: string;
-  scholarUrl: string;
-  orcid: string;
-  githubUrl: string;
-  linkedinUrl: string;
-  websiteUrl: string;
   motivation: string;
   experience: string;
   proposalTitle: string;
@@ -53,13 +49,17 @@ type Draft = {
   consent: boolean;
 };
 
+type JoinStep = 1 | 2 | 3;
+
 export type JoinOpportunitySelection = {
   slug: string;
   title: string;
   type: JoinInterestType;
 };
 
-const storageKey = "sandhi:join-application:v1";
+const storageKey = "sandhi:join-application:v2";
+const joinStepHistoryKey = "__sandhiJoinStep";
+const scrollEntryHistoryKey = "__sandhiScrollEntry";
 
 const defaultDraft: Draft = {
   type: "",
@@ -70,11 +70,6 @@ const defaultDraft: Draft = {
   currentRole: "",
   interests: [],
   customInterest: "",
-  scholarUrl: "",
-  orcid: "",
-  githubUrl: "",
-  linkedinUrl: "",
-  websiteUrl: "",
   motivation: "",
   experience: "",
   proposalTitle: "",
@@ -118,6 +113,33 @@ function focusFirstError(errors: FieldErrors) {
   const field = Object.keys(errors)[0];
   if (!field) return;
   requestAnimationFrame(() => document.getElementById(field)?.focus());
+}
+
+function joinStepFromHistoryState(state: unknown): JoinStep | null {
+  if (!state || typeof state !== "object") return null;
+  const value = Reflect.get(state, joinStepHistoryKey);
+  return value === 1 || value === 2 || value === 3 ? value : null;
+}
+
+function historyStateForJoinStep(step: JoinStep, isNewEntry: boolean) {
+  const state =
+    window.history.state && typeof window.history.state === "object"
+      ? { ...(window.history.state as Record<string, unknown>) }
+      : {};
+
+  // ScrollRestoration gives pushed entries their own position key. Keep Next's
+  // router state, but do not carry the current scroll entry into a new entry.
+  if (isNewEntry) delete state[scrollEntryHistoryKey];
+  state[joinStepHistoryKey] = step;
+  return state;
+}
+
+function pushJoinStep(step: JoinStep): void {
+  window.history.pushState(
+    historyStateForJoinStep(step, true),
+    "",
+    window.location.href,
+  );
 }
 
 async function responseError(
@@ -167,14 +189,6 @@ async function uploadPdf(file: File, kind: "cv" | "proposal") {
   return { key: intent.key, uploadToken: intent.uploadToken };
 }
 
-const optionalLinks = [
-  ["scholarUrl", "Google Scholar", "https://scholar.google.com/…"],
-  ["orcid", "ORCID", "0000-0000-0000-000X"],
-  ["githubUrl", "GitHub", "https://github.com/…"],
-  ["linkedinUrl", "LinkedIn", "https://linkedin.com/in/…"],
-  ["websiteUrl", "Personal website", "https://…"],
-] as const;
-
 const proposalCopy: Record<
   Exclude<JoinInterestType, "RESEARCHER" | "INTERNSHIP">,
   {
@@ -196,8 +210,8 @@ const proposalCopy: Record<
     heading: "Project proposal",
     title: "Proposal title *",
     summary: "Research question, approach, and intended contribution *",
-    file: "Full proposal (optional PDF, max 10 MB)",
-    hint: "Upload a separate proposal document if you have one.",
+    file: "Full proposal (PDF, max 10 MB) *",
+    hint: "Attach the full project proposal.",
   },
   ACADEMIC_COLLABORATION: {
     heading: "Academic collaboration",
@@ -214,6 +228,10 @@ const proposalCopy: Record<
     hint: "You may attach a non-confidential brief with additional context.",
   },
 };
+
+function supportsCv(type: JoinInterestType): boolean {
+  return type === "PROJECT_PROPOSAL" || requiresCv(type);
+}
 
 export function JoinForm({
   siteKey,
@@ -232,7 +250,7 @@ export function JoinForm({
     [opportunity],
   );
   const [draft, setDraft] = useState<Draft>(initialDraft);
-  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [step, setStep] = useState<JoinStep>(1);
   const [hydrated, setHydrated] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [proposalFile, setProposalFile] = useState<File | null>(null);
@@ -267,6 +285,30 @@ export function JoinForm({
     sessionStorage.setItem(storageKey, JSON.stringify(draft));
   }, [draft, hydrated, submitted]);
 
+  useEffect(() => {
+    const restoredStep = joinStepFromHistoryState(window.history.state);
+    if (restoredStep) {
+      queueMicrotask(() => setStep(restoredStep));
+    } else {
+      window.history.replaceState(
+        historyStateForJoinStep(1, false),
+        "",
+        window.location.href,
+      );
+    }
+
+    const restoreStep = (event: PopStateEvent) => {
+      const historyStep = joinStepFromHistoryState(event.state);
+      if (!historyStep) return;
+      setErrors({});
+      setFormMessage("");
+      setStep(historyStep);
+    };
+
+    window.addEventListener("popstate", restoreStep);
+    return () => window.removeEventListener("popstate", restoreStep);
+  }, []);
+
   const update = <Key extends keyof Draft>(key: Key, value: Draft[Key]) => {
     setDraft((current) => ({ ...current, [key]: value }));
     setErrors((current) => {
@@ -293,6 +335,23 @@ export function JoinForm({
       else delete next[field];
       return next;
     });
+    // The picker is replaced by the chosen file; keep keyboard focus there.
+    if (file)
+      requestAnimationFrame(() => document.getElementById(field)?.focus());
+  };
+
+  const removeFile = (
+    setter: (file: File | null) => void,
+    field: "cvFile" | "proposalFile",
+  ) => {
+    setter(null);
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      return next;
+    });
+    requestAnimationFrame(() => document.getElementById(field)?.focus());
   };
 
   const goForward = () => {
@@ -306,6 +365,7 @@ export function JoinForm({
         return;
       }
       setErrors({});
+      pushJoinStep(2);
       setStep(2);
       return;
     }
@@ -316,7 +376,9 @@ export function JoinForm({
     });
     const nextErrors = result.success ? {} : flattenZodErrors(result.error);
     const cvError =
-      draft.type && requiresCv(draft.type) ? isValidPdf(cvFile, "cv") : null;
+      draft.type && supportsCv(draft.type) && (requiresCv(draft.type) || cvFile)
+        ? isValidPdf(cvFile, "cv")
+        : null;
     if (cvError) nextErrors.cvFile = cvError;
 
     if (Object.keys(nextErrors).length > 0) {
@@ -326,12 +388,25 @@ export function JoinForm({
     }
 
     setErrors({});
+    pushJoinStep(3);
     setStep(3);
   };
 
   const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!draft.type || (requiresCv(draft.type) && !cvFile)) return;
+    // A reload restores the step and draft, but never the selected files.
+    if (!draft.type) {
+      setFormMessage(
+        "Return to the first step and choose what you would like to do.",
+      );
+      return;
+    }
+    if (requiresCv(draft.type) && !cvFile) {
+      setFormMessage(
+        "Files are not kept when the page reloads. Go back to About you and attach your CV again.",
+      );
+      return;
+    }
 
     const result = joinMotivationSchema.safeParse({
       type: draft.type,
@@ -345,7 +420,9 @@ export function JoinForm({
     const nextErrors = result.success ? {} : flattenZodErrors(result.error);
     const proposalError = proposalFile
       ? isValidPdf(proposalFile, "proposal")
-      : null;
+      : requiresProposalFile(draft.type)
+        ? "Upload the required project proposal as a PDF."
+        : null;
     if (proposalError) nextErrors.proposalFile = proposalError;
     if (!turnstileToken)
       nextErrors.turnstileToken = "Complete the anti-spam check.";
@@ -362,7 +439,7 @@ export function JoinForm({
 
     try {
       const cv =
-        requiresCv(draft.type) && cvFile
+        supportsCv(draft.type) && cvFile
           ? await uploadPdf(cvFile, "cv")
           : undefined;
       const proposal = proposalFile
@@ -381,11 +458,6 @@ export function JoinForm({
           institution: draft.institution,
           currentRole: draft.currentRole,
           interests: combinedInterests(draft),
-          scholarUrl: draft.scholarUrl,
-          orcid: draft.orcid,
-          githubUrl: draft.githubUrl,
-          linkedinUrl: draft.linkedinUrl,
-          websiteUrl: draft.websiteUrl,
           motivation: draft.motivation,
           experience: draft.experience,
           proposalTitle: draft.proposalTitle,
@@ -427,6 +499,13 @@ export function JoinForm({
 
   const proposalRequired = draft.type ? requiresProposal(draft.type) : false;
   const cvRequired = draft.type ? requiresCv(draft.type) : true;
+  const cvSupported = draft.type ? supportsCv(draft.type) : true;
+  const proposalFileRequired = draft.type
+    ? requiresProposalFile(draft.type)
+    : false;
+  const selectedInterest = joinInterestTypes.find(
+    ({ value }) => value === draft.type,
+  );
   const selectedProposalCopy =
     draft.type && proposalRequired
       ? proposalCopy[
@@ -479,6 +558,13 @@ export function JoinForm({
       ) : (
         <form className={styles.form} noValidate onSubmit={submit}>
           <ErrorSummary errors={errors} className={styles.errorSummary} />
+
+          {step > 1 && selectedInterest ? (
+            <p className={styles.pathIndicator}>
+              You’re completing the <strong>{selectedInterest.label}</strong>{" "}
+              application.
+            </p>
+          ) : null}
 
           {step === 1 ? (
             <fieldset className={styles.fieldset} disabled={!hydrated}>
@@ -625,53 +711,33 @@ export function JoinForm({
                 />
               </div>
 
-              <div className={styles.linkGrid}>
-                {optionalLinks.map(([key, label, placeholder]) => (
-                  <TextField
-                    key={key}
-                    id={key}
-                    label={label}
-                    value={draft[key]}
-                    error={errors[key]}
-                    onChange={(value) => update(key, value)}
-                    placeholder={placeholder}
-                    type={key === "orcid" ? "text" : "url"}
-                  />
-                ))}
-              </div>
-
-              {cvRequired ? (
-                <div className={styles.field}>
-                  <label className={styles.label} htmlFor="cvFile">
-                    CV (PDF, max 5 MB) *
-                  </label>
-                  <input
+              {cvSupported ? (
+                <>
+                  <FileField
                     id="cvFile"
-                    className={styles.fileInput}
-                    type="file"
-                    accept="application/pdf,.pdf"
+                    label={
+                      cvRequired
+                        ? "CV (PDF, max 5 MB) *"
+                        : "CV (optional PDF, max 5 MB)"
+                    }
+                    hint="The file is not saved in this browser session."
+                    file={cvFile}
+                    required={cvRequired}
+                    error={errors.cvFile}
                     onChange={(event) => changeFile(event, setCvFile, "cvFile")}
-                    aria-describedby={describedBy(
-                      "cvFile",
-                      errors.cvFile,
-                      "cvFile",
-                    )}
-                    aria-invalid={Boolean(errors.cvFile)}
+                    onRemove={() => removeFile(setCvFile, "cvFile")}
                   />
-                  <p id="cvFile-hint" className={styles.hint}>
-                    The file is not saved in this browser session.
-                  </p>
-                  <FieldError
-                    id="cvFile"
-                    message={errors.cvFile}
-                    className={styles.error}
-                  />
-                </div>
+                  {draft.type === "PROJECT_PROPOSAL" ? (
+                    <p className={styles.contextNote}>
+                      In the next step, describe the project and attach the
+                      required proposal PDF.
+                    </p>
+                  ) : null}
+                </>
               ) : (
                 <p className={styles.contextNote}>
-                  A CV is not required for this collaboration path. In the next
-                  step, describe the collaboration and optionally attach a PDF
-                  brief.
+                  In the next step, describe the collaboration and optionally
+                  attach a PDF brief.
                 </p>
               )}
 
@@ -769,35 +835,18 @@ export function JoinForm({
                       className={styles.error}
                     />
                   </div>
-                  <div className={styles.field}>
-                    <label className={styles.label} htmlFor="proposalFile">
-                      {selectedProposalCopy.file}
-                    </label>
-                    <input
-                      id="proposalFile"
-                      className={styles.fileInput}
-                      type="file"
-                      accept="application/pdf,.pdf"
-                      onChange={(event) =>
-                        changeFile(event, setProposalFile, "proposalFile")
-                      }
-                      aria-describedby={describedBy(
-                        "proposalFile",
-                        errors.proposalFile,
-                        "proposalFile",
-                      )}
-                      aria-invalid={Boolean(errors.proposalFile)}
-                    />
-                    <p id="proposalFile-hint" className={styles.hint}>
-                      {selectedProposalCopy.hint} The file is uploaded
-                      privately.
-                    </p>
-                    <FieldError
-                      id="proposalFile"
-                      message={errors.proposalFile}
-                      className={styles.error}
-                    />
-                  </div>
+                  <FileField
+                    id="proposalFile"
+                    label={selectedProposalCopy.file}
+                    hint={`${selectedProposalCopy.hint} The file is uploaded privately.`}
+                    file={proposalFile}
+                    required={proposalFileRequired}
+                    error={errors.proposalFile}
+                    onChange={(event) =>
+                      changeFile(event, setProposalFile, "proposalFile")
+                    }
+                    onRemove={() => removeFile(setProposalFile, "proposalFile")}
+                  />
                 </div>
               ) : null}
 
@@ -860,7 +909,7 @@ export function JoinForm({
                 onClick={() => {
                   setErrors({});
                   setFormMessage("");
-                  setStep(step === 3 ? 2 : 1);
+                  window.history.back();
                 }}
               >
                 Back
@@ -890,6 +939,95 @@ export function JoinForm({
           </p>
         </form>
       )}
+    </div>
+  );
+}
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024 * 1024) {
+    return `${Math.max(1, Math.round(bytes / 1024))} KB`;
+  }
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+/**
+ * A PDF picker that becomes a removable file row once a file is chosen. The
+ * row reflects component state, so it stays accurate after moving between
+ * steps, when the browser would otherwise show an empty picker.
+ */
+function FileField({
+  id,
+  label,
+  hint,
+  file,
+  required,
+  error,
+  onChange,
+  onRemove,
+}: {
+  id: "cvFile" | "proposalFile";
+  label: string;
+  hint: string;
+  file: File | null;
+  required: boolean;
+  error?: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onRemove: () => void;
+}) {
+  return (
+    <div className={styles.field}>
+      {file ? (
+        <span id={`${id}-label`} className={styles.label}>
+          {label}
+        </span>
+      ) : (
+        <label id={`${id}-label`} className={styles.label} htmlFor={id}>
+          {label}
+        </label>
+      )}
+      {file ? (
+        <div
+          id={id}
+          className={styles.selectedFile}
+          role="group"
+          aria-labelledby={`${id}-label`}
+          aria-describedby={describedBy(id, error, id)}
+          data-invalid={Boolean(error)}
+          tabIndex={-1}
+        >
+          <span className={styles.selectedFileName} title={file.name}>
+            {file.name}
+          </span>
+          <span className={styles.selectedFileSize}>
+            {formatFileSize(file.size)}
+          </span>
+          <button
+            className={styles.removeFile}
+            type="button"
+            aria-label={`Remove ${file.name}`}
+            onClick={onRemove}
+          >
+            <svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true">
+              <path d="M4 4l8 8M12 4l-8 8" />
+            </svg>
+          </button>
+        </div>
+      ) : (
+        <input
+          id={id}
+          className={styles.fileInput}
+          type="file"
+          accept="application/pdf,.pdf"
+          required={required}
+          onChange={onChange}
+          aria-describedby={describedBy(id, error, id)}
+          aria-invalid={Boolean(error)}
+        />
+      )}
+      <p id={`${id}-hint`} className={styles.hint}>
+        {hint}
+      </p>
+      <FieldError id={id} message={error} className={styles.error} />
     </div>
   );
 }
