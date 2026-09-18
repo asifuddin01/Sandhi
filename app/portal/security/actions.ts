@@ -1,5 +1,6 @@
 "use server";
 
+import type { RegistrationResponseJSON } from "@simplewebauthn/browser";
 import { APIError } from "better-auth/api";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
@@ -19,7 +20,7 @@ import { confirmPassword, ReauthenticationError } from "@/lib/reauth";
 import {
   recordPasswordChanged,
   recordSecurityEvent,
-  recordTwoFactorChange,
+  recordSignInMethodChange,
 } from "@/lib/security-events";
 
 const signedOut: AuthFormState = {
@@ -289,7 +290,7 @@ export async function confirmTwoFactorSetupAction(
     };
   }
 
-  await recordTwoFactorChange(
+  await recordSignInMethodChange(
     "auth.two_factor_enabled",
     { id: viewer.userId, email: viewer.email, name: viewer.name },
     requestHeaders,
@@ -317,7 +318,7 @@ export async function regenerateBackupCodesAction(
       body: { password },
       headers: requestHeaders,
     });
-    await recordTwoFactorChange(
+    await recordSignInMethodChange(
       "auth.backup_codes_regenerated",
       { id: viewer.userId, email: viewer.email, name: viewer.name },
       requestHeaders,
@@ -373,11 +374,117 @@ export async function disableTwoFactorAction(
       data: { twoFactorEnabled: false },
     }),
   ]);
-  await recordTwoFactorChange(
+  await recordSignInMethodChange(
     "auth.two_factor_disabled",
     { id: viewer.userId, email: viewer.email, name: viewer.name },
     requestHeaders,
   );
   revalidatePath("/portal/security");
   return { status: "success", message: "Two-factor authentication is off." };
+}
+
+export type PasskeyStart =
+  { status: "error"; message: string } | { status: "ready"; options: unknown };
+
+function passkeyError(error: unknown, fallback: string): AuthFormState {
+  const code = apiErrorCode(error);
+  if (code === "PASSKEY_USER_NOT_VERIFIED" && error instanceof APIError) {
+    return { status: "error", message: error.message };
+  }
+  if (code === "CHALLENGE_NOT_FOUND") {
+    return {
+      status: "error",
+      message: "That took too long. Try adding the passkey again.",
+    };
+  }
+  if (code === "SESSION_NOT_FRESH") {
+    return {
+      status: "error",
+      message: "For your safety, sign in again before adding a passkey.",
+    };
+  }
+  if (!(error instanceof APIError)) console.error("[auth] passkey:", error);
+  return { status: "error", message: fallback };
+}
+
+/** Adding a passkey lets it sign in alone, so the password comes first. */
+export async function beginPasskeyRegistrationAction(input: {
+  password: string;
+  name: string;
+}): Promise<PasskeyStart> {
+  const viewer = await getViewer();
+  if (!viewer) return { status: "error", message: signedOut.message! };
+  try {
+    await confirmPassword(viewer, input.password);
+  } catch (error) {
+    if (error instanceof ReauthenticationError) {
+      return { status: "error", message: error.message };
+    }
+    throw error;
+  }
+
+  try {
+    const name = input.name.trim().slice(0, 60);
+    const options = await getAuth().api.generatePasskeyRegistrationOptions({
+      headers: await headers(),
+      query: name ? { name } : {},
+    });
+    return { status: "ready", options };
+  } catch (error) {
+    const problem = passkeyError(error, "A passkey could not be added.");
+    return { status: "error", message: problem.message! };
+  }
+}
+
+export async function finishPasskeyRegistrationAction(input: {
+  response: RegistrationResponseJSON;
+  name: string;
+}): Promise<AuthFormState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  const requestHeaders = await headers();
+  const name = input.name.trim().slice(0, 60) || "Passkey";
+
+  try {
+    await getAuth().api.verifyPasskeyRegistration({
+      body: { response: input.response, name },
+      headers: requestHeaders,
+    });
+  } catch (error) {
+    return passkeyError(error, "The passkey could not be added.");
+  }
+
+  await recordSignInMethodChange(
+    "auth.passkey_added",
+    { id: viewer.userId, email: viewer.email, name: viewer.name },
+    requestHeaders,
+  );
+  revalidatePath("/portal/security");
+  return { status: "success", message: `Passkey “${name}” added.` };
+}
+
+export async function removePasskeyAction(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  const operation = field(formData, "operation");
+  if (!operation.startsWith("remove:")) {
+    return { status: "error", message: "Choose a passkey." };
+  }
+
+  // Scoped to the viewer, so nobody can remove someone else's passkey.
+  const { count } = await getDb().passkey.deleteMany({
+    where: { id: operation.slice("remove:".length), userId: viewer.userId },
+  });
+  if (count > 0) {
+    await recordSignInMethodChange(
+      "auth.passkey_removed",
+      { id: viewer.userId, email: viewer.email, name: viewer.name },
+      await headers(),
+    );
+  }
+  revalidatePath("/portal/security");
+  return { status: "success", message: "Passkey removed." };
 }

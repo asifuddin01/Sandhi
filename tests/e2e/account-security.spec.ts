@@ -61,7 +61,7 @@ async function signInWith(browser: Browser, email: string, userAgent?: string) {
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
   await context.close();
 }
@@ -99,7 +99,7 @@ test("failed sign-ins are recorded, and repeated ones alert the account holder o
     await page.waitForLoadState("networkidle");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Password").fill("not-the-password-at-all");
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
     await expect(
       page.getByText("The email address or password is incorrect."),
     ).toBeVisible();

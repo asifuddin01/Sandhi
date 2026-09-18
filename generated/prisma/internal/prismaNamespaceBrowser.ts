@@ -55,6 +55,7 @@ export const ModelName = {
   Session: 'Session',
   Account: 'Account',
   TwoFactor: 'TwoFactor',
+  Passkey: 'Passkey',
   Verification: 'Verification',
   Invitation: 'Invitation',
   Member: 'Member',
@@ -172,6 +173,23 @@ export const TwoFactorScalarFieldEnum = {
 } as const
 
 export type TwoFactorScalarFieldEnum = (typeof TwoFactorScalarFieldEnum)[keyof typeof TwoFactorScalarFieldEnum]
+
+
+export const PasskeyScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  publicKey: 'publicKey',
+  userId: 'userId',
+  credentialID: 'credentialID',
+  counter: 'counter',
+  deviceType: 'deviceType',
+  backedUp: 'backedUp',
+  transports: 'transports',
+  aaguid: 'aaguid',
+  createdAt: 'createdAt'
+} as const
+
+export type PasskeyScalarFieldEnum = (typeof PasskeyScalarFieldEnum)[keyof typeof PasskeyScalarFieldEnum]
 
 
 export const VerificationScalarFieldEnum = {

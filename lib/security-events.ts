@@ -36,7 +36,9 @@ export type SecurityAction =
   | "auth.two_factor_disabled"
   | "auth.two_factor_failed"
   | "auth.backup_codes_regenerated"
-  | "auth.backup_code_used";
+  | "auth.backup_code_used"
+  | "auth.passkey_added"
+  | "auth.passkey_removed";
 
 export type SignInFailure = "password" | "unverified" | "suspended";
 
@@ -408,10 +410,18 @@ const twoFactorNotices = {
     subject: "New backup codes for your SANDHI account",
     line: "New backup codes were created for your account; the old ones no longer work",
   },
+  "auth.passkey_added": {
+    subject: "A passkey was added to your SANDHI account",
+    line: "A passkey was added to your account, and it can now sign in without your password",
+  },
+  "auth.passkey_removed": {
+    subject: "A passkey was removed from your SANDHI account",
+    line: "A passkey was removed from your account",
+  },
 } as const;
 
-/** Changes a person makes to their own two-factor authentication. */
-export async function recordTwoFactorChange(
+/** Changes a person makes to how they sign in: two-factor and passkeys. */
+export async function recordSignInMethodChange(
   action: keyof typeof twoFactorNotices,
   user: AccountHolder,
   headers: Headers | undefined,

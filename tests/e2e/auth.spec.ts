@@ -23,7 +23,7 @@ async function signIn(page: Page, email: string, next?: string) {
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
 }
 
 test.describe("sign-in and administration access", () => {
@@ -40,7 +40,7 @@ test.describe("sign-in and administration access", () => {
 
     await page.getByLabel("Email").fill("fixture-admin@sandhi.test");
     await page.getByLabel("Password").fill(PASSWORD);
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
 
     // Staff finish with a code from their authenticator app.
     await expect(page).toHaveURL(/\/portal\/two-factor\?next=%2Fadmin$/u, {
@@ -69,7 +69,7 @@ test.describe("sign-in and administration access", () => {
     await page.waitForLoadState("networkidle");
     await page.getByLabel("Email").fill("fixture-member@sandhi.test");
     await page.getByLabel("Password").fill("not-the-password-at-all");
-    await page.getByRole("button", { name: "Sign in" }).click();
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
 
     await expect(
       page.getByText("The email address or password is incorrect."),

@@ -2,6 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import {
+  PasskeyManager,
+  type PasskeyRow,
+} from "@/components/portal/PasskeyForms";
+import {
   ChangePasswordForm,
   SessionList,
   TwoFactorSection,
@@ -40,6 +44,8 @@ const eventLabels: Record<string, string> = {
   "auth.two_factor_failed": "Incorrect two-factor code",
   "auth.backup_codes_regenerated": "New backup codes created",
   "auth.backup_code_used": "Signed in with a backup code",
+  "auth.passkey_added": "Passkey added",
+  "auth.passkey_removed": "Passkey removed",
 };
 
 function detail(diff: unknown): string {
@@ -59,7 +65,7 @@ export default async function AccountSecurityPage({
   const { setup } = await searchParams;
   const twoFactorRequired = can(viewer.role, "admin:access");
   const db = getDb();
-  const [sessions, events] = await Promise.all([
+  const [sessions, events, passkeys] = await Promise.all([
     db.session.findMany({
       where: { userId: viewer.userId, expiresAt: { gt: new Date() } },
       orderBy: { updatedAt: "desc" },
@@ -77,7 +83,18 @@ export default async function AccountSecurityPage({
       take: 12,
       select: { id: true, action: true, diff: true, createdAt: true },
     }),
+    db.passkey.findMany({
+      where: { userId: viewer.userId },
+      orderBy: { createdAt: "asc" },
+      select: { id: true, name: true, createdAt: true, backedUp: true },
+    }),
   ]);
+  const passkeyRows: PasskeyRow[] = passkeys.map((passkey) => ({
+    id: passkey.id,
+    name: passkey.name ?? "Passkey",
+    added: passkey.createdAt ? timeFormat.format(passkey.createdAt) : "",
+    synced: passkey.backedUp,
+  }));
 
   const rows: SessionRow[] = sessions.map((session) => ({
     id: session.id,
@@ -126,6 +143,16 @@ export default async function AccountSecurityPage({
           enabled={viewer.twoFactorEnabled}
           required={twoFactorRequired}
         />
+      </section>
+
+      <section className={styles.section} aria-labelledby="passkeys-heading">
+        <h2 id="passkeys-heading">Passkeys</h2>
+        <p className={styles.hint}>
+          A passkey signs you in with your fingerprint, face, or device PIN
+          instead of your password and code. It cannot be phished, because it
+          works only on this site.
+        </p>
+        <PasskeyManager passkeys={passkeyRows} />
       </section>
 
       <section className={styles.section} aria-labelledby="sessions-heading">

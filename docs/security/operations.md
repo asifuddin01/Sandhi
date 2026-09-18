@@ -69,6 +69,7 @@ Rotate immediately if a secret may have leaked (a laptop is lost, a key is paste
 - Every Owner, Admin, and Reviewer must set up an authenticator app (Portal → Account security) before administration opens. Members may choose to.
 - **Lost phone:** sign in with one of the ten backup codes, then create new codes and set up the new phone.
 - **Lost phone and backup codes:** another Owner or Admin opens Admin → Members → the person → Reset two-factor authentication (their own password and the person's name are required). The person is signed out everywhere, emailed, and sets it up again at next sign-in.
+- **Passkeys** (Portal → Account security) are optional and sign in without the password or code. If a device with a passkey is lost, remove the passkey from Account security on another device, or reset the person's two-factor authentication and ask them to remove it.
 - **The only Owner lost both:** in the Neon SQL editor, run `delete from "twoFactor" where "userId" = (select id from "user" where email = 'owner@…'); update "user" set "twoFactorEnabled" = false where email = 'owner@…';` then sign in and set it up again straight away. Record why in the audit notes.
 
 ## 9. Disaster recovery

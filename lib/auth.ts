@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 
+import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
@@ -20,6 +21,7 @@ import {
 } from "@/lib/forms-services";
 import { breachedPasswordProblem } from "@/lib/breached-passwords";
 import { authSecretProblem } from "@/lib/production-config";
+import { requireUserVerification } from "@/lib/passkey-policy";
 import { checkRateLimit } from "@/lib/ratelimit";
 import {
   recordPasswordChanged,
@@ -51,6 +53,17 @@ const rateLimitedPaths = new Set([
   "/two-factor/verify-backup-code",
   "/two-factor/generate-backup-codes",
 ]);
+
+/** Every passkey request goes through the portal's server actions. */
+const passkeyPaths = [
+  "/passkey/generate-register-options",
+  "/passkey/verify-registration",
+  "/passkey/generate-authenticate-options",
+  "/passkey/verify-authentication",
+  "/passkey/list-user-passkeys",
+  "/passkey/update-passkey",
+  "/passkey/delete-passkey",
+];
 
 /** An authenticator code works once, however long its window lasts. */
 const TOTP_REUSE_WINDOW_MS = 90 * 1000;
@@ -160,6 +173,10 @@ function createAuth() {
     throw new ServiceConfigurationError("Better Auth", secretProblem);
   }
 
+  const siteURL = process.env.BETTER_AUTH_URL
+    ? new URL(process.env.BETTER_AUTH_URL)
+    : null;
+
   return betterAuth({
     appName: "SANDHI Research Lab",
     baseURL: process.env.BETTER_AUTH_URL,
@@ -239,6 +256,8 @@ function createAuth() {
       "/two-factor/get-totp-uri",
       "/two-factor/send-otp",
       "/two-factor/verify-otp",
+      // Passkeys need the password to add one; the portal checks it first.
+      ...passkeyPaths,
     ],
     hooks: {
       before: createAuthMiddleware(async (context) => {
@@ -376,6 +395,30 @@ function createAuth() {
       // challenge allows five tries; ten failures lock two-factor sign-in
       // for fifteen minutes.
       twoFactor({ issuer: "SANDHI Research Lab" }),
+      passkey({
+        rpName: "SANDHI Research Lab",
+        // Production pins the site's own address; development uses the
+        // request's (localhost), since WebAuthn refuses IP addresses.
+        ...(siteURL ? { rpID: siteURL.hostname, origin: siteURL.origin } : {}),
+        authenticatorSelection: {
+          residentKey: "required",
+          userVerification: "required",
+        },
+        registration: {
+          afterVerification: ({ verification }) => {
+            requireUserVerification(
+              verification.registrationInfo?.userVerified,
+            );
+          },
+        },
+        authentication: {
+          afterVerification: ({ verification }) => {
+            requireUserVerification(
+              verification.authenticationInfo.userVerified,
+            );
+          },
+        },
+      }),
       nextCookies(),
     ],
   });

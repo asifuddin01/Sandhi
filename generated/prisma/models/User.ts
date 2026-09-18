@@ -246,6 +246,7 @@ export type UserWhereInput = {
   invitationsAccepted?: Prisma.InvitationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   twoFactors?: Prisma.TwoFactorListRelationFilter
+  passkeys?: Prisma.PasskeyListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -269,6 +270,7 @@ export type UserOrderByWithRelationInput = {
   invitationsAccepted?: Prisma.InvitationOrderByRelationAggregateInput
   auditLogs?: Prisma.AuditLogOrderByRelationAggregateInput
   twoFactors?: Prisma.TwoFactorOrderByRelationAggregateInput
+  passkeys?: Prisma.PasskeyOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -295,6 +297,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   invitationsAccepted?: Prisma.InvitationListRelationFilter
   auditLogs?: Prisma.AuditLogListRelationFilter
   twoFactors?: Prisma.TwoFactorListRelationFilter
+  passkeys?: Prisma.PasskeyListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -354,6 +357,7 @@ export type UserCreateInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -377,6 +381,7 @@ export type UserUncheckedCreateInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -400,6 +405,7 @@ export type UserUpdateInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -423,6 +429,7 @@ export type UserUncheckedUpdateInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -603,6 +610,20 @@ export type UserUpdateOneRequiredWithoutTwoFactorsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutTwoFactorsInput, Prisma.UserUpdateWithoutTwoFactorsInput>, Prisma.UserUncheckedUpdateWithoutTwoFactorsInput>
 }
 
+export type UserCreateNestedOneWithoutPasskeysInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPasskeysInput, Prisma.UserUncheckedCreateWithoutPasskeysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasskeysInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPasskeysNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPasskeysInput, Prisma.UserUncheckedCreateWithoutPasskeysInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPasskeysInput
+  upsert?: Prisma.UserUpsertWithoutPasskeysInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPasskeysInput, Prisma.UserUpdateWithoutPasskeysInput>, Prisma.UserUncheckedUpdateWithoutPasskeysInput>
+}
+
 export type UserCreateNestedOneWithoutInvitationsSentInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutInvitationsSentInput, Prisma.UserUncheckedCreateWithoutInvitationsSentInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutInvitationsSentInput
@@ -685,6 +706,7 @@ export type UserCreateWithoutSessionsInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -707,6 +729,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -734,6 +757,7 @@ export type UserCreateWithoutImpersonatedSessionsInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutImpersonatedSessionsInput = {
@@ -756,6 +780,7 @@ export type UserUncheckedCreateWithoutImpersonatedSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutImpersonatedSessionsInput = {
@@ -794,6 +819,7 @@ export type UserUpdateWithoutSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -816,6 +842,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutImpersonatedSessionsInput = {
@@ -849,6 +876,7 @@ export type UserUpdateWithoutImpersonatedSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutImpersonatedSessionsInput = {
@@ -871,6 +899,7 @@ export type UserUncheckedUpdateWithoutImpersonatedSessionsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -893,6 +922,7 @@ export type UserCreateWithoutAccountsInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -915,6 +945,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -953,6 +984,7 @@ export type UserUpdateWithoutAccountsInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -975,6 +1007,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutTwoFactorsInput = {
@@ -997,6 +1030,7 @@ export type UserCreateWithoutTwoFactorsInput = {
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutTwoFactorsInput = {
@@ -1019,6 +1053,7 @@ export type UserUncheckedCreateWithoutTwoFactorsInput = {
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutTwoFactorsInput = {
@@ -1057,6 +1092,7 @@ export type UserUpdateWithoutTwoFactorsInput = {
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutTwoFactorsInput = {
@@ -1079,6 +1115,115 @@ export type UserUncheckedUpdateWithoutTwoFactorsInput = {
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPasskeysInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  twoFactorEnabled?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  impersonatedSessions?: Prisma.SessionCreateNestedManyWithoutImpersonatorInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberCreateNestedOneWithoutUserInput
+  invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
+  invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
+  auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
+  twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPasskeysInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  role?: string
+  banned?: boolean
+  banReason?: string | null
+  banExpires?: Date | string | null
+  twoFactorEnabled?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  impersonatedSessions?: Prisma.SessionUncheckedCreateNestedManyWithoutImpersonatorInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  member?: Prisma.MemberUncheckedCreateNestedOneWithoutUserInput
+  invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
+  invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
+  auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
+  twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPasskeysInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPasskeysInput, Prisma.UserUncheckedCreateWithoutPasskeysInput>
+}
+
+export type UserUpsertWithoutPasskeysInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPasskeysInput, Prisma.UserUncheckedUpdateWithoutPasskeysInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPasskeysInput, Prisma.UserUncheckedCreateWithoutPasskeysInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPasskeysInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPasskeysInput, Prisma.UserUncheckedUpdateWithoutPasskeysInput>
+}
+
+export type UserUpdateWithoutPasskeysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  impersonatedSessions?: Prisma.SessionUpdateManyWithoutImpersonatorNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUpdateOneWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
+  auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
+  twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPasskeysInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  banned?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  banReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  banExpires?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  twoFactorEnabled?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  impersonatedSessions?: Prisma.SessionUncheckedUpdateManyWithoutImpersonatorNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  member?: Prisma.MemberUncheckedUpdateOneWithoutUserNestedInput
+  invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
+  invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
+  auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
+  twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvitationsSentInput = {
@@ -1101,6 +1246,7 @@ export type UserCreateWithoutInvitationsSentInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsSentInput = {
@@ -1123,6 +1269,7 @@ export type UserUncheckedCreateWithoutInvitationsSentInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsSentInput = {
@@ -1150,6 +1297,7 @@ export type UserCreateWithoutInvitationsAcceptedInput = {
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
@@ -1172,6 +1320,7 @@ export type UserUncheckedCreateWithoutInvitationsAcceptedInput = {
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvitationsAcceptedInput = {
@@ -1210,6 +1359,7 @@ export type UserUpdateWithoutInvitationsSentInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsSentInput = {
@@ -1232,6 +1382,7 @@ export type UserUncheckedUpdateWithoutInvitationsSentInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserUpsertWithoutInvitationsAcceptedInput = {
@@ -1265,6 +1416,7 @@ export type UserUpdateWithoutInvitationsAcceptedInput = {
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
@@ -1287,6 +1439,7 @@ export type UserUncheckedUpdateWithoutInvitationsAcceptedInput = {
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMemberInput = {
@@ -1309,6 +1462,7 @@ export type UserCreateWithoutMemberInput = {
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMemberInput = {
@@ -1331,6 +1485,7 @@ export type UserUncheckedCreateWithoutMemberInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   auditLogs?: Prisma.AuditLogUncheckedCreateNestedManyWithoutActorInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMemberInput = {
@@ -1369,6 +1524,7 @@ export type UserUpdateWithoutMemberInput = {
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMemberInput = {
@@ -1391,6 +1547,7 @@ export type UserUncheckedUpdateWithoutMemberInput = {
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   auditLogs?: Prisma.AuditLogUncheckedUpdateManyWithoutActorNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAuditLogsInput = {
@@ -1413,6 +1570,7 @@ export type UserCreateWithoutAuditLogsInput = {
   invitationsSent?: Prisma.InvitationCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationCreateNestedManyWithoutAcceptedByInput
   twoFactors?: Prisma.TwoFactorCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAuditLogsInput = {
@@ -1435,6 +1593,7 @@ export type UserUncheckedCreateWithoutAuditLogsInput = {
   invitationsSent?: Prisma.InvitationUncheckedCreateNestedManyWithoutInvitedByInput
   invitationsAccepted?: Prisma.InvitationUncheckedCreateNestedManyWithoutAcceptedByInput
   twoFactors?: Prisma.TwoFactorUncheckedCreateNestedManyWithoutUserInput
+  passkeys?: Prisma.PasskeyUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAuditLogsInput = {
@@ -1473,6 +1632,7 @@ export type UserUpdateWithoutAuditLogsInput = {
   invitationsSent?: Prisma.InvitationUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUpdateManyWithoutAcceptedByNestedInput
   twoFactors?: Prisma.TwoFactorUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAuditLogsInput = {
@@ -1495,6 +1655,7 @@ export type UserUncheckedUpdateWithoutAuditLogsInput = {
   invitationsSent?: Prisma.InvitationUncheckedUpdateManyWithoutInvitedByNestedInput
   invitationsAccepted?: Prisma.InvitationUncheckedUpdateManyWithoutAcceptedByNestedInput
   twoFactors?: Prisma.TwoFactorUncheckedUpdateManyWithoutUserNestedInput
+  passkeys?: Prisma.PasskeyUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1510,6 +1671,7 @@ export type UserCountOutputType = {
   invitationsAccepted: number
   auditLogs: number
   twoFactors: number
+  passkeys: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1520,6 +1682,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   invitationsAccepted?: boolean | UserCountOutputTypeCountInvitationsAcceptedArgs
   auditLogs?: boolean | UserCountOutputTypeCountAuditLogsArgs
   twoFactors?: boolean | UserCountOutputTypeCountTwoFactorsArgs
+  passkeys?: boolean | UserCountOutputTypeCountPasskeysArgs
 }
 
 /**
@@ -1581,6 +1744,13 @@ export type UserCountOutputTypeCountTwoFactorsArgs<ExtArgs extends runtime.Types
   where?: Prisma.TwoFactorWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountPasskeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.PasskeyWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1603,6 +1773,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   twoFactors?: boolean | Prisma.User$twoFactorsArgs<ExtArgs>
+  passkeys?: boolean | Prisma.User$passkeysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1661,6 +1832,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   invitationsAccepted?: boolean | Prisma.User$invitationsAcceptedArgs<ExtArgs>
   auditLogs?: boolean | Prisma.User$auditLogsArgs<ExtArgs>
   twoFactors?: boolean | Prisma.User$twoFactorsArgs<ExtArgs>
+  passkeys?: boolean | Prisma.User$passkeysArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1677,6 +1849,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     invitationsAccepted: Prisma.$InvitationPayload<ExtArgs>[]
     auditLogs: Prisma.$AuditLogPayload<ExtArgs>[]
     twoFactors: Prisma.$TwoFactorPayload<ExtArgs>[]
+    passkeys: Prisma.$PasskeyPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2093,6 +2266,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   invitationsAccepted<T extends Prisma.User$invitationsAcceptedArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$invitationsAcceptedArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   auditLogs<T extends Prisma.User$auditLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$auditLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AuditLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   twoFactors<T extends Prisma.User$twoFactorsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$twoFactorsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TwoFactorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  passkeys<T extends Prisma.User$passkeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$passkeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PasskeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2711,6 +2885,30 @@ export type User$twoFactorsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.TwoFactorScalarFieldEnum | Prisma.TwoFactorScalarFieldEnum[]
+}
+
+/**
+ * User.passkeys
+ */
+export type User$passkeysArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Passkey
+   */
+  select?: Prisma.PasskeySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Passkey
+   */
+  omit?: Prisma.PasskeyOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PasskeyInclude<ExtArgs> | null
+  where?: Prisma.PasskeyWhereInput
+  orderBy?: Prisma.PasskeyOrderByWithRelationInput | Prisma.PasskeyOrderByWithRelationInput[]
+  cursor?: Prisma.PasskeyWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.PasskeyScalarFieldEnum | Prisma.PasskeyScalarFieldEnum[]
 }
 
 /**

@@ -80,7 +80,10 @@ async function invitedAccount(
 async function setUpTwoFactor(page: Page) {
   await page.goto("/portal/security");
   await page.waitForLoadState("networkidle");
-  await page.getByLabel("Your password").fill(PASSWORD);
+  await page
+    .getByRole("region", { name: "Two-factor authentication" })
+    .getByLabel("Your password")
+    .fill(PASSWORD);
   await page
     .getByRole("button", { name: "Set up two-factor authentication" })
     .click();
@@ -125,7 +128,7 @@ async function passwordStep(page: Page, email: string, next = "/admin") {
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByRole("button", { name: "Sign in" }).click();
+  await page.getByRole("button", { name: "Sign in", exact: true }).click();
   await expect(page).toHaveURL(/\/portal\/two-factor/u, { timeout: 30_000 });
   await page.waitForLoadState("networkidle");
 }
@@ -308,7 +311,11 @@ test("members may turn two-factor authentication on and off", async ({
   const account = await invitedAccount(page, "MEMBER");
   try {
     await setUpTwoFactor(page);
-    await page.getByLabel("Your password").last().fill(PASSWORD);
+    await page
+      .getByRole("region", { name: "Two-factor authentication" })
+      .getByLabel("Your password")
+      .last()
+      .fill(PASSWORD);
     await page
       .getByRole("button", { name: "Turn off two-factor authentication" })
       .click();

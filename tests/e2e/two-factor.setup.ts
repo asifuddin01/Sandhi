@@ -48,13 +48,18 @@ setup(
         await page.waitForLoadState("networkidle");
         await page.getByLabel("Email").fill(email);
         await page.getByLabel("Password").fill(PASSWORD);
-        await page.getByRole("button", { name: "Sign in" }).click();
+        await page
+          .getByRole("button", { name: "Sign in", exact: true })
+          .click();
         await expect(page).toHaveURL(/\/portal\/security$/u, {
           timeout: 30_000,
         });
         await page.waitForLoadState("networkidle");
 
-        await page.getByLabel("Your password").fill(PASSWORD);
+        await page
+          .getByRole("region", { name: "Two-factor authentication" })
+          .getByLabel("Your password")
+          .fill(PASSWORD);
         await page
           .getByRole("button", { name: "Set up two-factor authentication" })
           .click();

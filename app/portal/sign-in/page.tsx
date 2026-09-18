@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 import { SignInForm } from "@/components/portal/AuthForms";
+import { PasskeySignIn } from "@/components/portal/PasskeyForms";
 import styles from "@/components/portal/Portal.module.css";
 import { getViewer } from "@/lib/authz";
 import { safeAuthenticatedPath } from "@/lib/permissions";
@@ -32,6 +33,7 @@ export default async function SignInPage({
         </p>
       </header>
       <SignInForm next={destination} />
+      <PasskeySignIn next={destination} />
     </div>
   );
 }

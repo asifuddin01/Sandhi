@@ -39,6 +39,11 @@ export type Account = Prisma.AccountModel
  */
 export type TwoFactor = Prisma.TwoFactorModel
 /**
+ * Model Passkey
+ * Better Auth passkey plugin: WebAuthn credentials (public keys only).
+ */
+export type Passkey = Prisma.PasskeyModel
+/**
  * Model Verification
  * 
  */

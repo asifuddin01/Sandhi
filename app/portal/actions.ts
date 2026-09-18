@@ -1,5 +1,6 @@
 "use server";
 
+import type { AuthenticationResponseJSON } from "@simplewebauthn/browser";
 import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
@@ -287,4 +288,66 @@ export async function acceptInvitationAction(
   }
 
   redirect("/portal");
+}
+
+export type PasskeySignInStart =
+  { status: "error"; message: string } | { status: "ready"; options: unknown };
+
+const passkeySignInMessages: Record<string, string> = {
+  PASSKEY_NOT_FOUND:
+    "This passkey is not registered for SANDHI. Sign in with your password.",
+  AUTHENTICATION_FAILED: "That passkey could not be verified.",
+  CHALLENGE_NOT_FOUND: "That took too long. Try again.",
+  // A suspended member's session is refused.
+  UNABLE_TO_CREATE_SESSION:
+    "Sign-in did not complete. If this continues, contact an administrator.",
+};
+
+export async function beginPasskeySignInAction(): Promise<PasskeySignInStart> {
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders);
+  if (blocked) return { status: "error", message: blocked.message! };
+  try {
+    const options = await getAuth().api.generatePasskeyAuthenticationOptions({
+      headers: requestHeaders,
+    });
+    return { status: "ready", options };
+  } catch (error) {
+    console.error("[auth] passkey sign-in options failed:", error);
+    return { status: "error", message: unavailable.message! };
+  }
+}
+
+export async function finishPasskeySignInAction(input: {
+  response: AuthenticationResponseJSON;
+  next: string;
+}): Promise<AuthFormState> {
+  const next = safeAuthenticatedPath(input.next);
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders);
+  if (blocked) return blocked;
+
+  try {
+    await getAuth().api.verifyPasskeyAuthentication({
+      body: { response: input.response },
+      headers: requestHeaders,
+    });
+  } catch (error) {
+    if (error instanceof APIError) {
+      const code = (error.body as { code?: unknown } | undefined)?.code;
+      if (code === "PASSKEY_USER_NOT_VERIFIED") {
+        return { status: "error", message: error.message };
+      }
+      return {
+        status: "error",
+        message:
+          (typeof code === "string" && passkeySignInMessages[code]) ||
+          "Passkey sign-in did not complete. Sign in with your password.",
+      };
+    }
+    console.error("[auth] passkey sign-in failed:", error);
+    return unavailable;
+  }
+
+  redirect(next);
 }
