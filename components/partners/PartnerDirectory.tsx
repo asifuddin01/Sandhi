@@ -50,7 +50,8 @@ function PartnerCard({ partner }: { partner: PublicPartner }) {
 }
 
 export function PartnerDirectory({ partners }: { partners: PublicPartner[] }) {
-  if (partners.length === 0) return <EmptyState>{PARTNER_EMPTY_COPY}</EmptyState>;
+  if (partners.length === 0)
+    return <EmptyState>{PARTNER_EMPTY_COPY}</EmptyState>;
 
   return (
     <div className={styles.groups}>

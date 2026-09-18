@@ -13,6 +13,8 @@ import { ScrollRestoration } from "@/components/navigation/ScrollRestoration";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { siteIdentity } from "@/content/strings";
+import { getSiteSettings } from "@/lib/site-settings";
+import { hiddenSectionPaths } from "@/lib/site-settings-schema";
 import { themeMetadataColors } from "@/styles/tokens";
 
 import "./globals.css";
@@ -91,6 +93,8 @@ export default async function RootLayout({
   // Set by proxy.ts for every page request; the policy only allows scripts
   // carrying this nonce.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
+  const settings = await getSiteSettings();
+  const hiddenPaths = hiddenSectionPaths(settings);
 
   return (
     <html
@@ -112,11 +116,16 @@ export default async function RootLayout({
         <a className="skip-link" href="#main-content">
           Skip to content
         </a>
-        <SiteHeader />
+        {settings.maintenanceBanner ? (
+          <aside className="site-notice" aria-label="Site notice">
+            <p>{settings.maintenanceBanner}</p>
+          </aside>
+        ) : null}
+        <SiteHeader hiddenPaths={hiddenPaths} />
         <main id="main-content" tabIndex={-1}>
           <PageTransition>{children}</PageTransition>
         </main>
-        <SiteFooter />
+        <SiteFooter hiddenPaths={hiddenPaths} social={settings.social} />
       </body>
     </html>
   );

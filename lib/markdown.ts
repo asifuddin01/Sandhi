@@ -67,7 +67,8 @@ function rehypeFigureCaptions() {
         );
         const image = meaningful.length === 1 ? meaningful[0] : undefined;
         const title =
-          image?.tagName === "img" && typeof image.properties?.title === "string"
+          image?.tagName === "img" &&
+          typeof image.properties?.title === "string"
             ? image.properties.title.trim()
             : "";
 

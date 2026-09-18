@@ -1,6 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3100";
+const chrome = { ...devices["Desktop Chrome"], channel: "chrome" };
+const siteWideSpecs = /admin-settings\.spec\.ts$/u;
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -10,6 +12,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : undefined,
   reporter: process.env.CI ? "github" : "list",
   outputDir: "test-results",
+  // Every worker shares one development server that compiles routes on first
+  // use and hashes passwords deliberately slowly.
+  expect: { timeout: 10_000 },
   use: {
     baseURL,
     trace: "on-first-retry",
@@ -26,10 +31,16 @@ export default defineConfig({
   projects: [
     {
       name: "chrome",
-      use: {
-        ...devices["Desktop Chrome"],
-        channel: "chrome",
-      },
+      testIgnore: siteWideSpecs,
+      use: chrome,
+    },
+    {
+      // These change what every public page shows (notices, hidden
+      // sections), so they run alone once everything else has finished.
+      name: "chrome-site-wide",
+      testMatch: siteWideSpecs,
+      dependencies: ["chrome"],
+      use: chrome,
     },
   ],
 });

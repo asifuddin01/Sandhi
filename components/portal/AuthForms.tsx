@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -11,6 +10,7 @@ import {
   signInAction,
   type AuthFormState,
 } from "@/app/portal/actions";
+import { useFormAction } from "@/components/forms/useFormAction";
 
 import styles from "./Portal.module.css";
 
@@ -43,10 +43,10 @@ function FormMessage({ state }: { state: AuthFormState }) {
 }
 
 export function SignInForm({ next }: { next: string }) {
-  const [state, action] = useActionState(signInAction, idle);
+  const { state, formAction, onSubmit } = useFormAction(signInAction, idle);
 
   return (
-    <form className={styles.form} action={action}>
+    <form className={styles.form} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="next" value={next} />
       <div className={styles.field}>
         <label htmlFor="email">Email</label>
@@ -78,10 +78,13 @@ export function SignInForm({ next }: { next: string }) {
 }
 
 export function RequestResetForm() {
-  const [state, action] = useActionState(requestPasswordResetAction, idle);
+  const { state, formAction, onSubmit } = useFormAction(
+    requestPasswordResetAction,
+    idle,
+  );
 
   return (
-    <form className={styles.form} action={action}>
+    <form className={styles.form} action={formAction} onSubmit={onSubmit}>
       <div className={styles.field}>
         <label htmlFor="email">Email</label>
         <input
@@ -136,7 +139,10 @@ function NewPasswordFields({ autoFocus = false }: { autoFocus?: boolean }) {
 }
 
 export function ResetPasswordForm({ token }: { token: string }) {
-  const [state, action] = useActionState(resetPasswordAction, idle);
+  const { state, formAction, onSubmit } = useFormAction(
+    resetPasswordAction,
+    idle,
+  );
 
   if (state.status === "success") {
     return (
@@ -150,7 +156,7 @@ export function ResetPasswordForm({ token }: { token: string }) {
   }
 
   return (
-    <form className={styles.form} action={action}>
+    <form className={styles.form} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="token" value={token} />
       <NewPasswordFields autoFocus />
       <FormMessage state={state} />
@@ -168,10 +174,13 @@ export function AcceptInvitationForm({
   email: string;
   suggestedName: string;
 }) {
-  const [state, action] = useActionState(acceptInvitationAction, idle);
+  const { state, formAction, onSubmit } = useFormAction(
+    acceptInvitationAction,
+    idle,
+  );
 
   return (
-    <form className={styles.form} action={action}>
+    <form className={styles.form} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="token" value={token} />
       <div className={styles.field}>
         <span className={styles.label}>Email</span>

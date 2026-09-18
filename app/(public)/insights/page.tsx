@@ -3,10 +3,7 @@ import Link from "next/link";
 
 import { InsightEntry } from "@/components/entries/InsightEntry";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
-import {
-  INSIGHT_KIND_LABELS,
-  INSIGHT_KINDS,
-} from "@/lib/insight-content";
+import { INSIGHT_KIND_LABELS, INSIGHT_KINDS } from "@/lib/insight-content";
 import { getPublicInsights } from "@/lib/public-insights";
 
 import styles from "../ContentPages.module.css";

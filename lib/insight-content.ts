@@ -83,7 +83,8 @@ export function generateInsightBibtex(input: {
   authors: readonly string[];
   publishedAt: Date | null;
 }): string {
-  const year = input.publishedAt?.getUTCFullYear() ?? new Date().getUTCFullYear();
+  const year =
+    input.publishedAt?.getUTCFullYear() ?? new Date().getUTCFullYear();
   const fields = [
     input.authors.length > 0
       ? `  author = {${escapeLatex(input.authors.join(" and "))}}`

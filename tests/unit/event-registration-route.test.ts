@@ -5,6 +5,7 @@ const mocks = vi.hoisted(() => ({
   registrationCreate: vi.fn(),
   checkRateLimit: vi.fn(),
   verifyTurnstile: vi.fn(),
+  isSectionEnabled: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -21,6 +22,10 @@ vi.mock("@/lib/ratelimit", () => ({
 
 vi.mock("@/lib/turnstile", () => ({
   verifyTurnstile: mocks.verifyTurnstile,
+}));
+
+vi.mock("@/lib/site-settings", () => ({
+  isSectionEnabled: mocks.isSectionEnabled,
 }));
 
 import { POST } from "@/app/api/events/[slug]/register/route";
@@ -48,6 +53,7 @@ const validBody = {
 describe("event registration route", () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mocks.isSectionEnabled.mockResolvedValue(true);
     mocks.checkRateLimit.mockResolvedValue({
       allowed: true,
       remaining: 4,
@@ -103,6 +109,20 @@ describe("event registration route", () => {
 
     expect(response.status).toBe(403);
     expect(mocks.checkRateLimit).not.toHaveBeenCalled();
+    expect(mocks.registrationCreate).not.toHaveBeenCalled();
+  });
+
+  it("refuses every registration while Events is switched off", async () => {
+    mocks.isSectionEnabled.mockResolvedValue(false);
+
+    const response = await POST(request(validBody), {
+      params: Promise.resolve({ slug: "public-talk" }),
+    });
+
+    expect(response.status).toBe(404);
+    expect(mocks.isSectionEnabled).toHaveBeenCalledWith("events");
+    expect(mocks.checkRateLimit).not.toHaveBeenCalled();
+    expect(mocks.eventFindFirst).not.toHaveBeenCalled();
     expect(mocks.registrationCreate).not.toHaveBeenCalled();
   });
 

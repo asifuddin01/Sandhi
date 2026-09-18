@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
 import { EventTime } from "@/components/events/EventTime";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
 import { emptyStateCopy } from "@/content/strings";
 import { type PublicEvent, getPublicEvents } from "@/lib/public-events";
+import { isSectionEnabled } from "@/lib/site-settings";
 
 import styles from "./events.module.css";
 
@@ -88,6 +90,7 @@ export function EventList({
 }
 
 export default async function EventsPage() {
+  if (!(await isSectionEnabled("events"))) notFound();
   const { upcoming, past } = await getPublicEvents();
   const hasEvents = upcoming.length > 0 || past.length > 0;
 

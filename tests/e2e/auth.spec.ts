@@ -12,6 +12,9 @@ async function signIn(page: Page, email: string, next?: string) {
       ? `/portal/sign-in?next=${encodeURIComponent(next)}`
       : "/portal/sign-in",
   );
+  // In development, a route compiling for the first time can reload the page
+  // mid-typing; wait until it has settled.
+  await page.waitForLoadState("networkidle");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
@@ -54,6 +57,10 @@ test.describe("sign-in and administration access", () => {
     await expect(
       page.getByText("The email address or password is incorrect."),
     ).toBeVisible();
+    // The address stays filled in so only the password needs retyping.
+    await expect(page.getByLabel("Email")).toHaveValue(
+      "fixture-member@sandhi.test",
+    );
     await page.goto("/portal");
     await expect(page).toHaveURL(/\/portal\/sign-in/u);
   });
@@ -138,6 +145,88 @@ test.describe("sign-in and administration access", () => {
         ),
       ).toBeVisible();
     }
+  });
+});
+
+test.describe("only real, verified accounts can sign in", () => {
+  test.skip(
+    process.env.E2E_FIXTURES_READY !== "true" || !process.env.DATABASE_URL,
+    "Needs the fixture database and DATABASE_URL to check stored accounts.",
+  );
+
+  test("nobody can create an account without an invitation", async ({
+    request,
+    baseURL,
+  }) => {
+    const email = `self-signup-${Date.now()}@sandhi.test`;
+    const response = await request.post("/api/auth/sign-up/email", {
+      headers: { Origin: new URL(baseURL!).origin },
+      data: { email, password: PASSWORD, name: "Self Signup" },
+    });
+    expect(response.status()).toBe(404);
+
+    const db = createPrismaClient();
+    try {
+      expect(await db.user.count({ where: { email } })).toBe(0);
+    } finally {
+      await db.$disconnect();
+    }
+  });
+
+  test("an unknown address cannot sign in", async ({ page, request }) => {
+    await signIn(page, `nobody-${Date.now()}@sandhi.test`);
+    await expect(
+      page.getByText("The email address or password is incorrect."),
+    ).toBeVisible();
+
+    // Directly against the API as well, not only through the form.
+    const response = await request.post("/api/auth/sign-in/email", {
+      data: { email: `nobody-${Date.now()}@sandhi.test`, password: PASSWORD },
+    });
+    expect(response.status()).toBe(401);
+    expect(response.headers()["set-cookie"] ?? "").not.toMatch(
+      /session_token=[^;]+/u,
+    );
+  });
+
+  test("an unverified address gets no session, even through the API", async ({
+    request,
+  }) => {
+    const response = await request.post("/api/auth/sign-in/email", {
+      data: { email: "fixture-unverified@sandhi.test", password: PASSWORD },
+    });
+    expect(response.status()).toBe(403);
+    expect(((await response.json()) as { code?: string }).code).toBe(
+      "EMAIL_NOT_VERIFIED",
+    );
+    expect(response.headers()["set-cookie"] ?? "").not.toMatch(
+      /session_token=[^;]+/u,
+    );
+
+    const session = await request.get("/api/auth/get-session");
+    expect(await session.json()).toBeNull();
+  });
+
+  test("a forged session cookie grants nothing", async ({
+    context,
+    page,
+    baseURL,
+  }) => {
+    const { hostname } = new URL(baseURL!);
+    await context.addCookies([
+      {
+        name: "better-auth.session_token",
+        value: "forged-token.forged-signature",
+        domain: hostname,
+        path: "/",
+      },
+    ]);
+
+    await page.goto("/portal");
+    await expect(page).toHaveURL(/\/portal\/sign-in/u);
+    await page.goto("/admin");
+    await expect(page).toHaveURL(/\/portal\/sign-in/u);
+    await expect(page.getByText("Active members")).toHaveCount(0);
   });
 });
 

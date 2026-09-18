@@ -3,8 +3,25 @@ import Link from "next/link";
 import { BrandMark } from "@/components/brand/BrandMark";
 import { ReduceMotionToggle } from "@/components/ui/ReduceMotionToggle";
 import { footerNavigation, siteIdentity } from "@/content/strings";
+import {
+  isPathHidden,
+  socialPlatforms,
+  type SiteSettings,
+} from "@/lib/site-settings-schema";
 
-export function SiteFooter() {
+export function SiteFooter({
+  hiddenPaths = [],
+  social = {},
+}: {
+  /** Sections switched off in site settings. */
+  hiddenPaths?: string[];
+  social?: SiteSettings["social"];
+}) {
+  const socialLinks = socialPlatforms.flatMap(({ key, label }) => {
+    const href = social[key];
+    return href ? [{ label, href }] : [];
+  });
+
   return (
     <footer className="site-footer">
       <div className="site-footer__inner">
@@ -22,11 +39,23 @@ export function SiteFooter() {
             >
               <h2 id={`footer-${group.heading}`}>{group.heading}</h2>
               <ul>
-                {group.links.map((item) => (
-                  <li key={item.href}>
-                    <Link href={item.href}>{item.label}</Link>
-                  </li>
-                ))}
+                {group.links
+                  .filter((item) => !isPathHidden(item.href, hiddenPaths))
+                  .map((item) => (
+                    <li key={item.href}>
+                      <Link href={item.href}>{item.label}</Link>
+                    </li>
+                  ))}
+                {group.heading === "Connect"
+                  ? socialLinks.map((item) => (
+                      <li key={item.href}>
+                        {/* "me" lets these profiles verify the lab's site. */}
+                        <a href={item.href} rel="me noopener">
+                          {item.label}
+                        </a>
+                      </li>
+                    ))
+                  : null}
               </ul>
             </section>
           ))}

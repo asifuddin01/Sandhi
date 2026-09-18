@@ -264,22 +264,24 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - Tests: permission matrix unit tests; end-to-end sign-in for each role, wrong password, suspended and unverified accounts, open-redirect refusal, sign-out, neutral reset response, the full emailed reset link (including replay refusal), and invitation acceptance; Better Auth's endpoint refuses cross-site sign-in (`INVALID_ORIGIN`).
 - Known follow-up: the public header still says "Sign in" while signed in (Milestone 6, without adding a database query to every public page).
 
+### Milestone 5 slice 2 — members, settings, and audit (committed)
+
+- Shared admin plumbing (`lib/admin/actions.ts`): every mutation runs through `runAdminAction(capability, work)`, which re-checks the signed-in account on the server, and writes its `AuditLog` row inside the same transaction as the change. `lib/cache-tags.ts` names the data tags that admin changes invalidate (`updateTag`), ready for data-level caching.
+- `/admin/members`: invite by email with role and rank (7-day links; resending replaces the link, and withdrawing revokes it), search and status filters, and a detail page for access (role and rank), status (active, alumni, suspended — suspension deletes every session at once), removal that requires typing the member's name and is refused for anyone with a scholarly record or who invited others, and Owner-only ownership transfer. Nobody can change their own access, and only the Owner can change the Owner.
+- `/admin/settings` (Owner and Admin): contact addresses, location, social links (https only), which public sections show (Events, Partners, the home page numbers), application retention, and a site notice. Stored values are validated again when read, so a bad row falls back to its default. Switching a section off removes it from the navigation, command palette, footer, and sitemap and makes its pages, calendar files, and registration endpoint return 404. Saving an untouched form records nothing.
+- `/admin/audit` (Owner and Admin): every administrative change, newest first, filtered by record type and action, 50 per page, with the recorded changes.
+- Forms keep what was typed when a save is refused (React resets a form after its action; `components/forms/useFormAction.ts` opts out while keeping the no-JavaScript fallback). This also fixes the sign-in form clearing the email after a wrong password.
+- Tests: settings parsing and validation unit tests; end-to-end invitation and withdrawal, Owner protection, suspension signing a member out, removal by name, settings changing the public site at once and being audited, and Members and Reviewers failing to invite, promote, or change settings even by posting harvested server-action references directly.
+- The settings end-to-end tests change every public page, so Playwright runs them alone after the rest of the suite (`chrome-site-wide` project).
+
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
 
 ## 10a. Portal and admin routes still to build
 
-### Authentication routes (Milestone 5)
-
-- `/portal/sign-in`
-- `/portal/accept-invite/[token]`
-- `/portal/reset-password`
-- Email verification support.
-- Invitation-only account creation, secure sessions, auth rate limits and protected routing.
-
 ### Admin routes (Milestone 5)
 
-- `/admin` dashboard.
-- `/admin/members`
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, and the sign-in, reset, and invitation routes (slices 1 and 2). Still to build:
+
 - `/admin/research`
 - `/admin/projects`
 - `/admin/publications`
@@ -291,23 +293,17 @@ The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation 
 - `/admin/insights`
 - `/admin/partners`
 - `/admin/approvals`
-- `/admin/settings`
-- `/admin/audit`
 
 Every admin mutation must enforce authorization on the server, create an AuditLog record, and revalidate affected cache tags. Hiding an action in the interface is never sufficient authorization.
 
 Required admin workflows still to build:
 
-- Member invitations, 7-day tokens, ranks, roles, suspension, alumni and safe named removal.
-- Owner-only ownership transfer and protection from Admin edits.
 - Research/project/publication/news/event/opportunity/resource/insight/partner managers.
 - Search, filters, bulk actions, Markdown preview, slug uniqueness, state/scheduling and public preview.
 - Mandatory image alt text that blocks save.
 - DOI and arXiv import; DOI must populate title/authors/venue/year.
 - Application kanban and detail, signed 10-minute private-file access, private notes, rating, status/email and accepted-to-invitation action.
 - Change-request approvals with old/new diff.
-- Site settings for contacts, social links, location, retention and feature flags.
-- Owner/Admin-only audit interface.
 
 ### Member portal routes (Milestone 6)
 

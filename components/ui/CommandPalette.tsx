@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 
+import type { NavigationLink } from "@/components/site/MoreMenu";
 import { commandNavigation } from "@/content/strings";
 import type { PublicSearchResult } from "@/lib/search";
 
 type SearchResponse = { results: PublicSearchResult[] };
 
-export function CommandPalette() {
+export function CommandPalette({
+  items = commandNavigation,
+}: {
+  items?: readonly NavigationLink[];
+}) {
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState("");
   const [remote, setRemote] = useState<{
@@ -70,9 +75,11 @@ export function CommandPalette() {
     };
   }, [open, query]);
 
-  const results = useMemo(() => {
+  const results = useMemo((): ReadonlyArray<
+    NavigationLink & { context?: string }
+  > => {
     const normalizedQuery = query.trim().toLocaleLowerCase();
-    if (!normalizedQuery) return commandNavigation;
+    if (!normalizedQuery) return items;
 
     if (normalizedQuery.length >= 2 && remote.query === query.trim()) {
       return remote.results.map((item) => ({
@@ -82,10 +89,10 @@ export function CommandPalette() {
       }));
     }
 
-    return commandNavigation.filter((item) =>
+    return items.filter((item) =>
       item.label.toLocaleLowerCase().includes(normalizedQuery),
     );
-  }, [query, remote]);
+  }, [items, query, remote]);
 
   function closePalette() {
     setOpen(false);
@@ -161,7 +168,7 @@ export function CommandPalette() {
                   <Link href={item.href} onClick={closePalette}>
                     <span>{item.label}</span>
                     <span className="command-palette__path">
-                      {"context" in item ? item.context : item.href}
+                      {item.context ?? item.href}
                     </span>
                   </Link>
                 </li>

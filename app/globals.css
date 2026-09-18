@@ -145,6 +145,20 @@ pre {
   transition: transform var(--dur-quick) var(--ease-sandhi);
 }
 
+/* Maintenance notice set in site settings; above the header on every page. */
+.site-notice {
+  border-block-end: 1px solid var(--ink-line);
+  background: var(--ink-raised);
+}
+
+.site-notice p {
+  width: min(100%, var(--content-max));
+  margin: 0 auto;
+  padding: 0.65rem var(--page-gutter);
+  color: var(--moonstone);
+  font-size: var(--text-ui);
+}
+
 .skip-link:focus {
   transform: translateY(0);
 }

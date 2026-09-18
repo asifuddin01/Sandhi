@@ -8,6 +8,7 @@ import {
 } from "@/lib/forms-http";
 import { requestIdentifier, requestIp } from "@/lib/forms-services";
 import { checkRateLimit } from "@/lib/ratelimit";
+import { isSectionEnabled } from "@/lib/site-settings";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { publicEventWhere } from "@/lib/visibility";
 
@@ -39,6 +40,9 @@ export async function POST(request: Request, context: RouteContext) {
   try {
     if (!isSameOriginRequest(request)) {
       return errorResponse("This registration request was not accepted.", 403);
+    }
+    if (!(await isSectionEnabled("events"))) {
+      return errorResponse("Event registration is not available.", 404);
     }
 
     const rateLimit = await checkRateLimit({

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { isSectionEnabled } from "@/lib/site-settings";
+
 import { EventRegistrationForm } from "@/components/events/EventRegistrationForm";
 import { EventTime } from "@/components/events/EventTime";
 import { Prose } from "@/components/Prose";
@@ -31,7 +33,9 @@ export async function generateMetadata({
   params,
 }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const event = await getPublicEventBySlug(slug);
+  const event = (await isSectionEnabled("events"))
+    ? await getPublicEventBySlug(slug)
+    : null;
   if (!event) {
     return {
       title: "Event not found",
@@ -54,6 +58,7 @@ export async function generateMetadata({
 }
 
 export default async function EventPage({ params }: PageProps) {
+  if (!(await isSectionEnabled("events"))) notFound();
   const { slug } = await params;
   const event = await getPublicEventBySlug(slug);
   if (!event) notFound();

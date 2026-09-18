@@ -1,6 +1,8 @@
 import type { MetadataRoute } from "next";
 
 import { getPublicSitemapEntries } from "@/lib/public-content";
+import { getSiteSettings } from "@/lib/site-settings";
+import { hiddenSectionPaths, isPathHidden } from "@/lib/site-settings-schema";
 
 export const dynamic = "force-dynamic";
 
@@ -33,14 +35,20 @@ const staticPages: Array<{
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const dynamicPages = await getPublicSitemapEntries();
+  const [dynamicPages, settings] = await Promise.all([
+    getPublicSitemapEntries(),
+    getSiteSettings(),
+  ]);
+  const hidden = hiddenSectionPaths(settings);
+  const shown = <Page extends { path: string }>(page: Page) =>
+    !isPathHidden(page.path, hidden);
   const pages: MetadataRoute.Sitemap = [
-    ...staticPages.map((page) => ({
+    ...staticPages.filter(shown).map((page) => ({
       url: `${origin}${page.path}`,
       changeFrequency: page.changeFrequency,
       priority: page.priority,
     })),
-    ...dynamicPages.map((page) => ({
+    ...dynamicPages.filter(shown).map((page) => ({
       url: `${origin}${page.path}`,
       lastModified: page.updatedAt,
       changeFrequency: "monthly" as const,

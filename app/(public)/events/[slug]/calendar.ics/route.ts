@@ -1,11 +1,14 @@
 import { createEventCalendar } from "@/lib/event-calendar";
 import { getPublicEventBySlug } from "@/lib/public-events";
+import { isSectionEnabled } from "@/lib/site-settings";
 
 type RouteContext = { params: Promise<{ slug: string }> };
 
 export async function GET(_request: Request, context: RouteContext) {
   const { slug } = await context.params;
-  const event = await getPublicEventBySlug(slug);
+  const event = (await isSectionEnabled("events"))
+    ? await getPublicEventBySlug(slug)
+    : null;
   if (!event) return new Response("Event not found.", { status: 404 });
 
   const calendar = createEventCalendar(event);

@@ -3,12 +3,17 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
+import type { NavigationLink } from "@/components/site/MoreMenu";
 import { moreNavigation, primaryNavigation } from "@/content/strings";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
-export function MobileMenu() {
+export function MobileMenu({
+  items = [...primaryNavigation, ...moreNavigation],
+}: {
+  items?: readonly NavigationLink[];
+}) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
@@ -101,7 +106,7 @@ export function MobileMenu() {
 
           <nav aria-label="Mobile navigation">
             <ul>
-              {[...primaryNavigation, ...moreNavigation].map((item) => (
+              {items.map((item) => (
                 <li key={item.href}>
                   <Link href={item.href} onClick={closeMenu}>
                     {item.label}

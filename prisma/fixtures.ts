@@ -6,7 +6,10 @@ import { createPrismaClient } from "../lib/db-runtime";
 export const FIXTURE_PASSWORD = "fixture-password-2026";
 
 const fixtureAccounts = [
+  { email: "fixture-owner@sandhi.test", name: "Fixture Owner", role: "OWNER" },
   { email: "fixture-admin@sandhi.test", name: "Fixture Admin", role: "ADMIN" },
+  // Changed by the member-management tests; nothing else signs in as it.
+  { email: "fixture-staff@sandhi.test", name: "Fixture Staff", role: "MEMBER" },
   {
     email: "fixture-reviewer@sandhi.test",
     name: "Fixture Reviewer",

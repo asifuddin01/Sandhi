@@ -5,9 +5,23 @@ import { MoreMenu } from "@/components/site/MoreMenu";
 import { MobileMenu } from "@/components/site/MobileMenu";
 import { CommandPalette } from "@/components/ui/CommandPalette";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
-import { primaryNavigation } from "@/content/strings";
+import {
+  commandNavigation,
+  moreNavigation,
+  primaryNavigation,
+} from "@/content/strings";
+import { isPathHidden } from "@/lib/site-settings-schema";
 
-export function SiteHeader() {
+export function SiteHeader({
+  hiddenPaths = [],
+}: {
+  /** Sections switched off in site settings. */
+  hiddenPaths?: string[];
+}) {
+  const visible = <Item extends { href: string }>(items: readonly Item[]) =>
+    items.filter((item) => !isPathHidden(item.href, hiddenPaths));
+  const more = visible(moreNavigation);
+
   return (
     <header className="site-header">
       <div className="site-header__inner">
@@ -23,14 +37,14 @@ export function SiteHeader() {
               </li>
             ))}
             <li>
-              <MoreMenu />
+              <MoreMenu items={more} />
             </li>
           </ul>
         </nav>
 
         <div className="site-header__actions">
           <ThemeToggle />
-          <CommandPalette />
+          <CommandPalette items={visible(commandNavigation)} />
           <Link
             className="site-header__signin text-link"
             href="/portal/sign-in"
@@ -43,7 +57,7 @@ export function SiteHeader() {
           >
             Join SANDHI
           </Link>
-          <MobileMenu />
+          <MobileMenu items={[...primaryNavigation, ...more]} />
         </div>
       </div>
     </header>

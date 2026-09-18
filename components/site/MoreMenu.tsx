@@ -5,7 +5,16 @@ import { useEffect, useRef, useState } from "react";
 
 import { moreNavigation } from "@/content/strings";
 
-export function MoreMenu() {
+export interface NavigationLink {
+  label: string;
+  href: string;
+}
+
+export function MoreMenu({
+  items = moreNavigation,
+}: {
+  items?: readonly NavigationLink[];
+}) {
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDetailsElement>(null);
 
@@ -44,7 +53,7 @@ export function MoreMenu() {
       </summary>
       <div className="more-menu__panel">
         <ul role="menu">
-          {moreNavigation.map((item) => (
+          {items.map((item) => (
             <li role="none" key={item.href}>
               <Link
                 role="menuitem"

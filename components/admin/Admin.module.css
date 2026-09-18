@@ -137,6 +137,315 @@
   color: var(--mist);
 }
 
+.breadcrumb {
+  margin: 0 0 0.75rem;
+  font-size: var(--text-meta);
+}
+
+.breadcrumb a,
+.table a,
+.facts a {
+  color: var(--moonstone);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line);
+  text-underline-offset: 0.2em;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible,
+.table a:hover,
+.table a:focus-visible,
+.facts a:hover,
+.facts a:focus-visible {
+  text-decoration-color: var(--lotus);
+}
+
+.actionForm {
+  display: grid;
+  max-width: 52rem;
+  gap: 1rem;
+}
+
+.inlineForm {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.inlineForm .actionMessage:empty {
+  display: none;
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  gap: 1rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field label {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  font-weight: 550;
+}
+
+.field input,
+.field select,
+.field textarea {
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+  font: inherit;
+}
+
+.field input:hover,
+.field select:hover,
+.field textarea:hover {
+  border-color: var(--mist);
+}
+
+.hint {
+  margin: 0;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.actionMessage {
+  min-height: 1.4em;
+  margin: 0;
+  color: var(--mist);
+  font-size: var(--text-ui);
+}
+
+.actionMessage[data-tone="error"] {
+  color: var(--signal-warn);
+}
+
+.actionMessage[data-tone="success"] {
+  color: var(--signal-ok);
+}
+
+.quietButton {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: transparent;
+  color: var(--moonstone);
+  cursor: pointer;
+  font: inherit;
+  font-size: var(--text-ui);
+}
+
+.quietButton:hover,
+.quietButton:focus-visible {
+  border-color: var(--lotus);
+}
+
+.quietButton[data-tone="danger"] {
+  color: var(--signal-warn);
+}
+
+.quietButton[data-tone="danger"]:hover,
+.quietButton[data-tone="danger"]:focus-visible {
+  border-color: var(--signal-warn);
+}
+
+.quietButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 1rem;
+  margin-block-end: 1.25rem;
+}
+
+.filters .field {
+  min-width: 12rem;
+}
+
+.tableWrap {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-ui);
+}
+
+.table th,
+.table td {
+  padding: 0.75rem 1rem 0.75rem 0;
+  border-block-end: 1px solid var(--ink-line);
+  text-align: start;
+  vertical-align: top;
+}
+
+.table th {
+  color: var(--mist);
+  font-size: var(--text-meta);
+  font-weight: 500;
+}
+
+.secondary {
+  display: block;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.rowActions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 2rem;
+  margin: 0 0 2.5rem;
+}
+
+.facts dt {
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.facts dd {
+  margin: 0.25rem 0 0;
+}
+
+.notice {
+  max-width: 42rem;
+  margin: 0 0 2.5rem;
+  padding: 1rem 1.1rem;
+  border-inline-start: 2px solid var(--lotus);
+  color: var(--mist);
+}
+
+.dialog {
+  width: min(32rem, calc(100vw - 2rem));
+  padding: 0;
+  border: 1px solid var(--ink-line);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+}
+
+.dialog::backdrop {
+  background: color-mix(in srgb, var(--ink) 80%, transparent);
+}
+
+.dialogForm {
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+}
+
+.dialogForm h2 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.dialogForm p {
+  margin: 0;
+  color: var(--mist);
+}
+
+.dialogActions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 0.75rem;
+}
+
+.fieldset {
+  display: grid;
+  gap: 1rem;
+  margin: 0 0 1.75rem;
+  padding: 1.25rem 0 0;
+  border: 0;
+  border-block-start: 1px solid var(--ink-line);
+}
+
+.fieldset legend {
+  padding: 0;
+  color: var(--moonstone);
+  font-family: var(--font-display);
+  font-size: var(--text-h3);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  color: var(--moonstone);
+  cursor: pointer;
+}
+
+.check input {
+  width: 1.1rem;
+  height: 1.1rem;
+  margin-block-start: 0.2rem;
+  accent-color: var(--lamplight);
+}
+
+.diff summary {
+  margin-block-start: 0.35rem;
+  color: var(--mist);
+  cursor: pointer;
+  font-size: var(--text-meta);
+}
+
+.diff pre {
+  max-width: 36rem;
+  margin: 0.5rem 0 0;
+  padding: 0.75rem;
+  overflow-x: auto;
+  border: 1px solid var(--ink-line);
+  background: var(--ink-raised);
+  font-family: var(--font-code);
+  font-size: var(--text-meta);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem 1.5rem;
+  margin-block-start: 1.5rem;
+  color: var(--mist);
+  font-size: var(--text-ui);
+}
+
+.pagination a {
+  color: var(--moonstone);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line);
+  text-underline-offset: 0.2em;
+}
+
+.pagination a:hover,
+.pagination a:focus-visible {
+  text-decoration-color: var(--lotus);
+}
+
 @media (max-width: 52rem) {
   .shell {
     grid-template-columns: 1fr;
