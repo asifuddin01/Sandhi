@@ -13,7 +13,11 @@ import {
   sendVerificationEmail,
   type EmailDelivery,
 } from "@/lib/email";
-import { identifierFromHeaders } from "@/lib/forms-services";
+import {
+  identifierFromHeaders,
+  ServiceConfigurationError,
+} from "@/lib/forms-services";
+import { authSecretProblem } from "@/lib/production-config";
 import { checkRateLimit } from "@/lib/ratelimit";
 
 export const MIN_PASSWORD_LENGTH = 12;
@@ -90,6 +94,14 @@ export function logUndeliveredLink(
 }
 
 function createAuth() {
+  const secretProblem = authSecretProblem(
+    process.env.BETTER_AUTH_SECRET,
+    process.env,
+  );
+  if (secretProblem) {
+    throw new ServiceConfigurationError("Better Auth", secretProblem);
+  }
+
   return betterAuth({
     appName: "SANDHI Research Lab",
     baseURL: process.env.BETTER_AUTH_URL,
@@ -130,6 +142,11 @@ function createAuth() {
           delivery.mode,
         );
       },
+    },
+    verification: {
+      // Reset links are stored only as SHA-256 hashes, so reading the
+      // database never yields a working link.
+      storeIdentifier: "hashed",
     },
     user: {
       additionalFields: {

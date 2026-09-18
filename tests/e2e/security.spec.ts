@@ -103,3 +103,20 @@ test("form endpoints refuse requests from other sites", async ({ request }) => {
     expect(response.status(), endpoint).toBe(403);
   }
 });
+
+test("security.txt tells researchers where to report a vulnerability", async ({
+  request,
+}) => {
+  const response = await request.get("/.well-known/security.txt");
+  expect(response.status()).toBe(200);
+  expect(response.headers()["content-type"]).toContain("text/plain");
+
+  const text = await response.text();
+  expect(text).toMatch(/^Contact: mailto:\S+@\S+$/mu);
+  const expires = new Date(/^Expires: (.+)$/mu.exec(text)![1]!);
+  expect(expires.getTime()).toBeGreaterThan(Date.now());
+  expect(expires.getTime() - Date.now()).toBeLessThan(
+    365 * 24 * 60 * 60 * 1000,
+  );
+  expect(text).toMatch(/^Canonical: \S+\/\.well-known\/security\.txt$/mu);
+});

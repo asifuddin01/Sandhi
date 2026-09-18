@@ -251,14 +251,28 @@ test.describe("password reset", () => {
       await page.getByRole("button", { name: "Send reset link" }).click();
       await expect(page.getByText(/we have sent a link/u)).toBeVisible();
 
-      const verification = await db.verification.findFirstOrThrow({
-        where: {
-          value: user.id,
-          identifier: { startsWith: "reset-password:" },
-        },
+      // The emailed token is stored only as a hash: the database never
+      // holds a working link.
+      const stored = await db.verification.findFirstOrThrow({
+        where: { value: user.id },
         orderBy: { createdAt: "desc" },
       });
-      const token = verification.identifier.slice("reset-password:".length);
+      expect(stored.identifier).not.toContain("reset-password:");
+      expect(stored.identifier).toMatch(/^[A-Za-z0-9_-]{43}$/u);
+
+      // So issue a link the same way Better Auth does, since the test cannot
+      // read the email.
+      const token = randomBytes(18).toString("base64url");
+      await db.verification.create({
+        data: {
+          id: `e2e-reset-${Date.now()}`,
+          identifier: createHash("sha256")
+            .update(`reset-password:${token}`)
+            .digest("base64url"),
+          value: user.id,
+          expiresAt: new Date(Date.now() + 60 * 60 * 1000),
+        },
+      });
 
       // The same link the email contains.
       await page.goto(

@@ -353,8 +353,19 @@ Required member workflows still to build:
 - **Cross-site request refusal:** contact, join, upload and event registration share `isSameOriginRequest` (refuses `Sec-Fetch-Site: cross-site` and foreign `Origin`; a missing `Origin` is refused in production). It runs before rate limiting so forged requests cannot spend real visitors' quota.
 - **Search rate limit:** 60 requests per minute per client; search stays available (and logs) if the limiter is unreachable, since it is read-only and bounded.
 - **Zod runs without JIT** (`lib/zod.ts`): its `new Function` probe otherwise reported a CSP violation on every form page in production.
-- **Dependencies:** `lodash` and `mysql2` pinned to patched releases through `pnpm-workspace.yaml` overrides. One advisory remains: `deepmerge-ts` (stack exhaustion on recursive objects) inside the Prisma CLI's config loader, a development tool that reads only local files; its fix is a major version Prisma must adopt, so it is not forced.
+- **Dependencies:** `lodash`, `mysql2`, and `deepmerge-ts` pinned to patched releases through `pnpm-workspace.yaml` overrides (`deepmerge-ts` 8 keeps the API the Prisma CLI's config loader uses; validate, generate, and migrate status were checked). `pnpm audit` reports no known vulnerabilities.
 - **Verification:** unit tests for the policy builder and origin checks; a join-route test proving cross-site posts do no work; an end-to-end security spec (headers, unique nonces, zero violations on Home, Research, Join, Publications, Contact, 403 for cross-site posts) that also passed against a production build, where an injected script without the nonce was blocked and recorded, and an insight with KaTeX and highlighted code rendered with no violations.
+
+### Security checklist, slice A (19 September 2026)
+
+The owner's 100-item security checklist is tracked item by item in [`docs/security/checklist.md`](docs/security/checklist.md); settings that live in hosting dashboards are in [`docs/security/operations.md`](docs/security/operations.md), and the reporting policy is `SECURITY.md`.
+
+- Production refuses a remote database without TLS (`sslmode=require`) and an auth secret shorter than 32 characters (`lib/production-config.ts`).
+- Password-reset tokens are stored only as SHA-256 hashes (Better Auth `verification.storeIdentifier`).
+- `/.well-known/security.txt` (RFC 9116) is generated from the general contact address in Admin → Settings, with a rolling six-month expiry.
+- `scripts/db/least-privilege.sql`: a runtime role that cannot change the schema and can only append to the audit log (tested inside a rolled-back transaction).
+- GitHub: CI (lint, types, tests, contrast, build, dependency audit), CodeQL (security-extended), and Gitleaks on every push, with actions pinned to commit SHAs and read-only tokens; Dependabot weekly for npm and actions.
+- Still to come: breached-password refusal, security event logging and alert emails (B); session list and revocation, re-authentication for sensitive actions (C); authenticator-app two-factor authentication required for staff (D); passkeys (E).
 
 Remaining for launch hardening:
 

@@ -1,6 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 
 import { PrismaClient } from "@/generated/prisma/client";
+import { databaseUrlProblem } from "@/lib/production-config";
 
 const globalForPrisma = globalThis as unknown as {
   sandhiPrisma?: PrismaClient;
@@ -12,6 +13,9 @@ export function createPrismaClient(databaseUrl = process.env.DATABASE_URL) {
       "DATABASE_URL is not set. Copy .env.example to .env.local and provide a PostgreSQL connection string.",
     );
   }
+
+  const problem = databaseUrlProblem(databaseUrl, process.env);
+  if (problem) throw new Error(problem);
 
   return new PrismaClient({
     adapter: new PrismaPg({ connectionString: databaseUrl }),
