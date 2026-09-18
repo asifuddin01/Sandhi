@@ -1,6 +1,13 @@
 import { expect, test } from "@playwright/test";
 
-const pages = ["/", "/research", "/join", "/publications", "/contact"] as const;
+const pages = [
+  "/",
+  "/research",
+  "/join",
+  "/publications",
+  "/contact",
+  "/portal/sign-in",
+] as const;
 
 function nonceFrom(policy: string | undefined): string | undefined {
   return policy?.match(/'nonce-([^']+)'/u)?.[1];
@@ -81,7 +88,8 @@ test("form endpoints refuse requests from other sites", async ({ request }) => {
       Origin: "https://evil.example",
       "Content-Type": "application/json",
     },
-    data: {},
+    // Well-formed, so each endpoint reaches its origin check.
+    data: { email: "someone@example.org", password: "not-a-real-password" },
   };
 
   for (const endpoint of [
@@ -89,6 +97,7 @@ test("form endpoints refuse requests from other sites", async ({ request }) => {
     "/api/join",
     "/api/join/upload",
     "/api/events/any-event/register",
+    "/api/auth/sign-in/email",
   ]) {
     const response = await request.post(endpoint, crossSite);
     expect(response.status(), endpoint).toBe(403);

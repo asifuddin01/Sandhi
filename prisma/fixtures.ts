@@ -1,4 +1,35 @@
+import { hashPassword } from "better-auth/crypto";
+
 import { createPrismaClient } from "../lib/db-runtime";
+
+/** Shared by every fixture account; used only against local test databases. */
+export const FIXTURE_PASSWORD = "fixture-password-2026";
+
+const fixtureAccounts = [
+  { email: "fixture-admin@sandhi.test", name: "Fixture Admin", role: "ADMIN" },
+  {
+    email: "fixture-reviewer@sandhi.test",
+    name: "Fixture Reviewer",
+    role: "REVIEWER",
+  },
+  {
+    email: "fixture-member@sandhi.test",
+    name: "Fixture Member",
+    role: "MEMBER",
+  },
+  {
+    email: "fixture-suspended@sandhi.test",
+    name: "Fixture Suspended",
+    role: "MEMBER",
+    status: "SUSPENDED",
+  },
+  {
+    email: "fixture-unverified@sandhi.test",
+    name: "Fixture Unverified",
+    role: "MEMBER",
+    emailVerified: false,
+  },
+] as const;
 
 function assertFixtureDatabase(): void {
   if (process.env.NODE_ENV === "production") {
@@ -150,6 +181,51 @@ async function main(): Promise<void> {
         state: "DRAFT",
       },
     });
+
+    // Private accounts for each role; never public members.
+    const passwordHash = await hashPassword(FIXTURE_PASSWORD);
+    for (const account of fixtureAccounts) {
+      const emailVerified =
+        "emailVerified" in account ? account.emailVerified : true;
+      const status = "status" in account ? account.status : "ACTIVE";
+      const user = await db.user.upsert({
+        where: { email: account.email },
+        update: { name: account.name, role: account.role, emailVerified },
+        create: {
+          email: account.email,
+          name: account.name,
+          role: account.role,
+          emailVerified,
+        },
+      });
+      await db.account.upsert({
+        where: {
+          providerId_accountId: {
+            providerId: "credential",
+            accountId: user.id,
+          },
+        },
+        update: { password: passwordHash },
+        create: {
+          accountId: user.id,
+          providerId: "credential",
+          userId: user.id,
+          password: passwordHash,
+        },
+      });
+      await db.member.upsert({
+        where: { userId: user.id },
+        update: { name: account.name, status, isPublic: false },
+        create: {
+          userId: user.id,
+          slug: account.email.split("@")[0]!,
+          name: account.name,
+          rank: "RESEARCHER",
+          status,
+          isPublic: false,
+        },
+      });
+    }
 
     await db.siteSetting.upsert({
       where: { key: "features.showNumbers" },

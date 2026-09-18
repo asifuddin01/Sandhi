@@ -49,8 +49,8 @@ This checklist follows the supplied build specification. Milestones are complete
 
 ## Milestone 5 — Authentication and admin portal
 
-- [ ] Configure Better Auth for invitations, verification, reset, sessions, and rate limits.
-- [ ] Enforce server authorization in `lib/authz.ts` and protected-route middleware.
+- [x] Configure Better Auth for invitations, verification, reset, sessions, and rate limits.
+- [x] Enforce server authorization in `lib/authz.ts` and protected-route middleware (`proxy.ts`).
 - [ ] Build the admin dashboard and every specified content, member, applications, approvals, settings, and audit manager.
 - [ ] Add DOI and arXiv import, review workflows, previews, bulk actions, and mandatory image alt text.
 - [ ] Write an audit record and revalidate cache tags on every admin mutation.

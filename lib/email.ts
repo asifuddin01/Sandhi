@@ -178,3 +178,71 @@ export async function sendContactEmail(
     dependencies,
   );
 }
+
+type AccountEmail = {
+  to: string;
+  name: string;
+  url: string;
+};
+
+type EmailDependencies = {
+  env?: NodeJS.ProcessEnv;
+  fetcher?: Fetcher;
+};
+
+export async function sendPasswordResetEmail(
+  { to, name, url }: AccountEmail,
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  return sendEmail(
+    {
+      to,
+      subject: "Reset your SANDHI password",
+      text: `Hello ${name},\n\nUse this link within one hour to choose a new password:\n${url}\n\nIf you did not ask to reset your password, you can ignore this email.\n\nSANDHI Research Lab`,
+      html: `<p>Hello ${escapeHtml(name)},</p><p>Use this link within one hour to choose a new password:</p><p><a href="${escapeHtml(url)}">Reset your password</a></p><p>If you did not ask to reset your password, you can ignore this email.</p><p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}
+
+export async function sendVerificationEmail(
+  { to, name, url }: AccountEmail,
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  return sendEmail(
+    {
+      to,
+      subject: "Confirm your SANDHI email address",
+      text: `Hello ${name},\n\nConfirm your email address to finish signing in:\n${url}\n\nSANDHI Research Lab`,
+      html: `<p>Hello ${escapeHtml(name)},</p><p>Confirm your email address to finish signing in:</p><p><a href="${escapeHtml(url)}">Confirm email address</a></p><p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}
+
+export async function sendInvitationEmail(
+  {
+    to,
+    url,
+    inviterName,
+    expiresAt,
+  }: { to: string; url: string; inviterName: string; expiresAt: Date },
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  const expiry = expiresAt.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    timeZone: "Asia/Dhaka",
+  });
+
+  return sendEmail(
+    {
+      to,
+      subject: "You are invited to join SANDHI Research Lab",
+      text: `Hello,\n\n${inviterName} has invited you to the SANDHI Research Lab portal.\n\nAccept the invitation and set your password by ${expiry}:\n${url}\n\nSANDHI Research Lab`,
+      html: `<p>Hello,</p><p>${escapeHtml(inviterName)} has invited you to the SANDHI Research Lab portal.</p><p>Accept the invitation and set your password by ${escapeHtml(expiry)}:</p><p><a href="${escapeHtml(url)}">Accept invitation</a></p><p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}

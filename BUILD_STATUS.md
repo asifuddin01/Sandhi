@@ -12,7 +12,8 @@ The governing detailed specification remains `SANDHI_Codex_Build_Prompt.md`. `PL
 - **Milestone 4:** complete. Every gate passes (lint, typecheck, 87 unit tests, 62 end-to-end tests with fixture-backed visibility enabled, contrast, production build). Committed and pushed with the owner's standing approval.
 - **Latest user refinements:** implemented and tested — Join path context, optional-link removal, form-step history, proposal/CV rules, removable PDF attachments, exact route scroll restoration, and the layered neural-network research map with signal motion.
 - **Security hardening (first Milestone 8 items):** implemented, tested against a production build, committed, and pushed — see section 11.
-- **Milestones 5–8:** otherwise not started. These contain authentication/admin, the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
+- **Milestone 5 (in progress):** slice 1 — authentication, authorization, protected routes, and the admin shell — is committed; members and invitations, content managers, the applications pipeline, approvals, and data caching follow in that order.
+- **Milestones 6–8:** otherwise not started. These contain authentication/admin, the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
 - **Production launch:** not yet complete. The current site is a local development build, not the live finished service.
 
 ## 1. Product being built
@@ -250,7 +251,22 @@ Codex stopped mid-debugging a failing scroll-restoration test. This session fini
 
 Tests added: layout unit suite (8), legacy-link schema test, Join history, reload, and file-removal end-to-end tests, map alignment/signal/reduced-motion end-to-end test.
 
-## 10. Portal and admin routes still to build
+## 10. Portal and admin routes
+
+### Milestone 5 slice 1 — authentication foundation (committed)
+
+- Better Auth (`lib/auth.ts`, `/api/auth/[...all]`): invitation-only (public sign-up disabled and its endpoint removed), verified email required, 12–128 character passwords, one-hour reset links that revoke other sessions, seven-day sessions, telemetry off, and the role field server-only. Unused endpoints (`update-user`, `change-email`, `delete-user`) are disabled.
+- Rate limits (spec 10.4): 10 attempts per 15 minutes per IP and per email through the shared Upstash limiter, applied in the server actions and, for direct HTTP calls, in an auth hook. Suspended members cannot start a session.
+- `lib/permissions.ts` holds the Part 8 matrix (Editor renamed Reviewer), Owner protection, and a redirect guard that keeps `next` inside `/portal` and `/admin`. `lib/authz.ts` enforces it: pages call `requireCapability` (people without access see "not found"), actions and route handlers call `authorize`.
+- `proxy.ts` redirects signed-out requests for `/portal` and `/admin` to sign in before rendering; the server checks remain authoritative.
+- Pages: `/portal/sign-in`, `/portal/reset-password`, `/portal/accept-invite/[token]` (token stored only as a SHA-256 hash, claimed atomically, creates the account, credential, and member in one transaction), a minimal `/portal`, and the `/admin` shell with the dashboard from spec 9.2. Portal and admin pages are `noindex`.
+- Emails: invitation, verification, and password reset templates; without an email provider in local development the links are printed to the server log.
+- Tests: permission matrix unit tests; end-to-end sign-in for each role, wrong password, suspended and unverified accounts, open-redirect refusal, sign-out, neutral reset response, the full emailed reset link (including replay refusal), and invitation acceptance; Better Auth's endpoint refuses cross-site sign-in (`INVALID_ORIGIN`).
+- Known follow-up: the public header still says "Sign in" while signed in (Milestone 6, without adding a database query to every public page).
+
+The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
+
+## 10a. Portal and admin routes still to build
 
 ### Authentication routes (Milestone 5)
 

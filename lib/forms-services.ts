@@ -27,7 +27,15 @@ export function isProductionEnvironment(
 }
 
 export function requestIdentifier(request: Request): string {
-  const address = requestIp(request) || "unknown-client";
+  return identifierFromHeaders(request.headers);
+}
+
+/** A stable, non-reversible client identifier for rate limiting. */
+export function identifierFromHeaders(headers: Headers): string {
+  const address =
+    headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
+    headers.get("x-real-ip")?.trim() ||
+    "unknown-client";
 
   return createHash("sha256").update(address).digest("hex").slice(0, 32);
 }
