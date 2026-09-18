@@ -66,4 +66,19 @@ describe("authSecretProblem", () => {
     ).toBeNull();
     expect(authSecretProblem(undefined, development)).toBeNull();
   });
+
+  it("checks every key when rotating with BETTER_AUTH_SECRETS", () => {
+    const long = "y".repeat(MIN_AUTH_SECRET_LENGTH);
+    const rotating = (value: string) =>
+      ({
+        NODE_ENV: "production",
+        BETTER_AUTH_SECRETS: value,
+      }) as NodeJS.ProcessEnv;
+    expect(
+      authSecretProblem(undefined, rotating(`2:${long},1:${long}`)),
+    ).toBeNull();
+    expect(authSecretProblem(undefined, rotating(`2:${long},1:short`))).toMatch(
+      /BETTER_AUTH_SECRETS entries/u,
+    );
+  });
 });

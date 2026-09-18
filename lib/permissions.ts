@@ -31,6 +31,11 @@ export const capabilityRoles = {
 
 export type Capability = keyof typeof capabilityRoles;
 
+/** Everything beyond the member portal needs two-factor authentication. */
+export function requiresTwoFactor(capability: Capability): boolean {
+  return capability !== "portal:access";
+}
+
 export function parseSystemRole(value: unknown): SystemRoleValue {
   return systemRoles.includes(value as SystemRoleValue)
     ? (value as SystemRoleValue)

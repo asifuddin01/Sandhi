@@ -108,7 +108,9 @@ export async function getMemberDetail(id: string) {
       isPublic: true,
       joinedAt: true,
       leftAt: true,
-      user: { select: { id: true, email: true, role: true } },
+      user: {
+        select: { id: true, email: true, role: true, twoFactorEnabled: true },
+      },
       _count: {
         select: {
           authorships: true,

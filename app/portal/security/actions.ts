@@ -3,6 +3,7 @@
 import { APIError } from "better-auth/api";
 import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
+import { encode } from "uqr";
 
 import { getAuth } from "@/lib/auth";
 import { getViewer } from "@/lib/authz";
@@ -13,9 +14,12 @@ import {
   passwordProblem,
   type AuthFormState,
 } from "@/lib/portal-forms";
+import { can } from "@/lib/permissions";
+import { confirmPassword, ReauthenticationError } from "@/lib/reauth";
 import {
   recordPasswordChanged,
   recordSecurityEvent,
+  recordTwoFactorChange,
 } from "@/lib/security-events";
 
 const signedOut: AuthFormState = {
@@ -162,4 +166,218 @@ export async function manageSessionsAction(
 
   revalidatePath("/portal/security");
   return result;
+}
+
+export type TwoFactorSetup = {
+  /** SVG path for the QR code, drawn on a square of `size` modules. */
+  qrPath: string;
+  size: number;
+  /** The same secret, for typing into an app by hand. */
+  key: string;
+  backupCodes: string[];
+};
+
+export type TwoFactorState = AuthFormState & {
+  setup?: TwoFactorSetup;
+  backupCodes?: string[];
+};
+
+function qrFor(uri: string): { qrPath: string; size: number } {
+  const { data, size } = encode(uri, { ecc: "M", border: 2 });
+  let path = "";
+  data.forEach((row, y) =>
+    row.forEach((dark, x) => {
+      if (dark) path += `M${x} ${y}h1v1h-1z`;
+    }),
+  );
+  return { qrPath: path, size };
+}
+
+function apiErrorCode(error: unknown): string | null {
+  if (!(error instanceof APIError)) return null;
+  const code = (error.body as { code?: unknown } | undefined)?.code;
+  return typeof code === "string" ? code : null;
+}
+
+async function wrongPassword(viewerId: string, requestHeaders: Headers) {
+  await recordSecurityEvent("auth.reauth_failed", viewerId, {}, requestHeaders);
+  return { status: "error", message: "That password is not correct." } as const;
+}
+
+/** Step one: the password, then a secret, QR code, and backup codes. */
+export async function startTwoFactorSetupAction(
+  _previous: TwoFactorState,
+  formData: FormData,
+): Promise<TwoFactorState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  if (viewer.twoFactorEnabled) {
+    return {
+      status: "error",
+      message: "Two-factor authentication is already on.",
+    };
+  }
+  const password = field(formData, "password");
+  if (!password) return { status: "error", message: "Enter your password." };
+
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders, viewer.email);
+  if (blocked) return blocked;
+
+  try {
+    const enabled = await getAuth().api.enableTwoFactor({
+      body: { password, method: "totp" },
+      headers: requestHeaders,
+    });
+    if (enabled.method !== "totp") throw new Error("No authenticator secret");
+    const { totpURI, backupCodes } = enabled;
+    const key = new URL(totpURI).searchParams.get("secret") ?? "";
+    return {
+      status: "success",
+      message:
+        "Scan the code or type the key into your authenticator app, save your backup codes, then enter the code the app shows.",
+      setup: { ...qrFor(totpURI), key, backupCodes },
+    };
+  } catch (error) {
+    if (apiErrorCode(error) === "INVALID_PASSWORD") {
+      return wrongPassword(viewer.userId, requestHeaders);
+    }
+    console.error("[auth] two-factor setup failed:", error);
+    return {
+      status: "error",
+      message: "Two-factor authentication could not be set up. Try again.",
+    };
+  }
+}
+
+/** Step two: a code from the app proves it was set up correctly. */
+export async function confirmTwoFactorSetupAction(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  const code = field(formData, "code").replace(/\s/gu, "");
+  if (!/^\d{6}$/u.test(code)) {
+    return {
+      status: "error",
+      message: "Enter the six-digit code from your authenticator app.",
+    };
+  }
+
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders, viewer.email);
+  if (blocked) return blocked;
+
+  try {
+    await getAuth().api.verifyTOTP({
+      body: { code },
+      headers: requestHeaders,
+    });
+  } catch (error) {
+    if (apiErrorCode(error) === "INVALID_CODE") {
+      return {
+        status: "error",
+        message:
+          "That code is not correct. Check that your phone's clock is right, then try the next code.",
+      };
+    }
+    console.error("[auth] two-factor confirmation failed:", error);
+    return {
+      status: "error",
+      message: "The code could not be checked. Start again.",
+    };
+  }
+
+  await recordTwoFactorChange(
+    "auth.two_factor_enabled",
+    { id: viewer.userId, email: viewer.email, name: viewer.name },
+    requestHeaders,
+  );
+  revalidatePath("/portal/security");
+  return { status: "success", message: "Two-factor authentication is on." };
+}
+
+/** New backup codes replace every old one. */
+export async function regenerateBackupCodesAction(
+  _previous: TwoFactorState,
+  formData: FormData,
+): Promise<TwoFactorState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  const password = field(formData, "password");
+  if (!password) return { status: "error", message: "Enter your password." };
+
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders, viewer.email);
+  if (blocked) return blocked;
+
+  try {
+    const { backupCodes } = await getAuth().api.generateBackupCodes({
+      body: { password },
+      headers: requestHeaders,
+    });
+    await recordTwoFactorChange(
+      "auth.backup_codes_regenerated",
+      { id: viewer.userId, email: viewer.email, name: viewer.name },
+      requestHeaders,
+    );
+    return {
+      status: "success",
+      message: "New backup codes are ready. The old ones no longer work.",
+      backupCodes,
+    };
+  } catch (error) {
+    if (apiErrorCode(error) === "INVALID_PASSWORD") {
+      return wrongPassword(viewer.userId, requestHeaders);
+    }
+    console.error("[auth] backup code generation failed:", error);
+    return {
+      status: "error",
+      message: "New backup codes could not be made. Try again.",
+    };
+  }
+}
+
+/** Members may turn it off; staff roles cannot. */
+export async function disableTwoFactorAction(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const viewer = await getViewer();
+  if (!viewer) return signedOut;
+  if (can(viewer.role, "admin:access")) {
+    return {
+      status: "error",
+      message: "Your role requires two-factor authentication.",
+    };
+  }
+  if (!viewer.twoFactorEnabled) {
+    return { status: "success", message: "Two-factor authentication is off." };
+  }
+
+  try {
+    await confirmPassword(viewer, field(formData, "password"));
+  } catch (error) {
+    if (error instanceof ReauthenticationError) {
+      return { status: "error", message: error.message };
+    }
+    throw error;
+  }
+
+  const requestHeaders = await headers();
+  await getDb().$transaction([
+    getDb().twoFactor.deleteMany({ where: { userId: viewer.userId } }),
+    getDb().user.update({
+      where: { id: viewer.userId },
+      data: { twoFactorEnabled: false },
+    }),
+  ]);
+  await recordTwoFactorChange(
+    "auth.two_factor_disabled",
+    { id: viewer.userId, email: viewer.email, name: viewer.name },
+    requestHeaders,
+  );
+  revalidatePath("/portal/security");
+  return { status: "success", message: "Two-factor authentication is off." };
 }

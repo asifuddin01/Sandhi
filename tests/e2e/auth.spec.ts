@@ -4,8 +4,14 @@ import { expect, test, type Page } from "@playwright/test";
 
 import { createPrismaClient } from "../../lib/db-runtime";
 
-const PASSWORD = "fixture-password-2026";
+import {
+  completeTwoFactor,
+  PASSWORD,
+  signIn as signInFully,
+  twoFactorSecret,
+} from "./support/auth";
 
+/** Submits the form only; tests check whether sign-in succeeded. */
 async function signIn(page: Page, email: string, next?: string) {
   await page.goto(
     next
@@ -35,6 +41,16 @@ test.describe("sign-in and administration access", () => {
     await page.getByLabel("Email").fill("fixture-admin@sandhi.test");
     await page.getByLabel("Password").fill(PASSWORD);
     await page.getByRole("button", { name: "Sign in" }).click();
+
+    // Staff finish with a code from their authenticator app.
+    await expect(page).toHaveURL(/\/portal\/two-factor\?next=%2Fadmin$/u, {
+      timeout: 30_000,
+    });
+    await page.waitForLoadState("networkidle");
+    await completeTwoFactor(
+      page,
+      twoFactorSecret("fixture-admin@sandhi.test")!,
+    );
 
     await expect(page).toHaveURL(/\/admin$/u);
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(
@@ -86,8 +102,7 @@ test.describe("sign-in and administration access", () => {
   test("a reviewer reaches administration without the audit log", async ({
     page,
   }) => {
-    await signIn(page, "fixture-reviewer@sandhi.test", "/admin");
-    await expect(page).toHaveURL(/\/admin$/u);
+    await signInFully(page, "fixture-reviewer@sandhi.test", "/admin");
     await expect(page.getByText("Active members")).toBeVisible();
     await expect(
       page.getByRole("heading", { name: "Recent activity" }),
@@ -244,7 +259,8 @@ test.describe("password reset", () => {
     const db = createPrismaClient();
     try {
       const user = await db.user.findUniqueOrThrow({
-        where: { email: "fixture-reviewer@sandhi.test" },
+        // Its own account: a reset ends every session on the account.
+        where: { email: "fixture-reset@sandhi.test" },
       });
       await db.verification.deleteMany({ where: { value: user.id } });
 
@@ -297,8 +313,8 @@ test.describe("password reset", () => {
         ),
       ).toBeVisible();
 
-      await signIn(page, user.email, "/admin");
-      await expect(page).toHaveURL(/\/admin$/u);
+      await signIn(page, user.email, "/portal");
+      await expect(page).toHaveURL(/\/portal$/u);
 
       // A used link cannot be replayed.
       await page.goto(`/portal/reset-password?token=${token}`);

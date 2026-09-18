@@ -33,6 +33,11 @@ const fixtureAccounts = [
     role: "MEMBER",
   },
   {
+    email: "fixture-reset@sandhi.test",
+    name: "Fixture Reset",
+    role: "MEMBER",
+  },
+  {
     email: "fixture-suspended@sandhi.test",
     name: "Fixture Suspended",
     role: "MEMBER",

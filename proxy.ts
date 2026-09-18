@@ -8,6 +8,8 @@ const openPortalPaths = [
   "/portal/sign-in",
   "/portal/reset-password",
   "/portal/accept-invite",
+  // The second sign-in step, before a session exists.
+  "/portal/two-factor",
 ];
 
 function needsSession(pathname: string): boolean {

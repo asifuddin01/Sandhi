@@ -32,8 +32,15 @@ export default defineConfig({
       },
   projects: [
     {
+      // Enrolls the staff fixture accounts in two-factor authentication.
+      name: "setup",
+      testMatch: /\.setup\.ts$/u,
+      use: chrome,
+    },
+    {
       name: "chrome",
       testIgnore: siteWideSpecs,
+      dependencies: ["setup"],
       use: chrome,
     },
     {

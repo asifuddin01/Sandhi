@@ -187,3 +187,58 @@
   color: var(--mist);
   font-size: var(--text-meta);
 }
+
+.notice {
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border-inline-start: 3px solid var(--lotus);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+}
+
+.statusLine {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0;
+  color: var(--moonstone);
+}
+
+.steps {
+  display: grid;
+  gap: 1.5rem;
+  margin: 0;
+  padding-inline-start: 1.25rem;
+  color: var(--moonstone);
+}
+
+.steps > li > p {
+  margin: 0 0 0.75rem;
+}
+
+/* Scanners need dark modules on a light square in either theme. */
+.qr {
+  display: block;
+  width: min(100%, 13rem);
+  height: auto;
+  margin-block-end: 0.75rem;
+  border: 1px solid var(--ink-line);
+}
+
+.key,
+.codes code {
+  font-family: var(--font-code);
+  letter-spacing: 0.04em;
+  overflow-wrap: anywhere;
+}
+
+.codes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(8.5rem, 1fr));
+  gap: 0.4rem 1rem;
+  margin: 0 0 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--ink-line);
+  list-style: none;
+}

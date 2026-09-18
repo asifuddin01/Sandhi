@@ -21,6 +21,7 @@ import { can, canManageMember, parseSystemRole } from "@/lib/permissions";
 
 import {
   removeMemberAction,
+  resetMemberTwoFactorAction,
   setMemberStatusAction,
   transferOwnershipAction,
   updateMemberAccessAction,
@@ -183,6 +184,40 @@ export default async function MemberDetailPage({
                   ) : null}
                 </div>
               </ActionForm>
+            </section>
+          ) : null}
+
+          {member.user ? (
+            <section
+              className={styles.section}
+              aria-labelledby="two-factor-heading"
+            >
+              <h2 id="two-factor-heading">Two-factor authentication</h2>
+              {member.user.twoFactorEnabled ? (
+                <>
+                  <p className={styles.empty}>
+                    On. If {member.name} has lost their phone and backup codes,
+                    reset it: they are signed out everywhere and set it up
+                    again.
+                  </p>
+                  <ConfirmByNameDialog
+                    action={resetMemberTwoFactorAction}
+                    name={member.name}
+                    hidden={{ memberId: member.id }}
+                    trigger={`Reset two-factor authentication for ${member.name}`}
+                    title={`Reset two-factor authentication for ${member.name}?`}
+                    description="Their authenticator and backup codes stop working, and every session they have ends. They are emailed about it."
+                    confirmLabel="Reset two-factor authentication"
+                  />
+                </>
+              ) : (
+                <p className={styles.empty}>
+                  Off.{" "}
+                  {role === "MEMBER"
+                    ? "Members can turn it on from Account security."
+                    : "Their role requires it, so they set it up before administration opens."}
+                </p>
+              )}
             </section>
           ) : null}
 

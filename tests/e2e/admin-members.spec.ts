@@ -2,7 +2,7 @@ import { expect, test, type Browser, type Page } from "@playwright/test";
 
 import { createPrismaClient } from "../../lib/db-runtime";
 
-const PASSWORD = "fixture-password-2026";
+import { PASSWORD, signIn as signInAs } from "./support/auth";
 
 test.skip(
   process.env.E2E_FIXTURES_READY !== "true" || !process.env.DATABASE_URL,
@@ -20,11 +20,7 @@ async function open(page: Page, path: string) {
 }
 
 async function signIn(page: Page, email: string, next = "/admin") {
-  await open(page, `/portal/sign-in?next=${encodeURIComponent(next)}`);
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByRole("button", { name: "Sign in" }).click();
-  await expect(page).toHaveURL(new RegExp(`${next}$`, "u"));
+  await signInAs(page, email, next);
 }
 
 async function signedInPage(browser: Browser, email: string, next: string) {

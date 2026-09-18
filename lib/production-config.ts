@@ -36,12 +36,24 @@ export function databaseUrlProblem(
   return "DATABASE_URL must use TLS in production: add sslmode=require (Neon connection strings include it).";
 }
 
+/**
+ * BETTER_AUTH_SECRETS ("2:newest,1:previous") rotates the key while still
+ * decrypting two-factor secrets made with older ones; otherwise
+ * BETTER_AUTH_SECRET is the single key.
+ */
 export function authSecretProblem(
   secret: string | undefined,
   env: NodeJS.ProcessEnv,
 ): string | null {
   if (!isProductionEnv(env)) return null;
-  const value = secret?.trim() ?? "";
-  if (value.length >= MIN_AUTH_SECRET_LENGTH) return null;
-  return `BETTER_AUTH_SECRET must be at least ${MIN_AUTH_SECRET_LENGTH} random characters in production (generate one with: openssl rand -base64 32).`;
+  const rotated = env.BETTER_AUTH_SECRETS?.trim();
+  const values = rotated
+    ? rotated
+        .split(",")
+        .map((entry) => entry.slice(entry.indexOf(":") + 1).trim())
+    : [secret?.trim() ?? ""];
+  if (values.every((value) => value.length >= MIN_AUTH_SECRET_LENGTH)) {
+    return null;
+  }
+  return `BETTER_AUTH_SECRET${rotated ? "S entries" : ""} must be at least ${MIN_AUTH_SECRET_LENGTH} random characters in production (generate one with: openssl rand -base64 32).`;
 }

@@ -34,6 +34,7 @@ import { confirmPassword, ReauthenticationError } from "@/lib/reauth";
 import {
   notifyAccessChanged,
   notifyOwnersOfAdminGrant,
+  notifyTwoFactorReset,
 } from "@/lib/security-events";
 import { siteOrigin } from "@/lib/site-url";
 
@@ -508,6 +509,51 @@ export async function removeMemberAction(
   });
 
   if (result.status === "success") redirect("/admin/members");
+  return result;
+}
+
+/** For a member who lost both their phone and their backup codes. */
+export async function resetMemberTwoFactorAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const memberId = field(formData, "memberId");
+  const result = await runAdminAction("members:manage", async (viewer) => {
+    const { member } = await manageableMember(viewer, memberId);
+    if (!member.user) {
+      throw new AdminActionError(`${member.name} has no account.`);
+    }
+    if (field(formData, "confirmation") !== member.name) {
+      throw new AdminActionError(`Type ${member.name} exactly to confirm.`);
+    }
+    await passwordConfirmed(viewer, formData);
+
+    const userId = member.user.id;
+    await getDb().$transaction(async (transaction) => {
+      await transaction.twoFactor.deleteMany({ where: { userId } });
+      await transaction.user.update({
+        where: { id: userId },
+        data: { twoFactorEnabled: false },
+      });
+      await transaction.session.deleteMany({ where: { userId } });
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: "member.two_factor_reset",
+        entity: "Member",
+        entityId: member.id,
+      });
+    });
+    notifyTwoFactorReset({
+      to: member.user.email,
+      name: member.name,
+      resetBy: viewer.name,
+    });
+    return {
+      status: "success",
+      message: `Two-factor authentication was reset for ${member.name}.`,
+    };
+  });
+  revalidatePath(`/admin/members/${memberId}`);
   return result;
 }
 

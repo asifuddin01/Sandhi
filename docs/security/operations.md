@@ -6,16 +6,16 @@ The code enforces what it can. This page covers the rest: settings on the hostin
 
 Set these in Vercel → Project → Settings → Environment Variables, scoped to **Production** only and marked **Sensitive**. Preview deployments get their own values (a separate Neon branch and separate keys), never production's.
 
-| Variable                                             | Requirement                                                                                                                     |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- |
-| `BETTER_AUTH_SECRET`                                 | At least 32 random characters (`openssl rand -base64 32`). Production refuses to start signing people in with anything shorter. |
-| `BETTER_AUTH_URL`                                    | `https://sandhiresearch.org`. Email links are built from this, never from the request's host.                                   |
-| `DATABASE_URL`                                       | The least-privilege `sandhi_app` role (section 2), with `sslmode=require`. Production refuses a remote database without TLS.    |
-| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Required: without them, sign-in and forms refuse requests in production instead of running without rate limits.                 |
-| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`         | Required for the public forms in production.                                                                                    |
-| `RESEND_API_KEY`, `EMAIL_FROM`                       | Required for invitations, resets, and verification emails.                                                                      |
-| `R2_*`                                               | Keys scoped to the two SANDHI buckets only (Object Read & Write), not account-wide.                                             |
-| `CRON_SECRET`                                        | At least 32 random characters.                                                                                                  |
+| Variable                                             | Requirement                                                                                                                                                                                            |
+| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `BETTER_AUTH_SECRET`                                 | At least 32 random characters (`openssl rand -base64 32`). Production refuses to start signing people in with anything shorter. It also encrypts two-factor secrets; see section 7 before changing it. |
+| `BETTER_AUTH_URL`                                    | `https://sandhiresearch.org`. Email links are built from this, never from the request's host.                                                                                                          |
+| `DATABASE_URL`                                       | The least-privilege `sandhi_app` role (section 2), with `sslmode=require`. Production refuses a remote database without TLS.                                                                           |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Required: without them, sign-in and forms refuse requests in production instead of running without rate limits.                                                                                        |
+| `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`         | Required for the public forms in production.                                                                                                                                                           |
+| `RESEND_API_KEY`, `EMAIL_FROM`                       | Required for invitations, resets, and verification emails.                                                                                                                                             |
+| `R2_*`                                               | Keys scoped to the two SANDHI buckets only (Object Read & Write), not account-wide.                                                                                                                    |
+| `CRON_SECRET`                                        | At least 32 random characters.                                                                                                                                                                         |
 
 `SEED_OWNER_PASSWORD` is only for creating the first account. Remove it from every environment after that account exists.
 
@@ -56,15 +56,22 @@ In the repository's Settings → Code security:
 
 ## 7. Rotating secrets
 
-| Secret                              | How                                                                       | Effect                  |
-| ----------------------------------- | ------------------------------------------------------------------------- | ----------------------- |
-| `BETTER_AUTH_SECRET`                | Generate a new value, update Vercel, redeploy.                            | Everyone is signed out. |
-| Database password                   | Reset the `sandhi_app` password in Neon, update `DATABASE_URL`, redeploy. | None visible.           |
-| Upstash, Turnstile, Resend, R2 keys | Create a new key, update Vercel, redeploy, then delete the old key.       | None visible.           |
+| Secret                              | How                                                                                                     | Effect                                                                                                |
+| ----------------------------------- | ------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `BETTER_AUTH_SECRET`                | Set `BETTER_AUTH_SECRETS=2:<new>,1:<old>` (newest first) instead of replacing the value, then redeploy. | Everyone is signed out; two-factor keeps working because the old key still decrypts existing secrets. |
+| Database password                   | Reset the `sandhi_app` password in Neon, update `DATABASE_URL`, redeploy.                               | None visible.                                                                                         |
+| Upstash, Turnstile, Resend, R2 keys | Create a new key, update Vercel, redeploy, then delete the old key.                                     | None visible.                                                                                         |
 
 Rotate immediately if a secret may have leaked (a laptop is lost, a key is pasted somewhere public, or a secret-scanning alert fires). Otherwise rotate yearly.
 
-## 8. Disaster recovery
+## 8. Two-factor authentication
+
+- Every Owner, Admin, and Reviewer must set up an authenticator app (Portal → Account security) before administration opens. Members may choose to.
+- **Lost phone:** sign in with one of the ten backup codes, then create new codes and set up the new phone.
+- **Lost phone and backup codes:** another Owner or Admin opens Admin → Members → the person → Reset two-factor authentication (their own password and the person's name are required). The person is signed out everywhere, emailed, and sets it up again at next sign-in.
+- **The only Owner lost both:** in the Neon SQL editor, run `delete from "twoFactor" where "userId" = (select id from "user" where email = 'owner@…'); update "user" set "twoFactorEnabled" = false where email = 'owner@…';` then sign in and set it up again straight away. Record why in the audit notes.
+
+## 9. Disaster recovery
 
 Targets: lose at most one day of data (in practice minutes, with point-in-time restore) and be back within four hours.
 
@@ -75,16 +82,16 @@ Targets: lose at most one day of data (in practice minutes, with point-in-time r
 
 Practise this once before launch and then yearly.
 
-## 9. Incident response
+## 10. Incident response
 
 1. **Detect.** Signs include security emails to members, unexpected audit log entries, Dependabot or secret-scanning alerts, and error spikes in Vercel logs.
 2. **Contain.** Suspend affected accounts (this ends their sessions at once). Rotate `BETTER_AUTH_SECRET` to sign everyone out. Rotate any exposed key. Turn on Attack Challenge Mode. Post a site notice from Admin → Settings if people need to know.
 3. **Investigate.** Use the audit log, Vercel logs, and Neon history. Record times and actions as you go.
-4. **Fix and recover.** Patch the cause, redeploy, and restore data from a point in time if needed (section 8).
+4. **Fix and recover.** Patch the cause, redeploy, and restore data from a point in time if needed (section 9). If someone's authenticator may be compromised, reset their two-factor authentication (section 8).
 5. **Notify.** Tell affected people what happened and what to do, and meet any legal notification duty that applies.
 6. **Learn.** Write a short account of what happened and what changes as a result.
 
-## 10. Regular maintenance
+## 11. Regular maintenance
 
 - Weekly: review and merge Dependabot pull requests once CI passes.
 - Monthly: read the audit log and take a backup copy (sections 2 and 3).

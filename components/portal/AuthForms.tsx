@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import {
@@ -8,6 +9,7 @@ import {
   requestPasswordResetAction,
   resetPasswordAction,
   signInAction,
+  verifyTwoFactorAction,
   type AuthFormState,
 } from "@/app/portal/actions";
 import { useFormAction } from "@/components/forms/useFormAction";
@@ -200,6 +202,71 @@ export function AcceptInvitationForm({
       <NewPasswordFields />
       <FormMessage state={state} />
       <SubmitButton label="Create account" pending="Creating…" />
+    </form>
+  );
+}
+
+/** The second sign-in step for accounts with two-factor authentication. */
+export function TwoFactorForm({ next }: { next: string }) {
+  const [method, setMethod] = useState<"totp" | "backup">("totp");
+  const { state, formAction, onSubmit } = useFormAction(
+    verifyTwoFactorAction,
+    idle,
+  );
+
+  return (
+    <form className={styles.form} action={formAction} onSubmit={onSubmit}>
+      <input type="hidden" name="next" value={next} />
+      <input type="hidden" name="method" value={method} />
+      {method === "totp" ? (
+        <div className={styles.field} key="totp">
+          <label htmlFor="code">Authentication code</label>
+          <input
+            id="code"
+            name="code"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            pattern="[0-9 ]*"
+            maxLength={7}
+            aria-describedby="code-hint"
+            required
+            autoFocus
+          />
+          <p id="code-hint" className={styles.hint}>
+            The six-digit code your authenticator app shows for SANDHI.
+          </p>
+        </div>
+      ) : (
+        <div className={styles.field} key="backup">
+          <label htmlFor="code">Backup code</label>
+          <input
+            id="code"
+            name="code"
+            autoComplete="off"
+            spellCheck={false}
+            aria-describedby="code-hint"
+            required
+            autoFocus
+          />
+          <p id="code-hint" className={styles.hint}>
+            One of the codes you saved when you set up two-factor
+            authentication, such as ab3De-9xYz2. Each works once.
+          </p>
+        </div>
+      )}
+      <FormMessage state={state} />
+      <SubmitButton label="Continue" pending="Checking…" />
+      <p className={styles.aside}>
+        <button
+          className={styles.textButton}
+          type="button"
+          onClick={() => setMethod(method === "totp" ? "backup" : "totp")}
+        >
+          {method === "totp"
+            ? "Use a backup code instead"
+            : "Use your authenticator app instead"}
+        </button>
+      </p>
     </form>
   );
 }

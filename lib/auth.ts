@@ -6,6 +6,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
+import { twoFactor } from "better-auth/plugins";
 
 import { getDb } from "@/lib/db";
 import {
@@ -26,6 +27,7 @@ import {
   recordRateLimited,
   recordSignIn,
   recordSignInFailure,
+  recordTwoFactorFailure,
   type SignInFailure,
 } from "@/lib/security-events";
 
@@ -44,7 +46,39 @@ const rateLimitedPaths = new Set([
   "/request-password-reset",
   "/reset-password",
   "/send-verification-email",
+  "/two-factor/enable",
+  "/two-factor/verify-totp",
+  "/two-factor/verify-backup-code",
+  "/two-factor/generate-backup-codes",
 ]);
+
+/** An authenticator code works once, however long its window lasts. */
+const TOTP_REUSE_WINDOW_MS = 90 * 1000;
+export const TOTP_REUSED_MESSAGE =
+  "That code was already used. Wait for the next one.";
+
+function usedCodeKey(userId: string, code: string): string {
+  return `totp-used-${userId}-${code}`;
+}
+
+type AuthHookContext = Parameters<
+  Parameters<typeof createAuthMiddleware>[0]
+>[0];
+
+/** Whose sign-in a pending two-factor challenge belongs to, if any. */
+async function pendingTwoFactorUser(
+  context: AuthHookContext,
+): Promise<string | null> {
+  const cookie = context.context.createAuthCookie("two_factor");
+  const identifier = await context.getSignedCookie(
+    cookie.name,
+    context.context.secret,
+  );
+  if (!identifier) return null;
+  const challenge =
+    await context.context.internalAdapter.findVerificationValue(identifier);
+  return challenge?.value ?? null;
+}
 
 export class AuthRateLimitError extends Error {
   constructor(readonly retryAfter: number) {
@@ -199,11 +233,18 @@ function createAuth() {
       "/update-user",
       "/change-email",
       "/delete-user",
+      // Turning two-factor off goes through the portal, which refuses it
+      // for staff; the secret is never read back; codes are not emailed.
+      "/two-factor/disable",
+      "/two-factor/get-totp-uri",
+      "/two-factor/send-otp",
+      "/two-factor/verify-otp",
     ],
     hooks: {
       before: createAuthMiddleware(async (context) => {
         const body = context.body as
-          { email?: unknown; newPassword?: unknown } | undefined;
+          | { email?: unknown; newPassword?: unknown; code?: unknown }
+          | undefined;
 
         // Server actions call the API directly and limit themselves; this
         // covers requests that reach the HTTP endpoints.
@@ -235,8 +276,57 @@ function createAuth() {
             });
           }
         }
+
+        if (
+          context.path === "/two-factor/verify-totp" &&
+          typeof body?.code === "string"
+        ) {
+          const userId = await pendingTwoFactorUser(context);
+          const used = userId
+            ? await context.context.internalAdapter.findVerificationValue(
+                usedCodeKey(userId, body.code),
+              )
+            : null;
+          if (used && new Date(used.expiresAt).getTime() > Date.now()) {
+            throw new APIError("UNAUTHORIZED", {
+              message: TOTP_REUSED_MESSAGE,
+              code: "TOTP_CODE_REUSED",
+            });
+          }
+        }
       }),
       after: createAuthMiddleware(async (context) => {
+        if (
+          (context.path === "/two-factor/verify-totp" ||
+            context.path === "/two-factor/verify-backup-code") &&
+          context.context.returned instanceof APIError
+        ) {
+          const userId = await pendingTwoFactorUser(context);
+          if (userId) {
+            await recordTwoFactorFailure(
+              userId,
+              context.headers ?? context.request?.headers,
+            );
+          }
+          return;
+        }
+        if (context.path === "/two-factor/verify-totp") {
+          const returned = context.context.returned as
+            { user?: { id?: unknown } } | undefined;
+          const code = (context.body as { code?: unknown } | undefined)?.code;
+          if (
+            !(returned instanceof APIError) &&
+            typeof returned?.user?.id === "string" &&
+            typeof code === "string"
+          ) {
+            await context.context.internalAdapter.createVerificationValue({
+              identifier: usedCodeKey(returned.user.id, code),
+              value: returned.user.id,
+              expiresAt: new Date(Date.now() + TOTP_REUSE_WINDOW_MS),
+            });
+          }
+          return;
+        }
         if (context.path !== "/sign-in/email") return;
         const reason = signInFailure(context.context.returned);
         const body = context.body as { email?: unknown } | undefined;
@@ -259,7 +349,21 @@ function createAuth() {
             });
             if (member?.status === "SUSPENDED") return false;
           },
-          after: async (session) => {
+          after: async (session, context) => {
+            // Replacing the session of someone already signed in is not a
+            // sign-in, nor is the password-only session that two-factor
+            // sign-in discards before asking for the code.
+            const current = (
+              context?.context as { session?: unknown } | undefined
+            )?.session;
+            if (current) return;
+            if (context?.path === "/sign-in/email") {
+              const user = await getDb().user.findUnique({
+                where: { id: session.userId },
+                select: { twoFactorEnabled: true },
+              });
+              if (user?.twoFactorEnabled) return;
+            }
             await recordSignIn(session);
           },
         },
@@ -267,7 +371,13 @@ function createAuth() {
     },
     telemetry: { enabled: false },
     // Must stay last: lets server actions set the session cookie.
-    plugins: [nextCookies()],
+    plugins: [
+      // Authenticator-app codes with encrypted secrets and backup codes. A
+      // challenge allows five tries; ten failures lock two-factor sign-in
+      // for fifteen minutes.
+      twoFactor({ issuer: "SANDHI Research Lab" }),
+      nextCookies(),
+    ],
   });
 }
 

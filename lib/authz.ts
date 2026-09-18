@@ -9,9 +9,13 @@ import { getDb, isDatabaseConfigured } from "@/lib/db";
 import {
   can,
   parseSystemRole,
+  requiresTwoFactor,
   type Capability,
   type SystemRoleValue,
 } from "@/lib/permissions";
+
+/** Where staff without two-factor authentication are sent to set it up. */
+export const TWO_FACTOR_SETUP_PATH = "/portal/security?setup=two-factor";
 
 export interface Viewer {
   userId: string;
@@ -20,6 +24,7 @@ export interface Viewer {
   email: string;
   name: string;
   role: SystemRoleValue;
+  twoFactorEnabled: boolean;
   member: {
     id: string;
     slug: string;
@@ -30,8 +35,8 @@ export interface Viewer {
 }
 
 export class AuthorizationError extends Error {
-  constructor() {
-    super("You do not have permission to do that.");
+  constructor(message = "You do not have permission to do that.") {
+    super(message);
   }
 }
 
@@ -56,6 +61,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     email: session.user.email,
     name: session.user.name,
     role: parseSystemRole(session.user.role),
+    twoFactorEnabled: session.user.twoFactorEnabled === true,
     member,
   };
 });
@@ -76,6 +82,9 @@ export async function requireCapability(
 ): Promise<Viewer> {
   const viewer = await requireViewer(nextPath);
   if (!can(viewer.role, capability)) notFound();
+  if (requiresTwoFactor(capability) && !viewer.twoFactorEnabled) {
+    redirect(TWO_FACTOR_SETUP_PATH);
+  }
   return viewer;
 }
 
@@ -84,6 +93,11 @@ export async function authorize(capability: Capability): Promise<Viewer> {
   const viewer = await getViewer();
   if (!viewer || !can(viewer.role, capability)) {
     throw new AuthorizationError();
+  }
+  if (requiresTwoFactor(capability) && !viewer.twoFactorEnabled) {
+    throw new AuthorizationError(
+      "Set up two-factor authentication in Account security first.",
+    );
   }
   return viewer;
 }

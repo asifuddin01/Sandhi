@@ -947,14 +947,6 @@ export type MemberUpdateinterestsInput = {
   push?: string | string[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type MemberCreateNestedOneWithoutAreasInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutAreasInput, Prisma.MemberUncheckedCreateWithoutAreasInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutAreasInput

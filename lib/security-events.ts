@@ -31,7 +31,12 @@ export type SecurityAction =
   | "auth.alert_sent"
   | "auth.session_revoked"
   | "auth.sessions_revoked"
-  | "auth.reauth_failed";
+  | "auth.reauth_failed"
+  | "auth.two_factor_enabled"
+  | "auth.two_factor_disabled"
+  | "auth.two_factor_failed"
+  | "auth.backup_codes_regenerated"
+  | "auth.backup_code_used";
 
 export type SignInFailure = "password" | "unverified" | "suspended";
 
@@ -362,4 +367,103 @@ export async function notifyOwnersOfAdminGrant(input: {
       );
     }
   });
+}
+
+type AccountHolder = { id: string; email: string; name: string };
+
+/** A backup code signs someone in without the phone: always worth knowing. */
+export async function recordBackupCodeUsed(
+  user: AccountHolder,
+  headers: Headers | undefined,
+): Promise<void> {
+  await safely("backup code use", async () => {
+    const fingerprint = fingerprintFromHeaders(headers);
+    await record("auth.backup_code_used", user.id, fingerprint, user.id);
+    const origin = await siteOrigin();
+    sendLater(() =>
+      sendSecurityNotice({
+        to: user.email,
+        name: user.name,
+        subject: "A backup code was used on your SANDHI account",
+        lines: [
+          `A backup code was used to sign in from ${fingerprint.device} (${fingerprint.network}) at ${when()}. Each code works once.`,
+          `If this was you, consider creating new backup codes in Account security (${origin}/portal/security).`,
+          "If it was not, change your password now and tell an administrator.",
+        ],
+      }),
+    );
+  });
+}
+
+const twoFactorNotices = {
+  "auth.two_factor_enabled": {
+    subject: "Two-factor authentication is on for your SANDHI account",
+    line: "Two-factor authentication was turned on for your account",
+  },
+  "auth.two_factor_disabled": {
+    subject: "Two-factor authentication is off for your SANDHI account",
+    line: "Two-factor authentication was turned off for your account",
+  },
+  "auth.backup_codes_regenerated": {
+    subject: "New backup codes for your SANDHI account",
+    line: "New backup codes were created for your account; the old ones no longer work",
+  },
+} as const;
+
+/** Changes a person makes to their own two-factor authentication. */
+export async function recordTwoFactorChange(
+  action: keyof typeof twoFactorNotices,
+  user: AccountHolder,
+  headers: Headers | undefined,
+): Promise<void> {
+  await safely(action, async () => {
+    const fingerprint = fingerprintFromHeaders(headers);
+    await record(action, user.id, fingerprint, user.id);
+    const notice = twoFactorNotices[action];
+    sendLater(() =>
+      sendSecurityNotice({
+        to: user.email,
+        name: user.name,
+        subject: notice.subject,
+        lines: [
+          `${notice.line} at ${when()}, from ${fingerprint.device}.`,
+          "If you did not do this, change your password now and tell an administrator.",
+        ],
+      }),
+    );
+  });
+}
+
+/** Records a wrong code at the two-factor sign-in step. */
+export async function recordTwoFactorFailure(
+  userId: string,
+  headers: Headers | undefined,
+): Promise<void> {
+  await safely("two-factor failure", () =>
+    record(
+      "auth.two_factor_failed",
+      userId,
+      fingerprintFromHeaders(headers),
+      null,
+    ),
+  );
+}
+
+/** Tells a member an administrator reset their two-factor authentication. */
+export function notifyTwoFactorReset(input: {
+  to: string;
+  name: string;
+  resetBy: string;
+}): void {
+  sendLater(() =>
+    sendSecurityNotice({
+      to: input.to,
+      name: input.name,
+      subject: "Your SANDHI two-factor authentication was reset",
+      lines: [
+        `${input.resetBy} reset two-factor authentication on your account at ${when()} and signed you out everywhere.`,
+        "Set it up again from Account security the next time you sign in. If you did not ask for this, tell the lab's Owner.",
+      ],
+    }),
+  );
 }

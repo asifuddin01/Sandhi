@@ -3,7 +3,7 @@ import { expect, test, type Page } from "@playwright/test";
 import type { Prisma } from "../../generated/prisma/client";
 import { createPrismaClient } from "../../lib/db-runtime";
 
-const PASSWORD = "fixture-password-2026";
+import { signIn as signInAs } from "./support/auth";
 
 test.skip(
   process.env.E2E_FIXTURES_READY !== "true" || !process.env.DATABASE_URL,
@@ -19,14 +19,7 @@ async function open(page: Page, path: string) {
 }
 
 async function signIn(page: Page, email: string, next: string) {
-  await open(page, `/portal/sign-in?next=${encodeURIComponent(next)}`);
-  await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(PASSWORD);
-  await page.getByRole("button", { name: "Sign in" }).click();
-  // The first visit to a route compiles it in development.
-  await expect(page).toHaveURL(new RegExp(`${next}$`, "u"), {
-    timeout: 30_000,
-  });
+  await signInAs(page, email, next);
 }
 
 type StoredSetting = { key: string; value: Prisma.JsonValue };

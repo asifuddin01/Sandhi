@@ -54,7 +54,9 @@ describe("Prose", () => {
 
     expect(html).toContain('<h2 id="error-analysis">');
     expect(html).toContain("<figure>");
-    expect(html).toContain("<figcaption>Figure 1. Errors by class.</figcaption>");
+    expect(html).toContain(
+      "<figcaption>Figure 1. Errors by class.</figcaption>",
+    );
     expect(html).toContain('alt="Confusion matrix"');
   });
 });

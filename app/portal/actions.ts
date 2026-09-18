@@ -4,8 +4,9 @@ import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import { getAuth } from "@/lib/auth";
+import { getAuth, TOTP_REUSED_MESSAGE } from "@/lib/auth";
 import { breachedPasswordProblem } from "@/lib/breached-passwords";
+import { recordBackupCodeUsed } from "@/lib/security-events";
 import { acceptInvitation, InvitationError } from "@/lib/invitations";
 import { safeAuthenticatedPath } from "@/lib/permissions";
 import {
@@ -39,8 +40,9 @@ export async function signInAction(
   const blocked = await limited(requestHeaders, email);
   if (blocked) return blocked;
 
+  let result: unknown;
   try {
-    await getAuth().api.signInEmail({
+    result = await getAuth().api.signInEmail({
       body: { email, password },
       headers: requestHeaders,
     });
@@ -75,6 +77,86 @@ export async function signInAction(
       };
     }
     console.error("[auth] sign-in failed:", error);
+    return unavailable;
+  }
+
+  // The password was right; accounts with two-factor authentication still
+  // need a code before a session exists.
+  if (
+    result &&
+    typeof result === "object" &&
+    "twoFactorRedirect" in result &&
+    result.twoFactorRedirect
+  ) {
+    redirect(`/portal/two-factor?next=${encodeURIComponent(next)}`);
+  }
+  redirect(next);
+}
+
+const twoFactorMessages: Record<string, string> = {
+  INVALID_CODE: "That code is not correct.",
+  INVALID_BACKUP_CODE: "That backup code is not correct or was already used.",
+  TOTP_CODE_REUSED: TOTP_REUSED_MESSAGE,
+  TOO_MANY_ATTEMPTS_REQUEST_NEW_CODE:
+    "Too many attempts. Sign in again to try once more.",
+  ACCOUNT_TEMPORARILY_LOCKED:
+    "Too many incorrect codes. Two-factor sign-in is paused for 15 minutes.",
+  INVALID_TWO_FACTOR_COOKIE: "This sign-in has expired. Sign in again.",
+};
+
+/** The second step: a code from the authenticator app, or a backup code. */
+export async function verifyTwoFactorAction(
+  _previous: AuthFormState,
+  formData: FormData,
+): Promise<AuthFormState> {
+  const method = field(formData, "method") === "backup" ? "backup" : "totp";
+  const next = safeAuthenticatedPath(field(formData, "next"));
+  const code =
+    method === "totp"
+      ? field(formData, "code").replace(/\s/gu, "")
+      : field(formData, "code").trim();
+
+  if (method === "totp" && !/^\d{6}$/u.test(code)) {
+    return {
+      status: "error",
+      message: "Enter the six-digit code from your authenticator app.",
+    };
+  }
+  if (method === "backup" && !/^[A-Za-z0-9]{5}-[A-Za-z0-9]{5}$/u.test(code)) {
+    return {
+      status: "error",
+      message: "Enter one of your backup codes, including the dash.",
+    };
+  }
+
+  const requestHeaders = await headers();
+  const blocked = await limited(requestHeaders);
+  if (blocked) return blocked;
+
+  try {
+    if (method === "totp") {
+      await getAuth().api.verifyTOTP({
+        body: { code },
+        headers: requestHeaders,
+      });
+    } else {
+      const result = await getAuth().api.verifyBackupCode({
+        body: { code },
+        headers: requestHeaders,
+      });
+      await recordBackupCodeUsed(result.user, requestHeaders);
+    }
+  } catch (error) {
+    if (error instanceof APIError) {
+      const errorCode = (error.body as { code?: unknown } | undefined)?.code;
+      return {
+        status: "error",
+        message:
+          (typeof errorCode === "string" && twoFactorMessages[errorCode]) ||
+          "That code could not be checked. Sign in again.",
+      };
+    }
+    console.error("[auth] two-factor verification failed:", error);
     return unavailable;
   }
 

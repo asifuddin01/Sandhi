@@ -5,6 +5,7 @@ import {
   canManageMember,
   capabilityRoles,
   parseSystemRole,
+  requiresTwoFactor,
   safeAuthenticatedPath,
   systemRoles,
   type Capability,
@@ -94,6 +95,16 @@ describe("post-sign-in redirects", () => {
       ["/admin"],
     ]) {
       expect(safeAuthenticatedPath(value)).toBe("/portal");
+    }
+  });
+});
+
+describe("requiresTwoFactor", () => {
+  it("guards every capability beyond the member portal", () => {
+    for (const capability of Object.keys(capabilityRoles) as Capability[]) {
+      expect(requiresTwoFactor(capability), capability).toBe(
+        capability !== "portal:access",
+      );
     }
   });
 });

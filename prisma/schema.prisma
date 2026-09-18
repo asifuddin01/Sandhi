@@ -183,6 +183,8 @@ model User {
   invitationsSent      Invitation[] @relation("InvitationInviter")
   invitationsAccepted  Invitation[] @relation("InvitationAcceptor")
   auditLogs            AuditLog[]
+  twoFactorEnabled     Boolean      @default(false)
+  twoFactors           TwoFactor[]
   createdAt            DateTime     @default(now())
   updatedAt            DateTime     @updatedAt
 
@@ -226,6 +228,23 @@ model Account {
   @@unique([providerId, accountId])
   @@index([userId])
   @@map("account")
+}
+
+/// Better Auth two-factor plugin: the authenticator secret and backup codes,
+/// both encrypted with the auth secret.
+model TwoFactor {
+  id                      String    @id @default(cuid())
+  secret                  String
+  backupCodes             String
+  userId                  String
+  verified                Boolean   @default(true)
+  failedVerificationCount Int       @default(0)
+  lockedUntil             DateTime?
+  user                    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([secret])
+  @@index([userId])
+  @@map("twoFactor")
 }
 
 model Verification {

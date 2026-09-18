@@ -132,7 +132,7 @@ test("failed sign-ins are recorded, and repeated ones alert the account holder o
 test("sign-ins are recorded, and one from a new device alerts the account holder", async ({
   browser,
 }) => {
-  const email = "fixture-reviewer@sandhi.test";
+  const email = "fixture-member@sandhi.test";
   const id = await userId(email);
   const since = new Date();
   const firefox =

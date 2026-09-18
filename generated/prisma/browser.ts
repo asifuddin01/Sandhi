@@ -33,6 +33,12 @@ export type Session = Prisma.SessionModel
  */
 export type Account = Prisma.AccountModel
 /**
+ * Model TwoFactor
+ * Better Auth two-factor plugin: the authenticator secret and backup codes,
+ * both encrypted with the auth secret.
+ */
+export type TwoFactor = Prisma.TwoFactorModel
+/**
  * Model Verification
  * 
  */

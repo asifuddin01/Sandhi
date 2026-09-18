@@ -4,10 +4,12 @@ import Link from "next/link";
 import {
   ChangePasswordForm,
   SessionList,
+  TwoFactorSection,
   type SessionRow,
 } from "@/components/portal/SecurityForms";
 import styles from "@/components/portal/Portal.module.css";
 import { requireViewer } from "@/lib/authz";
+import { can } from "@/lib/permissions";
 import { getDb } from "@/lib/db";
 import { coarseNetwork, describeDevice } from "@/lib/security-signals";
 
@@ -33,6 +35,11 @@ const eventLabels: Record<string, string> = {
   "auth.session_revoked": "Signed out another session",
   "auth.sessions_revoked": "Signed out every other session",
   "auth.reauth_failed": "Wrong password when confirming an action",
+  "auth.two_factor_enabled": "Two-factor authentication turned on",
+  "auth.two_factor_disabled": "Two-factor authentication turned off",
+  "auth.two_factor_failed": "Incorrect two-factor code",
+  "auth.backup_codes_regenerated": "New backup codes created",
+  "auth.backup_code_used": "Signed in with a backup code",
 };
 
 function detail(diff: unknown): string {
@@ -43,8 +50,14 @@ function detail(diff: unknown): string {
     .join(" · ");
 }
 
-export default async function AccountSecurityPage() {
+export default async function AccountSecurityPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ setup?: string | string[] }>;
+}) {
   const viewer = await requireViewer("/portal/security");
+  const { setup } = await searchParams;
+  const twoFactorRequired = can(viewer.role, "admin:access");
   const db = getDb();
   const [sessions, events] = await Promise.all([
     db.session.findMany({
@@ -91,6 +104,28 @@ export default async function AccountSecurityPage() {
       <section className={styles.section} aria-labelledby="password-heading">
         <h2 id="password-heading">Password</h2>
         <ChangePasswordForm />
+      </section>
+
+      <section className={styles.section} aria-labelledby="two-factor-heading">
+        <h2 id="two-factor-heading">Two-factor authentication</h2>
+        {setup === "two-factor" && !viewer.twoFactorEnabled ? (
+          <p className={styles.notice} role="status">
+            Your role needs two-factor authentication before administration
+            opens. Set it up below; it takes about a minute.
+          </p>
+        ) : null}
+        {viewer.twoFactorEnabled ? null : (
+          <p className={styles.hint}>
+            A code from an authenticator app (such as 1Password, Google
+            Authenticator, or Microsoft Authenticator) is needed after your
+            password, so a stolen password alone cannot open your account.
+            {twoFactorRequired ? " Your role requires it." : ""}
+          </p>
+        )}
+        <TwoFactorSection
+          enabled={viewer.twoFactorEnabled}
+          required={twoFactorRequired}
+        />
       </section>
 
       <section className={styles.section} aria-labelledby="sessions-heading">
