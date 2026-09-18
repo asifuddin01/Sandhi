@@ -50,6 +50,7 @@ test.describe("sign-in and administration access", () => {
     page,
   }) => {
     await page.goto("/portal/sign-in");
+    await page.waitForLoadState("networkidle");
     await page.getByLabel("Email").fill("fixture-member@sandhi.test");
     await page.getByLabel("Password").fill("not-the-password-at-all");
     await page.getByRole("button", { name: "Sign in" }).click();
@@ -137,6 +138,7 @@ test.describe("sign-in and administration access", () => {
       "nobody-here@sandhi.test",
     ]) {
       await page.goto("/portal/reset-password");
+      await page.waitForLoadState("networkidle");
       await page.getByLabel("Email").fill(email);
       await page.getByRole("button", { name: "Send reset link" }).click();
       await expect(
@@ -247,6 +249,7 @@ test.describe("password reset", () => {
       await db.verification.deleteMany({ where: { value: user.id } });
 
       await page.goto("/portal/reset-password");
+      await page.waitForLoadState("networkidle");
       await page.getByLabel("Email").fill(user.email);
       await page.getByRole("button", { name: "Send reset link" }).click();
       await expect(page.getByText(/we have sent a link/u)).toBeVisible();
@@ -278,6 +281,7 @@ test.describe("password reset", () => {
       await page.goto(
         `/api/auth/reset-password/${token}?callbackURL=${encodeURIComponent("/portal/reset-password")}`,
       );
+      await page.waitForLoadState("networkidle");
       await expect(page).toHaveURL(/\/portal\/reset-password\?token=/u);
       await expect(
         page.getByRole("heading", { name: "Choose a new password" }),
@@ -298,6 +302,7 @@ test.describe("password reset", () => {
 
       // A used link cannot be replayed.
       await page.goto(`/portal/reset-password?token=${token}`);
+      await page.waitForLoadState("networkidle");
       await page.getByLabel("New password").fill(PASSWORD);
       await page.getByLabel("Confirm password").fill(PASSWORD);
       await page.getByRole("button", { name: "Change password" }).click();
@@ -339,6 +344,7 @@ test.describe("invitations", () => {
       });
 
       await page.goto(`/portal/accept-invite/${token}`);
+      await page.waitForLoadState("networkidle");
       await expect(page.getByText(email)).toBeVisible();
       await page.getByLabel("Full name").fill("Invited Researcher");
       await page.getByLabel("New password").fill(PASSWORD);
@@ -363,7 +369,9 @@ test.describe("invitations", () => {
     } finally {
       const user = await db.user.findUnique({ where: { email } });
       if (user) {
-        await db.auditLog.deleteMany({ where: { actorId: user.id } });
+        await db.auditLog.deleteMany({
+          where: { OR: [{ actorId: user.id }, { entityId: user.id }] },
+        });
         await db.invitation.deleteMany({ where: { email } });
         await db.member.deleteMany({ where: { userId: user.id } });
         await db.user.delete({ where: { id: user.id } });

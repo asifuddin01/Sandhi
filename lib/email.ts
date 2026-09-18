@@ -246,3 +246,29 @@ export async function sendInvitationEmail(
     dependencies,
   );
 }
+
+/**
+ * A short security notice to an account holder: what happened, and what to
+ * do if it was not them. Lines are plain text and escaped for HTML.
+ */
+export async function sendSecurityNotice(
+  {
+    to,
+    name,
+    subject,
+    lines,
+  }: { to: string; name: string; subject: string; lines: string[] },
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  return sendEmail(
+    {
+      to,
+      subject,
+      text: `Hello ${name},\n\n${lines.join("\n\n")}\n\nSANDHI Research Lab`,
+      html: `<p>Hello ${escapeHtml(name)},</p>${lines
+        .map((line) => `<p>${escapeHtml(line)}</p>`)
+        .join("")}<p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}

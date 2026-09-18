@@ -176,9 +176,15 @@ test("a member cannot invite or promote anyone, even by posting admin actions di
     });
     expect(self.user?.role).toBe("MEMBER");
     expect(self.rank).toBe("RESEARCHER");
-    expect(await db.auditLog.count({ where: { actorId: self.user!.id } })).toBe(
-      0,
-    );
+    // Nothing but their own sign-in was recorded for them.
+    expect(
+      await db.auditLog.count({
+        where: {
+          actorId: self.user!.id,
+          NOT: { action: { startsWith: "auth." } },
+        },
+      }),
+    ).toBe(0);
   } finally {
     await db.$disconnect();
     await member.context().close();

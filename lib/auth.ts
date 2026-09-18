@@ -17,14 +17,26 @@ import {
   identifierFromHeaders,
   ServiceConfigurationError,
 } from "@/lib/forms-services";
+import { breachedPasswordProblem } from "@/lib/breached-passwords";
 import { authSecretProblem } from "@/lib/production-config";
 import { checkRateLimit } from "@/lib/ratelimit";
+import {
+  recordPasswordChanged,
+  recordPasswordResetRequested,
+  recordRateLimited,
+  recordSignIn,
+  recordSignInFailure,
+  type SignInFailure,
+} from "@/lib/security-events";
 
 export const MIN_PASSWORD_LENGTH = 12;
 export const MAX_PASSWORD_LENGTH = 128;
 
 const AUTH_WINDOW_SECONDS = 15 * 60;
 const AUTH_ATTEMPT_LIMIT = 10;
+
+// Endpoints that set a new password: refused if it appears in a breach.
+const newPasswordPaths = new Set(["/reset-password", "/change-password"]);
 
 // Endpoints that accept credentials or send email over HTTP.
 const rateLimitedPaths = new Set([
@@ -74,7 +86,19 @@ export async function enforceAuthRateLimit(
   const blocked = (await Promise.all(checks)).find(
     (decision) => !decision.allowed,
   );
-  if (blocked) throw new AuthRateLimitError(blocked.retryAfter);
+  if (blocked) {
+    if (normalizedEmail) await recordRateLimited(normalizedEmail, headers);
+    throw new AuthRateLimitError(blocked.retryAfter);
+  }
+}
+
+/** Which kind of refusal a failed email sign-in was, if one worth recording. */
+function signInFailure(returned: unknown): SignInFailure | null {
+  if (!(returned instanceof APIError)) return null;
+  const code = (returned.body as { code?: unknown } | undefined)?.code;
+  if (code === "EMAIL_NOT_VERIFIED") return "unverified";
+  if (code === "FAILED_TO_CREATE_SESSION") return "suspended";
+  return returned.statusCode === 401 ? "password" : null;
 }
 
 /**
@@ -116,13 +140,17 @@ function createAuth() {
       maxPasswordLength: MAX_PASSWORD_LENGTH,
       resetPasswordTokenExpiresIn: 60 * 60,
       revokeSessionsOnPasswordReset: true,
-      sendResetPassword: async ({ user, url }) => {
+      sendResetPassword: async ({ user, url }, request) => {
+        await recordPasswordResetRequested(user.id, request?.headers);
         const delivery = await sendPasswordResetEmail({
           to: user.email,
           name: user.name,
           url,
         });
         logUndeliveredLink("password reset", user.email, url, delivery.mode);
+      },
+      onPasswordReset: async ({ user }, request) => {
+        await recordPasswordChanged(user, request?.headers);
       },
     },
     emailVerification: {
@@ -174,21 +202,50 @@ function createAuth() {
     ],
     hooks: {
       before: createAuthMiddleware(async (context) => {
+        const body = context.body as
+          { email?: unknown; newPassword?: unknown } | undefined;
+
         // Server actions call the API directly and limit themselves; this
         // covers requests that reach the HTTP endpoints.
-        if (!context.request || !rateLimitedPaths.has(context.path)) return;
-        const body = context.body as { email?: unknown } | undefined;
-        try {
-          await enforceAuthRateLimit(
-            context.request.headers,
-            typeof body?.email === "string" ? body.email : undefined,
-          );
-        } catch (error) {
-          if (error instanceof AuthRateLimitError) {
-            throw new APIError("TOO_MANY_REQUESTS", { message: error.message });
+        if (context.request && rateLimitedPaths.has(context.path)) {
+          try {
+            await enforceAuthRateLimit(
+              context.request.headers,
+              typeof body?.email === "string" ? body.email : undefined,
+            );
+          } catch (error) {
+            if (error instanceof AuthRateLimitError) {
+              throw new APIError("TOO_MANY_REQUESTS", {
+                message: error.message,
+              });
+            }
+            throw error;
           }
-          throw error;
         }
+
+        if (
+          newPasswordPaths.has(context.path) &&
+          typeof body?.newPassword === "string"
+        ) {
+          const problem = await breachedPasswordProblem(body.newPassword);
+          if (problem) {
+            throw new APIError("BAD_REQUEST", {
+              message: problem,
+              code: "PASSWORD_BREACHED",
+            });
+          }
+        }
+      }),
+      after: createAuthMiddleware(async (context) => {
+        if (context.path !== "/sign-in/email") return;
+        const reason = signInFailure(context.context.returned);
+        const body = context.body as { email?: unknown } | undefined;
+        if (!reason || typeof body?.email !== "string") return;
+        await recordSignInFailure(
+          body.email,
+          reason,
+          context.headers ?? context.request?.headers,
+        );
       }),
     },
     databaseHooks: {
@@ -201,6 +258,9 @@ function createAuth() {
               select: { status: true },
             });
             if (member?.status === "SUSPENDED") return false;
+          },
+          after: async (session) => {
+            await recordSignIn(session);
           },
         },
       },

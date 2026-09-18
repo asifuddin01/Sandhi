@@ -47,6 +47,8 @@ export default async function AdminDashboardPage() {
     db.insight.count({ where: { state: "IN_REVIEW" } }),
     showAudit
       ? db.auditLog.findMany({
+          // Sign-ins and other account events stay in the audit log.
+          where: { NOT: { action: { startsWith: "auth." } } },
           orderBy: { createdAt: "desc" },
           take: 8,
           select: {

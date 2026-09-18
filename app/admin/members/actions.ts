@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/actions";
 import {
   memberRanks,
+  roleLabels,
   scholarlyRecordSize,
   type MemberRankValue,
 } from "@/lib/admin/members";
@@ -29,6 +30,10 @@ import {
   parseSystemRole,
   type SystemRoleValue,
 } from "@/lib/permissions";
+import {
+  notifyAccessChanged,
+  notifyOwnersOfAdminGrant,
+} from "@/lib/security-events";
 import { siteOrigin } from "@/lib/site-url";
 
 const invitableRoles = ["MEMBER", "REVIEWER", "ADMIN"] as const;
@@ -339,6 +344,23 @@ export async function updateMemberAccessAction(
       });
     });
     invalidate(cacheTags.members);
+
+    if (diff.role && member.user) {
+      notifyAccessChanged({
+        to: member.user.email,
+        name: member.name,
+        from: roleLabels[role],
+        toRole: roleLabels[nextRole],
+        changedBy: viewer.name,
+      });
+      if (nextRole === "ADMIN") {
+        await notifyOwnersOfAdminGrant({
+          memberName: member.name,
+          grantedBy: viewer.name,
+          grantedById: viewer.userId,
+        });
+      }
+    }
     return { status: "success", message: "Access updated." };
   });
   revalidatePath("/admin/members");

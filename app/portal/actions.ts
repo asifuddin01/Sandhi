@@ -11,6 +11,7 @@ import {
   MAX_PASSWORD_LENGTH,
   MIN_PASSWORD_LENGTH,
 } from "@/lib/auth";
+import { breachedPasswordProblem } from "@/lib/breached-passwords";
 import { acceptInvitation, InvitationError } from "@/lib/invitations";
 import { safeAuthenticatedPath } from "@/lib/permissions";
 
@@ -184,6 +185,11 @@ export async function resetPasswordAction(
   } catch (error) {
     if (!(error instanceof APIError)) {
       console.error("[auth] password reset failed:", error);
+    } else if (
+      (error.body as { code?: unknown } | undefined)?.code ===
+      "PASSWORD_BREACHED"
+    ) {
+      return { status: "error", message: error.message };
     }
     return {
       status: "error",
@@ -215,6 +221,9 @@ export async function acceptInvitationAction(
   const requestHeaders = await headers();
   const blocked = await limited(requestHeaders);
   if (blocked) return blocked;
+
+  const breached = await breachedPasswordProblem(password);
+  if (breached) return { status: "error", message: breached };
 
   let email: string;
   try {

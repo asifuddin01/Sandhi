@@ -365,7 +365,8 @@ The owner's 100-item security checklist is tracked item by item in [`docs/securi
 - `/.well-known/security.txt` (RFC 9116) is generated from the general contact address in Admin → Settings, with a rolling six-month expiry.
 - `scripts/db/least-privilege.sql`: a runtime role that cannot change the schema and can only append to the audit log (tested inside a rolled-back transaction).
 - GitHub: CI (lint, types, tests, contrast, build, dependency audit), CodeQL (security-extended), and Gitleaks on every push, with actions pinned to commit SHAs and read-only tokens; Dependabot weekly for npm and actions.
-- Still to come: breached-password refusal, security event logging and alert emails (B); session list and revocation, re-authentication for sensitive actions (C); authenticator-app two-factor authentication required for staff (D); passkeys (E).
+- Slice B (account protection): new passwords found in the Have I Been Pwned corpus are refused at invitation acceptance and reset (k-anonymity lookup; allowed with a logged warning if the service is down). Sign-ins, failed attempts, rate-limit lockouts, reset requests, and password changes are written to the audit log with the device and network only (`lib/security-events.ts`); the dashboard's recent activity leaves them out. Account holders are emailed about five failed attempts in 15 minutes (at most hourly), sign-ins from a new device or network, password changes, and role changes; the Owner is emailed when someone else grants administrator access.
+- Still to come: session list and revocation, re-authentication for sensitive actions (C); authenticator-app two-factor authentication required for staff (D); passkeys (E); then protections beyond the checklist.
 
 Remaining for launch hardening:
 
