@@ -15,6 +15,8 @@ import {
 
 export interface Viewer {
   userId: string;
+  /** The session this request belongs to (never its token). */
+  sessionId: string;
   email: string;
   name: string;
   role: SystemRoleValue;
@@ -50,6 +52,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
 
   return {
     userId: session.user.id,
+    sessionId: session.session.id,
     email: session.user.email,
     name: session.user.name,
     role: parseSystemRole(session.user.role),

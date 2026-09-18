@@ -20,6 +20,18 @@ const fixtureAccounts = [
     name: "Fixture Member",
     role: "MEMBER",
   },
+  // Each used by one account-security test, since signing out other
+  // sessions or changing the password affects every session on the account.
+  {
+    email: "fixture-sessions@sandhi.test",
+    name: "Fixture Sessions",
+    role: "MEMBER",
+  },
+  {
+    email: "fixture-password@sandhi.test",
+    name: "Fixture Password",
+    role: "MEMBER",
+  },
   {
     email: "fixture-suspended@sandhi.test",
     name: "Fixture Suspended",

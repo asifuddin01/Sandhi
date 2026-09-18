@@ -99,8 +99,9 @@ export function ActionForm({
 }
 
 /**
- * Confirms an irreversible action by asking for the member's name, in a
- * native dialog that traps focus and closes on Escape.
+ * Confirms an irreversible action by asking for the member's name and the
+ * administrator's own password, in a native dialog that traps focus and
+ * closes on Escape. The password is cleared as soon as it is sent.
  */
 export function ConfirmByNameDialog({
   action,
@@ -121,6 +122,7 @@ export function ConfirmByNameDialog({
 }) {
   const dialog = useRef<HTMLDialogElement>(null);
   const [typed, setTyped] = useState("");
+  const [password, setPassword] = useState("");
   const { state, formAction, onSubmit } = useFormAction(action, idle);
   const titleId = `${confirmLabel.replace(/\W+/gu, "-").toLowerCase()}-title`;
 
@@ -138,11 +140,17 @@ export function ConfirmByNameDialog({
         ref={dialog}
         className={styles.dialog}
         aria-labelledby={titleId}
-        onClose={() => setTyped("")}
+        onClose={() => {
+          setTyped("");
+          setPassword("");
+        }}
       >
         <form
           action={formAction}
-          onSubmit={onSubmit}
+          onSubmit={(event) => {
+            onSubmit(event);
+            setPassword("");
+          }}
           className={styles.dialogForm}
         >
           <h2 id={titleId}>{title}</h2>
@@ -162,6 +170,17 @@ export function ConfirmByNameDialog({
               onChange={(event) => setTyped(event.target.value)}
             />
           </div>
+          <div className={styles.field}>
+            <label htmlFor={`${titleId}-password`}>Your password</label>
+            <input
+              id={`${titleId}-password`}
+              name="currentPassword"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+            />
+          </div>
           <ActionMessage state={state} />
           <div className={styles.dialogActions}>
             <button
@@ -171,7 +190,7 @@ export function ConfirmByNameDialog({
             >
               Cancel
             </button>
-            {typed === name ? (
+            {typed === name && password ? (
               <SubmitButton tone="danger" pending="Working…">
                 {confirmLabel}
               </SubmitButton>

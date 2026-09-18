@@ -320,6 +320,18 @@ test("credited members keep their record; others are removed only by name", asyn
     await dialog
       .getByLabel(/Type Fixture Temporary to confirm/u)
       .fill("Fixture Temporary");
+    // The name alone is not enough: the administrator's password is needed.
+    await expect(
+      dialog.getByRole("button", { name: "Remove member" }),
+    ).toBeDisabled();
+    await dialog.getByLabel("Your password").fill("not-the-password-at-all");
+    await dialog.getByRole("button", { name: "Remove member" }).click();
+    await expect(
+      dialog.getByText("That password is not correct."),
+    ).toBeVisible();
+    expect(await db.member.count({ where: { id: temporary.id } })).toBe(1);
+
+    await dialog.getByLabel("Your password").fill(PASSWORD);
     await dialog.getByRole("button", { name: "Remove member" }).click();
 
     await expect(page).toHaveURL(/\/admin\/members$/u);
@@ -332,6 +344,73 @@ test("credited members keep their record; others are removed only by name", asyn
   } finally {
     await db.auditLog.deleteMany({ where: { entityId: temporary.id } });
     await db.member.deleteMany({ where: { id: temporary.id } });
+    await db.$disconnect();
+  }
+});
+
+test("ownership cannot be transferred without the Owner's password", async ({
+  page,
+}) => {
+  const staffId = await memberIdFor("fixture-staff@sandhi.test");
+  const since = new Date();
+  const db = createPrismaClient();
+
+  try {
+    await signIn(
+      page,
+      "fixture-owner@sandhi.test",
+      `/admin/members/${staffId}`,
+    );
+    await page
+      .getByRole("button", { name: "Transfer ownership to Fixture Staff" })
+      .click();
+    const dialog = page.getByRole("dialog", {
+      name: "Transfer ownership to Fixture Staff?",
+    });
+    await dialog
+      .getByLabel(/Type Fixture Staff to confirm/u)
+      .fill("Fixture Staff");
+    await dialog.getByLabel("Your password").fill("not-the-password-at-all");
+    await dialog.getByRole("button", { name: "Transfer ownership" }).click();
+    await expect(
+      dialog.getByText("That password is not correct."),
+    ).toBeVisible();
+    // The password field is cleared once sent.
+    await expect(dialog.getByLabel("Your password")).toHaveValue("");
+
+    const staff = await db.user.findUniqueOrThrow({
+      where: { email: "fixture-staff@sandhi.test" },
+      select: { role: true },
+    });
+    expect(staff.role).toBe("MEMBER");
+    const owner = await db.user.findUniqueOrThrow({
+      where: { email: "fixture-owner@sandhi.test" },
+      select: { id: true, role: true },
+    });
+    expect(owner.role).toBe("OWNER");
+    expect(
+      await db.auditLog.count({
+        where: {
+          entityId: owner.id,
+          action: "auth.reauth_failed",
+          createdAt: { gte: since },
+        },
+      }),
+    ).toBe(1);
+  } finally {
+    const owner = await db.user.findUnique({
+      where: { email: "fixture-owner@sandhi.test" },
+      select: { id: true },
+    });
+    if (owner) {
+      await db.auditLog.deleteMany({
+        where: {
+          entityId: owner.id,
+          action: "auth.reauth_failed",
+          createdAt: { gte: since },
+        },
+      });
+    }
     await db.$disconnect();
   }
 });

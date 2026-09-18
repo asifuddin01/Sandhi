@@ -40,6 +40,9 @@ export default async function PortalPage() {
               Open administration
             </Link>
           ) : null}
+          <Link className={styles.textButton} href="/portal/security">
+            Account security
+          </Link>
           <form action={signOutAction}>
             <button className={styles.textButton} type="submit">
               Sign out

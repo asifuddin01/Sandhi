@@ -138,3 +138,52 @@
 .textButton:focus-visible {
   text-decoration-color: var(--lotus);
 }
+
+.section {
+  display: grid;
+  max-width: 40rem;
+  gap: 1rem;
+  margin-block-end: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.section h2 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.sessions,
+.activity {
+  display: grid;
+  margin: 0 0 1rem;
+  padding: 0;
+  border-block-start: 1px solid var(--ink-line);
+  list-style: none;
+}
+
+.session,
+.activity li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem 1.5rem;
+  padding-block: 0.85rem;
+  border-block-end: 1px solid var(--ink-line);
+}
+
+.sessionDevice {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.6rem;
+  margin: 0 0 0.25rem;
+  color: var(--moonstone);
+}
+
+.badge {
+  padding: 0.1rem 0.5rem;
+  border: 1px solid var(--ink-line);
+  border-radius: 999px;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}

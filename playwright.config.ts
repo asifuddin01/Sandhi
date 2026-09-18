@@ -9,7 +9,9 @@ export default defineConfig({
   fullyParallel: true,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 2 : 0,
-  workers: process.env.CI ? 1 : undefined,
+  // Several specs render the WebGL field; more than two browsers at once
+  // starve an 8 GB machine. PLAYWRIGHT_WORKERS overrides this locally.
+  workers: process.env.CI ? 1 : Number(process.env.PLAYWRIGHT_WORKERS) || 2,
   reporter: process.env.CI ? "github" : "list",
   outputDir: "test-results",
   // Every worker shares one development server that compiles routes on first

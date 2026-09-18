@@ -28,7 +28,10 @@ export type SecurityAction =
   | "auth.rate_limited"
   | "auth.password_reset_requested"
   | "auth.password_changed"
-  | "auth.alert_sent";
+  | "auth.alert_sent"
+  | "auth.session_revoked"
+  | "auth.sessions_revoked"
+  | "auth.reauth_failed";
 
 export type SignInFailure = "password" | "unverified" | "suspended";
 
@@ -73,6 +76,23 @@ async function record(
       diff: details as Prisma.InputJsonValue,
     },
   });
+}
+
+/** Records an account event whose details need no further processing. */
+export async function recordSecurityEvent(
+  action: SecurityAction,
+  userId: string,
+  details: Record<string, unknown>,
+  headers?: Headers,
+): Promise<void> {
+  await safely(action, () =>
+    record(
+      action,
+      userId,
+      { ...details, ...fingerprintFromHeaders(headers) },
+      userId,
+    ),
+  );
 }
 
 /** Sends after the response when inside a request, so sign-in never waits. */

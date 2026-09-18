@@ -4,63 +4,21 @@ import { APIError } from "better-auth/api";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
-import {
-  AuthRateLimitError,
-  enforceAuthRateLimit,
-  getAuth,
-  MAX_PASSWORD_LENGTH,
-  MIN_PASSWORD_LENGTH,
-} from "@/lib/auth";
+import { getAuth } from "@/lib/auth";
 import { breachedPasswordProblem } from "@/lib/breached-passwords";
 import { acceptInvitation, InvitationError } from "@/lib/invitations";
 import { safeAuthenticatedPath } from "@/lib/permissions";
+import {
+  field,
+  limited,
+  passwordProblem,
+  unavailable,
+  type AuthFormState,
+} from "@/lib/portal-forms";
 
-export type AuthFormState = {
-  status: "idle" | "error" | "success";
-  message?: string;
-};
+export type { AuthFormState } from "@/lib/portal-forms";
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
-const unavailable: AuthFormState = {
-  status: "error",
-  message: "Sign-in is temporarily unavailable. Please try again shortly.",
-};
-
-function field(formData: FormData, name: string): string {
-  const value = formData.get(name);
-  return typeof value === "string" ? value : "";
-}
-
-function passwordProblem(
-  password: string,
-  confirmation: string,
-): string | null {
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    return `Use at least ${MIN_PASSWORD_LENGTH} characters for your password.`;
-  }
-  if (password.length > MAX_PASSWORD_LENGTH) {
-    return `Keep your password under ${MAX_PASSWORD_LENGTH} characters.`;
-  }
-  if (password !== confirmation) return "The two passwords do not match.";
-  return null;
-}
-
-/** Applies the shared limit and turns its failures into form messages. */
-async function limited(
-  requestHeaders: Headers,
-  email?: string,
-): Promise<AuthFormState | null> {
-  try {
-    await enforceAuthRateLimit(requestHeaders, email);
-    return null;
-  } catch (error) {
-    if (error instanceof AuthRateLimitError) {
-      return { status: "error", message: error.message };
-    }
-    console.error("[auth] rate limiting unavailable:", error);
-    return unavailable;
-  }
-}
 
 export async function signInAction(
   _previous: AuthFormState,

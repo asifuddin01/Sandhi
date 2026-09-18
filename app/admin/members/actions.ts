@@ -30,6 +30,7 @@ import {
   parseSystemRole,
   type SystemRoleValue,
 } from "@/lib/permissions";
+import { confirmPassword, ReauthenticationError } from "@/lib/reauth";
 import {
   notifyAccessChanged,
   notifyOwnersOfAdminGrant,
@@ -108,6 +109,18 @@ async function manageableMember(viewer: Viewer, memberId: string) {
     throw new AdminActionError("Only the Owner can change the Owner.");
   }
   return { member, role };
+}
+
+/** Irreversible actions need the administrator's password again. */
+async function passwordConfirmed(viewer: Viewer, formData: FormData) {
+  try {
+    await confirmPassword(viewer, field(formData, "currentPassword"));
+  } catch (error) {
+    if (error instanceof ReauthenticationError) {
+      throw new AdminActionError(error.message);
+    }
+    throw error;
+  }
 }
 
 export async function inviteMemberAction(
@@ -446,6 +459,7 @@ export async function removeMemberAction(
     if (field(formData, "confirmation") !== member.name) {
       throw new AdminActionError(`Type ${member.name} exactly to confirm.`);
     }
+    await passwordConfirmed(viewer, formData);
 
     await getDb().$transaction(async (transaction) => {
       const record = await transaction.member.findUniqueOrThrow({
@@ -523,6 +537,7 @@ export async function transferOwnershipAction(
     if (field(formData, "confirmation") !== member.name) {
       throw new AdminActionError(`Type ${member.name} exactly to confirm.`);
     }
+    await passwordConfirmed(viewer, formData);
     const newOwnerId = member.user.id;
 
     await getDb().$transaction(async (transaction) => {
