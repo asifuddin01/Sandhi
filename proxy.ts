@@ -1,7 +1,10 @@
 import { getSessionCookie } from "better-auth/cookies";
 import { NextResponse, type NextRequest } from "next/server";
 
-import { buildContentSecurityPolicy } from "@/lib/security-headers";
+import {
+  buildContentSecurityPolicy,
+  REPORTING_ENDPOINTS,
+} from "@/lib/security-headers";
 
 // Reachable without a session: signing in, resetting, and accepting invites.
 const openPortalPaths = [
@@ -53,6 +56,7 @@ export function proxy(request: NextRequest) {
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });
   response.headers.set("Content-Security-Policy", policy);
+  response.headers.set("Reporting-Endpoints", REPORTING_ENDPOINTS);
   return response;
 }
 

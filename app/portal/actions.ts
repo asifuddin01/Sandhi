@@ -7,6 +7,7 @@ import { redirect } from "next/navigation";
 
 import { getAuth, TOTP_REUSED_MESSAGE } from "@/lib/auth";
 import { breachedPasswordProblem } from "@/lib/breached-passwords";
+import { isEmailAddress } from "@/lib/email-address";
 import { recordBackupCodeUsed } from "@/lib/security-events";
 import { acceptInvitation, InvitationError } from "@/lib/invitations";
 import { safeAuthenticatedPath } from "@/lib/permissions";
@@ -20,8 +21,6 @@ import {
 
 export type { AuthFormState } from "@/lib/portal-forms";
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
-
 export async function signInAction(
   _previous: AuthFormState,
   formData: FormData,
@@ -30,7 +29,7 @@ export async function signInAction(
   const password = field(formData, "password");
   const next = safeAuthenticatedPath(field(formData, "next"));
 
-  if (!emailPattern.test(email) || !password) {
+  if (!isEmailAddress(email) || !password) {
     return {
       status: "error",
       message: "Enter your email address and password.",
@@ -174,7 +173,7 @@ export async function requestPasswordResetAction(
   formData: FormData,
 ): Promise<AuthFormState> {
   const email = field(formData, "email").trim().toLowerCase();
-  if (!emailPattern.test(email)) {
+  if (!isEmailAddress(email)) {
     return { status: "error", message: "Enter a valid email address." };
   }
 

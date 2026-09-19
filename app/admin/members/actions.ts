@@ -20,6 +20,7 @@ import { logUndeliveredLink } from "@/lib/auth";
 import type { Viewer } from "@/lib/authz";
 import { cacheTags } from "@/lib/cache-tags";
 import { getDb } from "@/lib/db";
+import { isEmailAddress } from "@/lib/email-address";
 import { sendInvitationEmail } from "@/lib/email";
 import {
   createInvitationToken,
@@ -39,7 +40,6 @@ import {
 import { siteOrigin } from "@/lib/site-url";
 
 const invitableRoles = ["MEMBER", "REVIEWER", "ADMIN"] as const;
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 
 function field(formData: FormData, name: string): string {
   const value = formData.get(name);
@@ -130,7 +130,7 @@ export async function inviteMemberAction(
 ): Promise<ActionState> {
   const result = await runAdminAction("members:manage", async (viewer) => {
     const email = field(formData, "email").toLowerCase();
-    if (!emailPattern.test(email) || email.length > 254) {
+    if (!isEmailAddress(email)) {
       throw new AdminActionError("Enter a valid email address.");
     }
     const role = parseInvitableRole(field(formData, "role"));

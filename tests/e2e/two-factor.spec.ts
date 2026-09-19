@@ -227,6 +227,31 @@ test("administration needs two-factor authentication, and codes work once", asyn
       }),
     ).toBe(1);
 
+    // Administration needs a sign-in from the last twelve hours; the portal
+    // session itself carries on.
+    await db.session.updateMany({
+      where: { userId: user.id },
+      data: { createdAt: new Date(Date.now() - 13 * 60 * 60 * 1000) },
+    });
+    await page.goto("/admin");
+    await expect(page).toHaveURL(
+      /\/portal\/sign-in\?next=%2Fadmin&reason=expired$/u,
+    );
+    await expect(
+      page.getByText("For your safety, sign in again to use administration."),
+    ).toBeVisible();
+    await page.goto("/portal");
+    await expect(page).toHaveURL(/\/portal$/u);
+    await page.goto("/portal/sign-in?next=%2Fadmin&reason=expired");
+    await page.waitForLoadState("networkidle");
+    await page.getByLabel("Email").fill(account.email);
+    await page.getByLabel("Password").fill(PASSWORD);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+    await expect(page).toHaveURL(/\/portal\/two-factor/u, { timeout: 30_000 });
+    await page.waitForLoadState("networkidle");
+    await completeTwoFactor(page, key);
+    await expect(page).toHaveURL(/\/admin$/u);
+
     await signOut(page);
     await passwordStep(page, account.email);
     await page

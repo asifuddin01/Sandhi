@@ -3,6 +3,8 @@
  * trusts stored values) and the admin validation can be tested.
  */
 
+import { isEmailAddress } from "@/lib/email-address";
+
 export const socialPlatforms = [
   { key: "github", label: "GitHub" },
   { key: "linkedin", label: "LinkedIn" },
@@ -61,7 +63,6 @@ export const defaultSiteSettings: SiteSettings = {
   maintenanceBanner: null,
 };
 
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/u;
 export const MAX_RETENTION_MONTHS = 120;
 export const MAX_BANNER_LENGTH = 280;
 export const MAX_LOCATION_LENGTH = 200;
@@ -94,7 +95,7 @@ export function parseSiteSettings(
   const contact = { ...defaultSiteSettings.contact };
   for (const { key } of contactTopics) {
     const value = byKey.get(settingKeys.contact(key));
-    if (typeof value === "string" && emailPattern.test(value)) {
+    if (typeof value === "string" && isEmailAddress(value)) {
       contact[key] = value;
     }
   }
@@ -190,7 +191,7 @@ export function readSettingsForm(
 
   for (const { key, label } of contactTopics) {
     const value = form(`contact.${key}`).trim().toLowerCase();
-    if (!emailPattern.test(value) || value.length > 254) {
+    if (!isEmailAddress(value)) {
       problems.push({
         field: `contact.${key}`,
         message: `${label} needs a valid email address.`,

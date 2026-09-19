@@ -98,3 +98,16 @@ Practise this once before launch and then yearly.
 - Monthly: read the audit log and take a backup copy (sections 2 and 3).
 - Quarterly: review member access (section 6).
 - Before launch and after major changes: run an external scan (for example the OWASP ZAP baseline) against a preview deployment, and commission a penetration test when the budget allows.
+
+## 12. Accounts behind the site, DNS, and email
+
+Anyone who takes over one of these accounts can bypass every control in the code, so each needs its own protection:
+
+- **Two-factor authentication**, ideally a passkey or security key, on GitHub, Vercel, Neon, Cloudflare, Resend, Upstash, and the domain registrar. Keep their recovery codes offline.
+- **Registrar:** turn on the transfer lock and auto-renew, and use an address that is not on the domain itself for the registrar account.
+- **Email authentication** for `sandhiresearch.org`, so nobody can send mail that looks like it came from the lab:
+  - SPF: `v=spf1 include:<Resend's SPF host> -all` (exact value in Resend → Domains).
+  - DKIM: the records Resend lists for the domain.
+  - DMARC: start with `v=DMARC1; p=quarantine; rua=mailto:<an address you read>`, then move to `p=reject` once reports show only Resend sends for the domain.
+- **CAA:** add `0 issue "letsencrypt.org"` (and any other authority Vercel lists) so no other authority may issue certificates for the domain.
+- **Logs:** Vercel's logs show `[csp] violation` lines when a browser blocks a script; more than a trickle after a release means a bug or an injection attempt worth reading.

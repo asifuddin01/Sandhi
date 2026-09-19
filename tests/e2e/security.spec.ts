@@ -120,3 +120,36 @@ test("security.txt tells researchers where to report a vulnerability", async ({
   );
   expect(text).toMatch(/^Canonical: \S+\/\.well-known\/security\.txt$/mu);
 });
+
+test("violations can be reported, and account responses stay on this site", async ({
+  request,
+}) => {
+  const page = await request.get("/");
+  expect(page.headers()["reporting-endpoints"]).toBe(
+    'csp-endpoint="/api/csp-report"',
+  );
+  expect(page.headers()["content-security-policy"]).toContain(
+    "report-uri /api/csp-report",
+  );
+  // Public pages and images may appear in feed readers and link previews.
+  expect(page.headers()["cross-origin-resource-policy"]).toBeUndefined();
+
+  for (const path of ["/portal/sign-in", "/api/search?q=sandhi"]) {
+    const response = await request.get(path);
+    expect(response.headers()["cross-origin-resource-policy"], path).toBe(
+      "same-origin",
+    );
+  }
+
+  const report = await request.post("/api/csp-report", {
+    headers: { "Content-Type": "application/csp-report" },
+    data: JSON.stringify({
+      "csp-report": {
+        "document-uri": "http://127.0.0.1/",
+        "effective-directive": "script-src",
+        "blocked-uri": "inline",
+      },
+    }),
+  });
+  expect(report.status()).toBe(204);
+});

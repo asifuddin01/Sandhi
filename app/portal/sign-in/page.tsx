@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { SignInForm } from "@/components/portal/AuthForms";
 import { PasskeySignIn } from "@/components/portal/PasskeyForms";
 import styles from "@/components/portal/Portal.module.css";
-import { getViewer } from "@/lib/authz";
+import { getViewer, STAFF_SESSION_EXPIRED_MESSAGE } from "@/lib/authz";
 import { safeAuthenticatedPath } from "@/lib/permissions";
 
 export const metadata: Metadata = {
@@ -15,13 +15,19 @@ export const metadata: Metadata = {
 export default async function SignInPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string | string[] }>;
+  searchParams: Promise<{
+    next?: string | string[];
+    reason?: string | string[];
+  }>;
 }) {
-  const { next } = await searchParams;
+  const { next, reason } = await searchParams;
   const destination = safeAuthenticatedPath(
     Array.isArray(next) ? next[0] : next,
   );
-  if (await getViewer()) redirect(destination);
+  // Administration asks staff to sign in again after twelve hours, even
+  // though their portal session is still valid.
+  const expired = reason === "expired";
+  if (!expired && (await getViewer())) redirect(destination);
 
   return (
     <div className={styles.page}>
@@ -31,6 +37,11 @@ export default async function SignInPage({
           For SANDHI members, reviewers, and administrators. Accounts are
           created by invitation.
         </p>
+        {expired ? (
+          <p className={styles.notice} role="status">
+            {STAFF_SESSION_EXPIRED_MESSAGE}
+          </p>
+        ) : null}
       </header>
       <SignInForm next={destination} />
       <PasskeySignIn next={destination} />

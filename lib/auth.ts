@@ -7,6 +7,7 @@ import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
+import { after } from "next/server";
 import { twoFactor } from "better-auth/plugins";
 
 import { getDb } from "@/lib/db";
@@ -241,6 +242,20 @@ function createAuth() {
     session: {
       expiresIn: 7 * 24 * 60 * 60,
       updateAge: 24 * 60 * 60,
+    },
+    advanced: {
+      // Emails go out after the response, so how long a reset request takes
+      // never reveals whether the address has an account.
+      backgroundTasks: {
+        handler: (task) => {
+          try {
+            after(task);
+          } catch {
+            // Outside a request (scripts), let it finish on its own.
+            void task;
+          }
+        },
+      },
     },
     // Better Auth's own limiter stores counts per instance; the shared limiter
     // in the hook below is enforced across serverless instances instead.

@@ -1,7 +1,12 @@
 // Imported by next.config.ts, so it must stay free of path aliases and
 // server-only modules.
 
+import { CSP_REPORT_GROUP, CSP_REPORT_PATH } from "./csp-reports";
+
 const TURNSTILE_ORIGIN = "https://challenges.cloudflare.com";
+
+/** Names the endpoint that `report-to` refers to. */
+export const REPORTING_ENDPOINTS = `${CSP_REPORT_GROUP}="${CSP_REPORT_PATH}"`;
 
 export interface ContentSecurityPolicyOptions {
   nonce: string;
@@ -69,6 +74,9 @@ export function buildContentSecurityPolicy({
     ["base-uri", ["'self'"]],
     ["form-action", ["'self'"]],
     ["frame-ancestors", ["'none'"]],
+    // Violations are reported, so an injection attempt leaves a trace.
+    ["report-uri", [CSP_REPORT_PATH]],
+    ["report-to", [CSP_REPORT_GROUP]],
   ];
 
   const policy = directives.map(([name, values]) =>
@@ -94,6 +102,10 @@ export function staticSecurityHeaders(
         "camera=(), microphone=(), geolocation=(), payment=(), usb=(), browsing-topics=()",
     },
     { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+    // Keeps this origin in its own browser process group.
+    { key: "Origin-Agent-Cluster", value: "?1" },
+    // No legacy plugin may load a cross-domain policy from this site.
+    { key: "X-Permitted-Cross-Domain-Policies", value: "none" },
     ...(isProduction
       ? [
           {
@@ -103,4 +115,15 @@ export function staticSecurityHeaders(
         ]
       : []),
   ];
+}
+
+/** Account and API responses are never loaded into another site's page. */
+export const sensitiveRoutes = [
+  "/portal/:path*",
+  "/admin/:path*",
+  "/api/:path*",
+];
+
+export function sensitiveRouteHeaders(): Array<{ key: string; value: string }> {
+  return [{ key: "Cross-Origin-Resource-Policy", value: "same-origin" }];
 }

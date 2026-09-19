@@ -17,10 +17,24 @@ import {
 /** Where staff without two-factor authentication are sent to set it up. */
 export const TWO_FACTOR_SETUP_PATH = "/portal/security?setup=two-factor";
 
+/**
+ * Sessions last a week for the portal, but administration needs a sign-in
+ * from the last twelve hours, so a session left open on a borrowed or lost
+ * device stops carrying administrative power by the next day.
+ */
+export const STAFF_SESSION_MAX_AGE_MS = 12 * 60 * 60 * 1000;
+export const STAFF_SESSION_EXPIRED_MESSAGE =
+  "For your safety, sign in again to use administration.";
+
+function staffSessionExpired(viewer: Viewer, now = Date.now()): boolean {
+  return now - viewer.sessionCreatedAt.getTime() > STAFF_SESSION_MAX_AGE_MS;
+}
+
 export interface Viewer {
   userId: string;
   /** The session this request belongs to (never its token). */
   sessionId: string;
+  sessionCreatedAt: Date;
   email: string;
   name: string;
   role: SystemRoleValue;
@@ -58,6 +72,7 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   return {
     userId: session.user.id,
     sessionId: session.session.id,
+    sessionCreatedAt: new Date(session.session.createdAt),
     email: session.user.email,
     name: session.user.name,
     role: parseSystemRole(session.user.role),
@@ -85,6 +100,11 @@ export async function requireCapability(
   if (requiresTwoFactor(capability) && !viewer.twoFactorEnabled) {
     redirect(TWO_FACTOR_SETUP_PATH);
   }
+  if (requiresTwoFactor(capability) && staffSessionExpired(viewer)) {
+    redirect(
+      `/portal/sign-in?next=${encodeURIComponent(nextPath)}&reason=expired`,
+    );
+  }
   return viewer;
 }
 
@@ -98,6 +118,9 @@ export async function authorize(capability: Capability): Promise<Viewer> {
     throw new AuthorizationError(
       "Set up two-factor authentication in Account security first.",
     );
+  }
+  if (requiresTwoFactor(capability) && staffSessionExpired(viewer)) {
+    throw new AuthorizationError(STAFF_SESSION_EXPIRED_MESSAGE);
   }
   return viewer;
 }

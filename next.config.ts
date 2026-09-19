@@ -1,6 +1,10 @@
 import type { NextConfig } from "next";
 
-import { staticSecurityHeaders } from "./lib/security-headers";
+import {
+  sensitiveRouteHeaders,
+  sensitiveRoutes,
+  staticSecurityHeaders,
+} from "./lib/security-headers";
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
@@ -13,6 +17,10 @@ const nextConfig: NextConfig = {
         source: "/:path*",
         headers: staticSecurityHeaders(process.env.NODE_ENV === "production"),
       },
+      ...sensitiveRoutes.map((source) => ({
+        source,
+        headers: sensitiveRouteHeaders(),
+      })),
     ];
   },
 };

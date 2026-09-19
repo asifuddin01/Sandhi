@@ -3,6 +3,8 @@ import { describe, expect, it } from "vitest";
 import { isSameOriginRequest } from "@/lib/forms-http";
 import {
   buildContentSecurityPolicy,
+  sensitiveRouteHeaders,
+  sensitiveRoutes,
   staticSecurityHeaders,
 } from "@/lib/security-headers";
 
@@ -108,8 +110,21 @@ describe("content security policy", () => {
         "X-Frame-Options",
         "Referrer-Policy",
         "Permissions-Policy",
+        "Origin-Agent-Cluster",
+        "X-Permitted-Cross-Domain-Policies",
       ]),
     );
+  });
+
+  it("keeps account and API responses out of other sites' pages", () => {
+    expect(sensitiveRoutes).toEqual([
+      "/portal/:path*",
+      "/admin/:path*",
+      "/api/:path*",
+    ]);
+    expect(sensitiveRouteHeaders()).toEqual([
+      { key: "Cross-Origin-Resource-Policy", value: "same-origin" },
+    ]);
   });
 });
 
