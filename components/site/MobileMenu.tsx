@@ -11,8 +11,11 @@ const FOCUSABLE =
 
 export function MobileMenu({
   items = [...primaryNavigation, ...moreNavigation],
+  signedIn = false,
 }: {
   items?: readonly NavigationLink[];
+  /** Whether this request carries a member's session. */
+  signedIn?: boolean;
 }) {
   const [open, setOpen] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
@@ -119,18 +122,20 @@ export function MobileMenu({
           <div className="mobile-menu__actions">
             <Link
               className="text-link"
-              href="/portal/sign-in"
+              href={signedIn ? "/portal" : "/portal/sign-in"}
               onClick={closeMenu}
             >
-              Sign in
+              {signedIn ? "Portal" : "Sign in"}
             </Link>
-            <Link
-              className="button button-primary"
-              href="/join"
-              onClick={closeMenu}
-            >
-              Join SANDHI
-            </Link>
+            {signedIn ? null : (
+              <Link
+                className="button button-primary"
+                href="/join"
+                onClick={closeMenu}
+              >
+                Join SANDHI
+              </Link>
+            )}
           </div>
         </div>
       )}

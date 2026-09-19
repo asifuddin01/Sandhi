@@ -369,6 +369,43 @@ marking an announcement read arrive with Milestone 6 as server-side actions the
 website and the app both call. Building them API-first now would be the one way
 to make the two surfaces diverge.
 
+## 10c. Project progress and materials (20 September 2026)
+
+The team runs a project from the site, and the public sees as much of it as the
+team chooses to show.
+
+- **Two layers.** The _stage_ (`ProjectStatus`) is drawn as a numbered thread
+  by `components/entries/ProjectStage.tsx` on the project card, the portal page
+  and the public page: one glance answers "how far along is this". Under it sit
+  _updates_ — dated notes saying what happened and what comes next.
+- **`ProjectUpdate`** records the stage it was written at, so the history still
+  reads correctly after the project moves on. It is internal when written;
+  publishing is a separate button. `publicProjectUpdateWhere` needs both halves
+  (the update public _and_ its project published), so publishing a project
+  cannot retroactively publish working notes and publishing a note cannot leak
+  an unpublished project.
+- **`UpdateAttachment`** carries the materials: a figure (architecture or
+  pipeline diagram, plot, screenshot) shown inline, and documents and data
+  files (dataset descriptions, tables, protocols) offered as downloads. The
+  browser uploads straight to the private bucket with a ten-minute signed URL
+  minted only for a member on that project; the server then reads the object
+  back and checks its type, size and format signature before a row exists.
+  SVG is refused because figures are drawn inline. Tables and maths belong in
+  the update body, which is the site's sanitised Markdown.
+- **`/files/updates/[id]`** is the authorization decision; the signed link is
+  its last step. Public when the update and project both are, otherwise only
+  for someone on that project, and the same 404 for every other case.
+- **The controls live where the work is read.** `/projects/[slug]` shows an
+  "Update this project" button to whoever is on that project — `membershipOf()`
+  is one indexed row — and nothing at all to everyone else. The header, mobile
+  menu and footer say "Portal" rather than "Sign in" to someone signed in.
+- **Routes:** `/portal/projects`, `/portal/projects/[slug]`,
+  `/api/portal/attachments`, `/files/updates/[id]`.
+
+Still to build here: the proposal-to-team pipeline (submit, queue, approve,
+mark interested, assign), and admin control of the stage from the project
+workspace rather than only the Projects manager.
+
 ## 10a. Portal and admin routes still to build
 
 ### Admin routes (Milestone 5)

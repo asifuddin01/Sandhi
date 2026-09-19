@@ -13,6 +13,14 @@ import { memberProjectIds, workspaceMemberId } from "@/lib/portal-content";
 
 export const UPDATES_PAGE_SIZE = 50;
 
+export interface ProgressAttachment {
+  id: string;
+  kind: string;
+  title: string;
+  contentType: string;
+  byteSize: number;
+}
+
 export interface ProgressUpdate {
   id: string;
   title: string;
@@ -22,6 +30,7 @@ export interface ProgressUpdate {
   stage: string;
   author: { slug: string; name: string } | null;
   createdAt: Date;
+  attachments: ProgressAttachment[];
   /** Whether this viewer wrote it, and so may change or withdraw it. */
   mine: boolean;
 }
@@ -37,6 +46,27 @@ export interface ProjectProgress {
   role: string;
   isLead: boolean;
   updates: ProgressUpdate[];
+}
+
+/**
+ * The viewer's place on a project, by slug — one indexed row, cheap enough to
+ * ask on a public page so the people who work on a project get their own
+ * controls there without signing in again or going looking for them.
+ * `null` for a visitor, for a signed-out reader, and for a member who is not
+ * on this project: in every one of those cases no control is drawn.
+ */
+export async function membershipOf(
+  viewer: Viewer | null,
+  slug: string,
+): Promise<{ isLead: boolean; role: string } | null> {
+  const memberId = viewer ? workspaceMemberId(viewer) : null;
+  if (!memberId || !isDatabaseConfigured()) return null;
+
+  const membership = await getDb().projectMember.findFirst({
+    where: { memberId, project: { slug } },
+    select: { isLead: true, role: true },
+  });
+  return membership;
 }
 
 /** Whether the viewer is on this project; nothing here works without that. */
@@ -81,6 +111,16 @@ export async function getProjectProgress(
           createdAt: true,
           authorId: true,
           author: { select: { slug: true, name: true } },
+          attachments: {
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+            select: {
+              id: true,
+              kind: true,
+              title: true,
+              contentType: true,
+              byteSize: true,
+            },
+          },
         },
       },
     },

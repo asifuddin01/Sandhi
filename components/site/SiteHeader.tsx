@@ -14,9 +14,12 @@ import { isPathHidden } from "@/lib/site-settings-schema";
 
 export function SiteHeader({
   hiddenPaths = [],
+  signedIn = false,
 }: {
   /** Sections switched off in site settings. */
   hiddenPaths?: string[];
+  /** Whether this request carries a member's session. */
+  signedIn?: boolean;
 }) {
   const visible = <Item extends { href: string }>(items: readonly Item[]) =>
     items.filter((item) => !isPathHidden(item.href, hiddenPaths));
@@ -45,19 +48,26 @@ export function SiteHeader({
         <div className="site-header__actions">
           <ThemeToggle />
           <CommandPalette items={visible(commandNavigation)} />
+          {/* A member who is already signed in is not asked to sign in, and
+              is not invited to join the lab they are in. */}
           <Link
             className="site-header__signin text-link"
-            href="/portal/sign-in"
+            href={signedIn ? "/portal" : "/portal/sign-in"}
           >
-            Sign in
+            {signedIn ? "Portal" : "Sign in"}
           </Link>
-          <Link
-            className="button button-primary site-header__join"
-            href="/join"
-          >
-            Join SANDHI
-          </Link>
-          <MobileMenu items={[...primaryNavigation, ...more]} />
+          {signedIn ? null : (
+            <Link
+              className="button button-primary site-header__join"
+              href="/join"
+            >
+              Join SANDHI
+            </Link>
+          )}
+          <MobileMenu
+            items={[...primaryNavigation, ...more]}
+            signedIn={signedIn}
+          />
         </div>
       </div>
     </header>

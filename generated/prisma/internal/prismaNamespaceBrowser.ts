@@ -93,7 +93,8 @@ export const ModelName = {
   SiteSetting: 'SiteSetting',
   AuditLog: 'AuditLog',
   Diagram: 'Diagram',
-  ProjectUpdate: 'ProjectUpdate'
+  ProjectUpdate: 'ProjectUpdate',
+  UpdateAttachment: 'UpdateAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -799,6 +800,21 @@ export const ProjectUpdateScalarFieldEnum = {
 } as const
 
 export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
+
+
+export const UpdateAttachmentScalarFieldEnum = {
+  id: 'id',
+  updateId: 'updateId',
+  kind: 'kind',
+  title: 'title',
+  fileKey: 'fileKey',
+  contentType: 'contentType',
+  byteSize: 'byteSize',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type UpdateAttachmentScalarFieldEnum = (typeof UpdateAttachmentScalarFieldEnum)[keyof typeof UpdateAttachmentScalarFieldEnum]
 
 
 export const SortOrder = {

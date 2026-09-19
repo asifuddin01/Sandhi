@@ -226,6 +226,7 @@ export type ProjectUpdateWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   author?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
+  attachments?: Prisma.UpdateAttachmentListRelationFilter
 }
 
 export type ProjectUpdateOrderByWithRelationInput = {
@@ -241,6 +242,7 @@ export type ProjectUpdateOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   author?: Prisma.MemberOrderByWithRelationInput
+  attachments?: Prisma.UpdateAttachmentOrderByRelationAggregateInput
 }
 
 export type ProjectUpdateWhereUniqueInput = Prisma.AtLeast<{
@@ -259,6 +261,7 @@ export type ProjectUpdateWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   author?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
+  attachments?: Prisma.UpdateAttachmentListRelationFilter
 }, "id">
 
 export type ProjectUpdateOrderByWithAggregationInput = {
@@ -304,6 +307,7 @@ export type ProjectUpdateCreateInput = {
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
   author?: Prisma.MemberCreateNestedOneWithoutProjectUpdatesInput
+  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateInput = {
@@ -317,6 +321,7 @@ export type ProjectUpdateUncheckedCreateInput = {
   stage: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUpdateInput = {
@@ -330,6 +335,7 @@ export type ProjectUpdateUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
   author?: Prisma.MemberUpdateOneWithoutProjectUpdatesNestedInput
+  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateInput = {
@@ -343,6 +349,7 @@ export type ProjectUpdateUncheckedUpdateInput = {
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateCreateManyInput = {
@@ -431,6 +438,11 @@ export type ProjectUpdateMinOrderByAggregateInput = {
   updatedAt?: Prisma.SortOrder
 }
 
+export type ProjectUpdateScalarRelationFilter = {
+  is?: Prisma.ProjectUpdateWhereInput
+  isNot?: Prisma.ProjectUpdateWhereInput
+}
+
 export type ProjectUpdateCreateNestedManyWithoutAuthorInput = {
   create?: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAuthorInput, Prisma.ProjectUpdateUncheckedCreateWithoutAuthorInput> | Prisma.ProjectUpdateCreateWithoutAuthorInput[] | Prisma.ProjectUpdateUncheckedCreateWithoutAuthorInput[]
   connectOrCreate?: Prisma.ProjectUpdateCreateOrConnectWithoutAuthorInput | Prisma.ProjectUpdateCreateOrConnectWithoutAuthorInput[]
@@ -515,6 +527,20 @@ export type ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.ProjectUpdateScalarWhereInput | Prisma.ProjectUpdateScalarWhereInput[]
 }
 
+export type ProjectUpdateCreateNestedOneWithoutAttachmentsInput = {
+  create?: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedCreateWithoutAttachmentsInput>
+  connectOrCreate?: Prisma.ProjectUpdateCreateOrConnectWithoutAttachmentsInput
+  connect?: Prisma.ProjectUpdateWhereUniqueInput
+}
+
+export type ProjectUpdateUpdateOneRequiredWithoutAttachmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedCreateWithoutAttachmentsInput>
+  connectOrCreate?: Prisma.ProjectUpdateCreateOrConnectWithoutAttachmentsInput
+  upsert?: Prisma.ProjectUpdateUpsertWithoutAttachmentsInput
+  connect?: Prisma.ProjectUpdateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.ProjectUpdateUpdateWithoutAttachmentsInput>, Prisma.ProjectUpdateUncheckedUpdateWithoutAttachmentsInput>
+}
+
 export type ProjectUpdateCreateWithoutAuthorInput = {
   id?: string
   title: string
@@ -525,6 +551,7 @@ export type ProjectUpdateCreateWithoutAuthorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
+  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateWithoutAuthorInput = {
@@ -537,6 +564,7 @@ export type ProjectUpdateUncheckedCreateWithoutAuthorInput = {
   stage: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateCreateOrConnectWithoutAuthorInput = {
@@ -591,6 +619,7 @@ export type ProjectUpdateCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   author?: Prisma.MemberCreateNestedOneWithoutProjectUpdatesInput
+  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateWithoutProjectInput = {
@@ -603,6 +632,7 @@ export type ProjectUpdateUncheckedCreateWithoutProjectInput = {
   stage: $Enums.ProjectStatus
   createdAt?: Date | string
   updatedAt?: Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateCreateOrConnectWithoutProjectInput = {
@@ -631,6 +661,74 @@ export type ProjectUpdateUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.ProjectUpdateUpdateManyMutationInput, Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type ProjectUpdateCreateWithoutAttachmentsInput = {
+  id?: string
+  title: string
+  body: string
+  nextUp?: string | null
+  isPublic?: boolean
+  stage: $Enums.ProjectStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
+  author?: Prisma.MemberCreateNestedOneWithoutProjectUpdatesInput
+}
+
+export type ProjectUpdateUncheckedCreateWithoutAttachmentsInput = {
+  id?: string
+  projectId: string
+  authorId?: string | null
+  title: string
+  body: string
+  nextUp?: string | null
+  isPublic?: boolean
+  stage: $Enums.ProjectStatus
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type ProjectUpdateCreateOrConnectWithoutAttachmentsInput = {
+  where: Prisma.ProjectUpdateWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedCreateWithoutAttachmentsInput>
+}
+
+export type ProjectUpdateUpsertWithoutAttachmentsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateUpdateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedUpdateWithoutAttachmentsInput>
+  create: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedCreateWithoutAttachmentsInput>
+  where?: Prisma.ProjectUpdateWhereInput
+}
+
+export type ProjectUpdateUpdateToOneWithWhereWithoutAttachmentsInput = {
+  where?: Prisma.ProjectUpdateWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateUpdateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedUpdateWithoutAttachmentsInput>
+}
+
+export type ProjectUpdateUpdateWithoutAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
+  author?: Prisma.MemberUpdateOneWithoutProjectUpdatesNestedInput
+}
+
+export type ProjectUpdateUncheckedUpdateWithoutAttachmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  authorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  body?: Prisma.StringFieldUpdateOperationsInput | string
+  nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type ProjectUpdateCreateManyAuthorInput = {
   id?: string
   projectId: string
@@ -653,6 +751,7 @@ export type ProjectUpdateUpdateWithoutAuthorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
+  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateWithoutAuthorInput = {
@@ -665,6 +764,7 @@ export type ProjectUpdateUncheckedUpdateWithoutAuthorInput = {
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateManyWithoutAuthorInput = {
@@ -701,6 +801,7 @@ export type ProjectUpdateUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.MemberUpdateOneWithoutProjectUpdatesNestedInput
+  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateWithoutProjectInput = {
@@ -713,6 +814,7 @@ export type ProjectUpdateUncheckedUpdateWithoutProjectInput = {
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateManyWithoutProjectInput = {
@@ -728,6 +830,35 @@ export type ProjectUpdateUncheckedUpdateManyWithoutProjectInput = {
 }
 
 
+/**
+ * Count Type ProjectUpdateCountOutputType
+ */
+
+export type ProjectUpdateCountOutputType = {
+  attachments: number
+}
+
+export type ProjectUpdateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  attachments?: boolean | ProjectUpdateCountOutputTypeCountAttachmentsArgs
+}
+
+/**
+ * ProjectUpdateCountOutputType without action
+ */
+export type ProjectUpdateCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectUpdateCountOutputType
+   */
+  select?: Prisma.ProjectUpdateCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * ProjectUpdateCountOutputType without action
+ */
+export type ProjectUpdateCountOutputTypeCountAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UpdateAttachmentWhereInput
+}
+
 
 export type ProjectUpdateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -742,6 +873,8 @@ export type ProjectUpdateSelect<ExtArgs extends runtime.Types.Extensions.Interna
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   author?: boolean | Prisma.ProjectUpdate$authorArgs<ExtArgs>
+  attachments?: boolean | Prisma.ProjectUpdate$attachmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProjectUpdateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["projectUpdate"]>
 
 export type ProjectUpdateSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -791,6 +924,8 @@ export type ProjectUpdateOmit<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ProjectUpdateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   author?: boolean | Prisma.ProjectUpdate$authorArgs<ExtArgs>
+  attachments?: boolean | Prisma.ProjectUpdate$attachmentsArgs<ExtArgs>
+  _count?: boolean | Prisma.ProjectUpdateCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectUpdateIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -806,6 +941,7 @@ export type $ProjectUpdatePayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs>
     author: Prisma.$MemberPayload<ExtArgs> | null
+    attachments: Prisma.$UpdateAttachmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1221,6 +1357,7 @@ export interface Prisma__ProjectUpdateClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   author<T extends Prisma.ProjectUpdate$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectUpdate$authorArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  attachments<T extends Prisma.ProjectUpdate$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectUpdate$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UpdateAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1677,6 +1814,30 @@ export type ProjectUpdate$authorArgs<ExtArgs extends runtime.Types.Extensions.In
    */
   include?: Prisma.MemberInclude<ExtArgs> | null
   where?: Prisma.MemberWhereInput
+}
+
+/**
+ * ProjectUpdate.attachments
+ */
+export type ProjectUpdate$attachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the UpdateAttachment
+   */
+  select?: Prisma.UpdateAttachmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the UpdateAttachment
+   */
+  omit?: Prisma.UpdateAttachmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UpdateAttachmentInclude<ExtArgs> | null
+  where?: Prisma.UpdateAttachmentWhereInput
+  orderBy?: Prisma.UpdateAttachmentOrderByWithRelationInput | Prisma.UpdateAttachmentOrderByWithRelationInput[]
+  cursor?: Prisma.UpdateAttachmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UpdateAttachmentScalarFieldEnum | Prisma.UpdateAttachmentScalarFieldEnum[]
 }
 
 /**

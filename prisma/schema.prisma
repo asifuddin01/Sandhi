@@ -1000,6 +1000,35 @@ model ProjectUpdate {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  attachments UpdateAttachment[]
+
   @@index([projectId, isPublic, createdAt])
   @@index([authorId])
+}
+
+/// What an attachment is for, which decides how it is shown: a figure is
+/// drawn in the update, everything else is offered as a download.
+enum AttachmentKind {
+  FIGURE
+  DOCUMENT
+  DATA
+}
+
+/// A file a team attached to a progress update: an architecture or pipeline
+/// figure, a dataset description, a table. It is only as public as the update
+/// that carries it, so every read goes through that update's visibility.
+model UpdateAttachment {
+  id          String         @id @default(cuid())
+  updateId    String
+  kind        AttachmentKind
+  title       String
+  /// The object in private storage. Never taken from a request.
+  fileKey     String         @unique
+  contentType String
+  byteSize    Int
+  sortOrder   Int            @default(0)
+  update      ProjectUpdate  @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  createdAt   DateTime       @default(now())
+
+  @@index([updateId, sortOrder])
 }

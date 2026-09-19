@@ -95,6 +95,16 @@ test("a team writes an update, publishes it, and the public page shows it", asyn
     // The author keeps no public profile, so the update is not attributed.
     await expect(page.getByText("Fixture Member")).toHaveCount(0);
 
+    // A table in the body is how a team reports numbers.
+    await page.goto(`/portal/projects/${PROJECT}`);
+    await expect(
+      page.getByRole("combobox", { name: "What is it" }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Attach this file" }),
+    ).toBeVisible();
+
+    await page.goto(`/projects/${PROJECT}`);
     const results = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
       .analyze();

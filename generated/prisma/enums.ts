@@ -213,3 +213,12 @@ export const ChangeStatus = {
 } as const
 
 export type ChangeStatus = (typeof ChangeStatus)[keyof typeof ChangeStatus]
+
+
+export const AttachmentKind = {
+  FIGURE: 'FIGURE',
+  DOCUMENT: 'DOCUMENT',
+  DATA: 'DATA'
+} as const
+
+export type AttachmentKind = (typeof AttachmentKind)[keyof typeof AttachmentKind]

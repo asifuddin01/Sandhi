@@ -9,11 +9,19 @@ import { invalidate } from "@/lib/admin/actions";
 import { getDb } from "@/lib/db";
 import { workspaceMemberId } from "@/lib/portal-content";
 import {
+  MAX_ATTACHMENTS,
   MAX_UPDATE_BODY,
   MAX_UPDATE_NEXT,
   MAX_UPDATE_TITLE,
 } from "@/lib/portal/progress-limits";
+import {
+  ATTACHMENT_RULES,
+  type AttachmentKindInput,
+  ATTACHMENT_KINDS,
+  MAX_ATTACHMENT_TITLE,
+} from "@/lib/portal/attachment-input";
 import { canEditUpdate, onProject } from "@/lib/portal/progress";
+import { assertAttachmentExists } from "@/lib/storage";
 
 export type ProgressState = ActionState;
 
@@ -167,6 +175,118 @@ export async function deleteProjectUpdateAction(
     await getDb().projectUpdate.delete({ where: { id } });
     invalidate(cacheTags.projects);
     return { status: "success", message: "Deleted." };
+  });
+
+  revalidatePath(`/portal/projects/${slug}`);
+  revalidatePath(`/projects/${slug}`);
+  return result;
+}
+
+const DB_KIND = {
+  figure: "FIGURE",
+  document: "DOCUMENT",
+  data: "DATA",
+} as const;
+
+/**
+ * Records a file the browser has already put in private storage. The receipt
+ * proves this server minted the slot, and the object is read back before a
+ * row exists, so a row never points at something that was never uploaded or
+ * at bytes that are not what they were declared to be.
+ */
+export async function attachToUpdateAction(
+  _previous: ProgressState,
+  formData: FormData,
+): Promise<ProgressState> {
+  const slug = field(formData, "slug");
+  const updateId = field(formData, "id");
+
+  const result = await run(async (viewer) => {
+    const { allowed } = await canEditUpdate(viewer, updateId);
+    if (!allowed) {
+      throw new ProgressError("That update is not yours to change.");
+    }
+
+    const kind = field(formData, "kind") as AttachmentKindInput;
+    if (!(ATTACHMENT_KINDS as readonly string[]).includes(kind)) {
+      throw new ProgressError("Choose what kind of file this is.");
+    }
+    const title = field(formData, "title").trim();
+    if (!title)
+      throw new ProgressError("Give the file a name people will read.");
+    if (title.length > MAX_ATTACHMENT_TITLE) {
+      throw new ProgressError("That name is too long.");
+    }
+
+    const key = field(formData, "fileKey");
+    const uploadToken = field(formData, "uploadToken");
+    const contentType = field(formData, "contentType");
+    const byteSize = Number(field(formData, "byteSize"));
+    if (!key || !uploadToken || !Number.isSafeInteger(byteSize)) {
+      throw new ProgressError("That upload did not finish. Try again.");
+    }
+
+    try {
+      await assertAttachmentExists({ key, kind, contentType, uploadToken });
+    } catch (error) {
+      throw new ProgressError(
+        error instanceof Error
+          ? error.message
+          : `That ${ATTACHMENT_RULES[kind].label} could not be accepted.`,
+      );
+    }
+
+    const count = await getDb().updateAttachment.count({ where: { updateId } });
+    if (count >= MAX_ATTACHMENTS) {
+      throw new ProgressError(
+        `An update carries at most ${MAX_ATTACHMENTS} files. Post another update.`,
+      );
+    }
+
+    await getDb().updateAttachment.create({
+      data: {
+        updateId,
+        kind: DB_KIND[kind],
+        title,
+        fileKey: key,
+        contentType,
+        byteSize,
+        sortOrder: count,
+      },
+    });
+    invalidate(cacheTags.projects);
+    return { status: "success", message: `Attached ${title}.` };
+  });
+
+  revalidatePath(`/portal/projects/${slug}`);
+  revalidatePath(`/projects/${slug}`);
+  return result;
+}
+
+export async function removeAttachmentAction(
+  _previous: ProgressState,
+  formData: FormData,
+): Promise<ProgressState> {
+  const slug = field(formData, "slug");
+  const attachmentId = field(formData, "attachmentId");
+
+  const result = await run(async (viewer) => {
+    const attachment = await getDb().updateAttachment.findUnique({
+      where: { id: attachmentId },
+      select: { updateId: true, title: true },
+    });
+    if (!attachment) throw new ProgressError("That file is already gone.");
+
+    const { allowed } = await canEditUpdate(viewer, attachment.updateId);
+    if (!allowed) {
+      throw new ProgressError("That file is not yours to remove.");
+    }
+
+    // The row goes; the object is swept later by the retention job, which
+    // already owns deleting from storage.
+    await getDb().updateAttachment.delete({ where: { id: attachmentId } });
+    invalidate(cacheTags.projects);
+    return { status: "success", message: `Removed ${attachment.title}.` };
   });
 
   revalidatePath(`/portal/projects/${slug}`);

@@ -7,3 +7,6 @@
 export const MAX_UPDATE_TITLE = 200;
 export const MAX_UPDATE_BODY = 20_000;
 export const MAX_UPDATE_NEXT = 2000;
+
+/** How many files one update carries before it should be two updates. */
+export const MAX_ATTACHMENTS = 8;

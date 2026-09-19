@@ -11,6 +11,7 @@ import {
 import {
   deleteProjectUpdateAction,
   postProjectUpdateAction,
+  removeAttachmentAction,
   setUpdateVisibilityAction,
 } from "../actions";
 
@@ -42,7 +43,8 @@ export function PostUpdate({ slug }: { slug: string }) {
           aria-describedby="update-body-hint"
         />
         <p className={styles.hint} id="update-body-hint">
-          Markdown, with $maths$ and code blocks.
+          Markdown: headings, lists, tables, code blocks and $maths$. Attach
+          figures, datasets and documents once the update is posted.
         </p>
       </div>
       <div className={styles.field}>
@@ -104,5 +106,24 @@ export function UpdateControls({
         </p>
       ) : null}
     </div>
+  );
+}
+
+/** Taking one file back off an update, without touching the update itself. */
+export function RemoveAttachment({
+  slug,
+  attachmentId,
+}: {
+  slug: string;
+  attachmentId: string;
+}) {
+  return (
+    <ActionForm action={removeAttachmentAction} className={styles.inlineForm}>
+      <input type="hidden" name="slug" value={slug} />
+      <input type="hidden" name="attachmentId" value={attachmentId} />
+      <SubmitButton tone="quiet" pending="Removing…">
+        Remove
+      </SubmitButton>
+    </ActionForm>
   );
 }

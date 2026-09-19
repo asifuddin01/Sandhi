@@ -70,7 +70,7 @@ This checklist follows the supplied build specification. Milestones are complete
 ## Milestone 7 — Research workspace
 
 - [ ] Build experiments, structured configurations and results, logs, milestones, and external tracking links. (Public progress: `ProjectUpdate` records the stage a note was written at, and `publicProjectUpdateWhere` needs both the update and its project to be public.)
-- [ ] Build the project documents library and research activity feed.
+- [ ] Build the project documents library and research activity feed. (Progress updates carry files: figures shown inline, documents and data offered as downloads, all through `/files/updates/[id]`, which is the authorization decision rather than a guessable URL.)
 - [ ] Prove experiment data and results never appear on public routes.
 - [ ] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
 

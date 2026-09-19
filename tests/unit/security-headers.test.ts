@@ -79,6 +79,11 @@ describe("content security policy", () => {
       "https://a1b2c3.r2.cloudflarestorage.com",
     );
     expect(policy.get("img-src")).toContain("https://files.sandhiresearch.org");
+    // An attachment's route redirects to a signed link in private storage,
+    // and a figure has to be able to draw.
+    expect(policy.get("img-src")).toContain(
+      "https://a1b2c3.r2.cloudflarestorage.com",
+    );
 
     const unsafe = directives(
       buildContentSecurityPolicy({

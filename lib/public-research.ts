@@ -144,6 +144,16 @@ export interface ProjectUpdateEntry {
   stage: ProjectStatusValue;
   author: { name: string; memberSlug: string | null } | null;
   postedAt: string;
+  attachments: ProjectUpdateFile[];
+}
+
+/** A file published with an update: a figure, a document, or a data file. */
+export interface ProjectUpdateFile {
+  id: string;
+  kind: "FIGURE" | "DOCUMENT" | "DATA";
+  title: string;
+  contentType: string;
+  byteSize: number;
 }
 
 export interface ProjectDetailData extends ProjectSummary {
@@ -244,6 +254,16 @@ const projectUpdateSelect = {
   stage: true,
   createdAt: true,
   author: { select: { slug: true, name: true, isPublic: true, status: true } },
+  attachments: {
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: {
+      id: true,
+      kind: true,
+      title: true,
+      contentType: true,
+      byteSize: true,
+    },
+  },
 } satisfies Prisma.ProjectUpdateSelect;
 
 const publicationSummarySelect = {
@@ -390,8 +410,17 @@ function mapProjectUpdate(record: ProjectUpdateRecord): ProjectUpdateEntry {
     stage: record.stage as ProjectStatusValue,
     // A member who left, or who keeps no public profile, is still credited by
     // the team internally but is not named here.
-    author: authorIsPublic ? { name: author.name, memberSlug: author.slug } : null,
+    author: authorIsPublic
+      ? { name: author.name, memberSlug: author.slug }
+      : null,
     postedAt: record.createdAt.toISOString(),
+    attachments: record.attachments.map((file) => ({
+      id: file.id,
+      kind: file.kind as ProjectUpdateFile["kind"],
+      title: file.title,
+      contentType: file.contentType,
+      byteSize: file.byteSize,
+    })),
   };
 }
 

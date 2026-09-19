@@ -6,12 +6,20 @@ import { ProjectStage } from "@/components/entries/ProjectStage";
 import styles from "@/components/portal/Portal.module.css";
 import { Prose } from "@/components/Prose";
 import { requireViewer } from "@/lib/authz";
+import { humanSize } from "@/lib/portal/attachment-input";
 import { projectStatusLabel } from "@/lib/project-status";
 import { getProjectProgress } from "@/lib/portal/progress";
 
-import { PostUpdate, UpdateControls } from "./ProgressForms";
+import { AttachFile } from "./AttachFile";
+import { PostUpdate, RemoveAttachment, UpdateControls } from "./ProgressForms";
 
 export const metadata: Metadata = { title: "Project progress" };
+
+const FILE_KINDS: Record<string, string> = {
+  FIGURE: "Figure",
+  DOCUMENT: "Document",
+  DATA: "Data",
+};
 
 function when(value: Date): string {
   return value.toLocaleDateString("en-GB", {
@@ -99,6 +107,32 @@ export default async function ProjectProgressPage({
                     <span className={styles.cardNextLabel}>Next</span>
                     {update.nextUp}
                   </p>
+                ) : null}
+                {update.attachments.length > 0 ? (
+                  <ul className={styles.attachList}>
+                    {update.attachments.map((file) => (
+                      <li key={file.id}>
+                        <a href={`/files/updates/${file.id}`}>{file.title}</a>
+                        <span className={styles.cardMeta}>
+                          {FILE_KINDS[file.kind] ?? file.kind} ·{" "}
+                          {humanSize(file.byteSize)}
+                        </span>
+                        {update.mine || project.isLead ? (
+                          <RemoveAttachment
+                            slug={project.slug}
+                            attachmentId={file.id}
+                          />
+                        ) : null}
+                      </li>
+                    ))}
+                  </ul>
+                ) : null}
+                {update.mine || project.isLead ? (
+                  <AttachFile
+                    key={update.attachments.length}
+                    slug={project.slug}
+                    updateId={update.id}
+                  />
                 ) : null}
                 {update.mine || project.isLead ? (
                   <UpdateControls

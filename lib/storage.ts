@@ -9,6 +9,11 @@ import {
   ExternalServiceError,
   ServiceConfigurationError,
 } from "@/lib/forms-services";
+import {
+  ATTACHMENT_RULES,
+  attachmentExtension,
+  type AttachmentUploadKind,
+} from "@/lib/portal/attachment-input";
 
 type Fetcher = typeof fetch;
 
@@ -19,10 +24,17 @@ type R2Config = {
   bucket: string;
 };
 
+/**
+ * What a private upload is for. The kind decides the key prefix, the accepted
+ * media types and the size ceiling, and it is signed into the receipt so a
+ * caller cannot present a small figure's token for a large dataset.
+ */
+export type UploadKind = "cv" | "proposal" | "figure" | "document" | "data";
+
 type UploadReceipt = {
   version: 1;
   key: string;
-  kind: "cv" | "proposal";
+  kind: UploadKind;
   size: number;
   expiresAt: number;
 };
@@ -133,7 +145,7 @@ function signReceipt(receipt: UploadReceipt, secret: string): string {
 
 export function verifyUploadReceipt(
   token: string,
-  expected: { key: string; kind: "cv" | "proposal" },
+  expected: { key: string; kind: UploadKind },
   options: { env?: NodeJS.ProcessEnv; now?: Date } = {},
 ): UploadReceipt {
   const config = r2Config(options.env ?? process.env);
@@ -209,6 +221,61 @@ export function createPrivateUploadIntent(
   };
 }
 
+/**
+ * An upload slot for one file attached to a progress update. The object lands
+ * in the same private bucket as everything else: an attachment is exactly as
+ * public as the update that carries it, which our own code decides on every
+ * read, so nothing here is ever world-readable by virtue of where it sits.
+ */
+export function createAttachmentUploadIntent(
+  input: {
+    kind: AttachmentUploadKind;
+    contentType: string;
+    size: number;
+  },
+  options: {
+    env?: NodeJS.ProcessEnv;
+    now?: Date;
+    randomId?: () => string;
+  } = {},
+): PrivateUploadIntent {
+  const rules = ATTACHMENT_RULES[input.kind];
+  const extension = attachmentExtension(input.kind, input.contentType);
+  if (!extension) {
+    throw new ExternalServiceError(
+      "R2",
+      `That file type is not accepted as a ${rules.label}.`,
+    );
+  }
+  if (input.size <= 0 || input.size > rules.maximumBytes) {
+    throw new ExternalServiceError(
+      "R2",
+      `A ${rules.label} must be under ${Math.round(rules.maximumBytes / (1024 * 1024))} MB.`,
+    );
+  }
+
+  const env = options.env ?? process.env;
+  const config = r2Config(env);
+  const now = options.now ?? new Date();
+  const expiresAt = new Date(now.getTime() + 10 * 60 * 1000);
+  const id = (options.randomId ?? randomUUID)();
+  const key = `projects/updates/${id}/${input.kind}.${extension}`;
+  const receipt: UploadReceipt = {
+    version: 1,
+    key,
+    kind: input.kind,
+    size: input.size,
+    expiresAt: expiresAt.getTime(),
+  };
+
+  return {
+    uploadUrl: presignedR2Url("PUT", key, config, now),
+    key,
+    uploadToken: signReceipt(receipt, config.secretAccessKey),
+    expiresAt: expiresAt.toISOString(),
+  };
+}
+
 /** How long a private download link works: long enough to open, not to share. */
 export const PRIVATE_DOWNLOAD_SECONDS = 600;
 
@@ -220,7 +287,11 @@ export const PRIVATE_DOWNLOAD_SECONDS = 600;
  */
 export function createPrivateDownloadUrl(
   key: string,
-  options: { env?: NodeJS.ProcessEnv; now?: Date; expiresSeconds?: number } = {},
+  options: {
+    env?: NodeJS.ProcessEnv;
+    now?: Date;
+    expiresSeconds?: number;
+  } = {},
 ): string {
   const config = r2Config(options.env ?? process.env);
   return presignedR2Url(
@@ -341,6 +412,129 @@ export async function assertPrivateUploadExists(
     throw new ExternalServiceError(
       "R2",
       "The uploaded file does not contain a valid PDF signature.",
+    );
+  }
+}
+
+/** The first bytes each accepted attachment format must begin with. */
+const MAGIC: Partial<Record<string, readonly number[][]>> = {
+  "image/png": [[0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+  "image/jpeg": [[0xff, 0xd8, 0xff]],
+  // RIFF....WEBP: the size sits between, so the two runs are checked apart.
+  "image/webp": [[0x52, 0x49, 0x46, 0x46]],
+  "application/pdf": [[0x25, 0x50, 0x44, 0x46, 0x2d]],
+};
+
+function startsWith(bytes: Uint8Array, signature: readonly number[]): boolean {
+  return signature.every((byte, index) => bytes[index] === byte);
+}
+
+/**
+ * Confirms an attachment really arrived, is the type and size that was
+ * validated, and — for the formats that have one — begins with that format's
+ * signature. A declared media type is a claim by the browser; the stored
+ * bytes are the thing that will be served back.
+ */
+export async function assertAttachmentExists(
+  input: {
+    key: string;
+    kind: AttachmentUploadKind;
+    contentType: string;
+    uploadToken: string;
+  },
+  dependencies: {
+    env?: NodeJS.ProcessEnv;
+    now?: Date;
+    fetcher?: Fetcher;
+  } = {},
+): Promise<void> {
+  const env = dependencies.env ?? process.env;
+  const now = dependencies.now ?? new Date();
+  const fetcher = dependencies.fetcher ?? fetch;
+  const rules = ATTACHMENT_RULES[input.kind];
+
+  if (!(rules.types as readonly string[]).includes(input.contentType)) {
+    throw new ExternalServiceError(
+      "R2",
+      `That file type is not accepted as a ${rules.label}.`,
+    );
+  }
+
+  const receipt = verifyUploadReceipt(input.uploadToken, input, { env, now });
+  if (receipt.size <= 0 || receipt.size > rules.maximumBytes) {
+    throw new ExternalServiceError(
+      "R2",
+      `That ${rules.label} exceeds its size limit.`,
+    );
+  }
+
+  const config = r2Config(env);
+  let head: Response;
+  try {
+    head = await fetcher(presignedR2Url("HEAD", input.key, config, now, 60), {
+      method: "HEAD",
+      signal: AbortSignal.timeout(8_000),
+    });
+  } catch (error) {
+    throw new ExternalServiceError(
+      "R2",
+      `The upload could not be confirmed: ${
+        error instanceof Error ? error.message : "network error"
+      }`,
+    );
+  }
+  if (!head.ok) {
+    throw new ExternalServiceError(
+      "R2",
+      `The upload could not be confirmed (HTTP ${head.status}).`,
+    );
+  }
+
+  const storedLength = Number(head.headers.get("content-length"));
+  if (!Number.isSafeInteger(storedLength) || storedLength !== receipt.size) {
+    throw new ExternalServiceError(
+      "R2",
+      "The uploaded file size does not match the validated upload.",
+    );
+  }
+
+  const signatures = MAGIC[input.contentType];
+  if (!signatures) return;
+
+  let prefixResponse: Response;
+  try {
+    prefixResponse = await fetcher(
+      presignedR2Url("GET", input.key, config, now, 60),
+      {
+        method: "GET",
+        headers: { Range: "bytes=0-15" },
+        signal: AbortSignal.timeout(8_000),
+      },
+    );
+  } catch (error) {
+    throw new ExternalServiceError(
+      "R2",
+      `The uploaded file could not be checked: ${
+        error instanceof Error ? error.message : "network error"
+      }`,
+    );
+  }
+  if (!prefixResponse.ok) {
+    throw new ExternalServiceError(
+      "R2",
+      `The uploaded file could not be checked (HTTP ${prefixResponse.status}).`,
+    );
+  }
+
+  const prefix = new Uint8Array(await prefixResponse.arrayBuffer());
+  const matches = signatures.some((signature) => startsWith(prefix, signature));
+  const webpTail =
+    input.contentType !== "image/webp" ||
+    startsWith(prefix.slice(8), [0x57, 0x45, 0x42, 0x50]);
+  if (!matches || !webpTail) {
+    throw new ExternalServiceError(
+      "R2",
+      `That file is not a valid ${input.contentType.split("/")[1]?.toUpperCase() ?? "file"}.`,
     );
   }
 }

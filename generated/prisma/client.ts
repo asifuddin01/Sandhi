@@ -261,3 +261,10 @@ export type Diagram = Prisma.DiagramModel
  * public statement by accident.
  */
 export type ProjectUpdate = Prisma.ProjectUpdateModel
+/**
+ * Model UpdateAttachment
+ * A file a team attached to a progress update: an architecture or pipeline
+ * figure, a dataset description, a table. It is only as public as the update
+ * that carries it, so every read goes through that update's visibility.
+ */
+export type UpdateAttachment = Prisma.UpdateAttachmentModel

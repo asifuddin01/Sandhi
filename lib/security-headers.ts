@@ -61,7 +61,10 @@ export function buildContentSecurityPolicy({
     // KaTeX, highlighted code, and motion set style attributes, which nonces
     // cannot cover. Scripts, not styles, are the injection risk.
     ["style-src", ["'self'", "'unsafe-inline'"]],
-    ["img-src", ["'self'", "data:", "blob:", publicFilesOrigin]],
+    // Private storage is listed because an attachment's own route answers
+    // with a redirect to a signed link there; the bytes still need a
+    // signature, and nothing is readable by URL alone.
+    ["img-src", ["'self'", "data:", "blob:", publicFilesOrigin, uploadOrigin]],
     ["font-src", ["'self'", "data:"]],
     // Application PDFs upload straight from the browser to private storage.
     [

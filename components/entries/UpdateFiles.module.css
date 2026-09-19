@@ -1,0 +1,68 @@
+.files {
+  display: grid;
+  gap: 1.1rem;
+  margin-block-start: 1.1rem;
+}
+
+.figure {
+  max-width: 44rem;
+  margin: 0;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The stored file's own ratio is unknown, so the box is reserved at a
+     common diagram shape and the image is fitted inside it: the page does
+     not jump when the figure arrives. */
+  max-height: 32rem;
+  object-fit: contain;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: var(--ink-raised);
+}
+
+.caption {
+  margin-block-start: 0.5rem;
+  color: var(--moonstone);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.list {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--ink-line);
+  list-style: none;
+}
+
+.list li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding-block: 0.6rem;
+  border-block-end: 1px solid var(--ink-line);
+}
+
+.link {
+  color: var(--moonstone);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line);
+  text-underline-offset: 0.2em;
+}
+
+.link:hover,
+.link:focus-visible {
+  text-decoration-color: var(--lotus);
+}
+
+.meta {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}

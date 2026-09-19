@@ -20,7 +20,14 @@ function projectTimeline(startedAt: string | null, endedAt: string | null) {
 }
 
 /** A project as visitors see it; the admin preview renders it too. */
-export function ProjectDetail({ project }: { project: ProjectDetailData }) {
+export function ProjectDetail({
+  project,
+  membership = null,
+}: {
+  project: ProjectDetailData;
+  /** Set when the reader works on this project; null for everyone else. */
+  membership?: { isLead: boolean; role: string } | null;
+}) {
   const timeline = projectTimeline(project.startedAt, project.endedAt);
 
   return (
@@ -60,6 +67,21 @@ export function ProjectDetail({ project }: { project: ProjectDetailData }) {
         </h2>
         <ProjectStage status={project.status} heading="Where it stands" />
         {timeline ? <p className={styles.stageAside}>{timeline}</p> : null}
+        {membership ? (
+          <p className={styles.ownerBar}>
+            <Link
+              className="button button-primary"
+              href={`/portal/projects/${project.slug}`}
+            >
+              Update this project
+            </Link>
+            <span className={styles.stageAside}>
+              You are on this project as {membership.role}
+              {membership.isLead ? " and its lead" : ""}. Post progress, publish
+              it here, and attach materials.
+            </span>
+          </p>
+        ) : null}
       </section>
 
       <section className={styles.section} aria-labelledby="abstract-heading">

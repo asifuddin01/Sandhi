@@ -13,6 +13,7 @@ import { ScrollRestoration } from "@/components/navigation/ScrollRestoration";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { siteIdentity } from "@/content/strings";
+import { getViewer } from "@/lib/authz";
 import { getSiteSettings } from "@/lib/site-settings";
 import { hiddenSectionPaths } from "@/lib/site-settings-schema";
 import { themeMetadataColors } from "@/styles/tokens";
@@ -93,7 +94,10 @@ export default async function RootLayout({
   // Set by proxy.ts for every page request; the policy only allows scripts
   // carrying this nonce.
   const nonce = (await headers()).get("x-nonce") ?? undefined;
-  const settings = await getSiteSettings();
+  const [settings, viewer] = await Promise.all([
+    getSiteSettings(),
+    getViewer(),
+  ]);
   const hiddenPaths = hiddenSectionPaths(settings);
 
   return (
@@ -121,11 +125,15 @@ export default async function RootLayout({
             <p>{settings.maintenanceBanner}</p>
           </aside>
         ) : null}
-        <SiteHeader hiddenPaths={hiddenPaths} />
+        <SiteHeader hiddenPaths={hiddenPaths} signedIn={Boolean(viewer)} />
         <main id="main-content" tabIndex={-1}>
           <PageTransition>{children}</PageTransition>
         </main>
-        <SiteFooter hiddenPaths={hiddenPaths} social={settings.social} />
+        <SiteFooter
+          hiddenPaths={hiddenPaths}
+          social={settings.social}
+          signedIn={Boolean(viewer)}
+        />
       </body>
     </html>
   );

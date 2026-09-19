@@ -1958,6 +1958,50 @@ html[data-reduce-motion="true"]::view-transition-group(*) {
   overflow-x: auto;
 }
 
+/* Tables carry results: a dataset summary, an ablation, a comparison. The
+   wrapper scrolls rather than the page, so a wide table never widens the
+   column it sits in. */
+.prose table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  font-variant-numeric: tabular-nums;
+}
+
+.prose thead th {
+  border-block-end: 1px solid var(--ink-line);
+  color: var(--moonstone);
+  font-weight: 550;
+  text-align: start;
+  white-space: nowrap;
+}
+
+.prose th,
+.prose td {
+  padding: 0.5rem 0.9rem 0.5rem 0;
+  border-block-end: 1px solid var(--ink-line);
+  vertical-align: top;
+}
+
+.prose tbody tr:last-child th,
+.prose tbody tr:last-child td {
+  border-block-end: 0;
+}
+
+.prose th[align="right"],
+.prose td[align="right"] {
+  text-align: end;
+}
+
+.prose th[align="center"],
+.prose td[align="center"] {
+  text-align: center;
+}
+
 .prose code[data-theme] span {
   color: var(--shiki-dark);
 }

@@ -439,7 +439,8 @@ export const ModelName = {
   SiteSetting: 'SiteSetting',
   AuditLog: 'AuditLog',
   Diagram: 'Diagram',
-  ProjectUpdate: 'ProjectUpdate'
+  ProjectUpdate: 'ProjectUpdate',
+  UpdateAttachment: 'UpdateAttachment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -455,7 +456,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram" | "projectUpdate"
+    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram" | "projectUpdate" | "updateAttachment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3641,6 +3642,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    UpdateAttachment: {
+      payload: Prisma.$UpdateAttachmentPayload<ExtArgs>
+      fields: Prisma.UpdateAttachmentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.UpdateAttachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.UpdateAttachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        findFirst: {
+          args: Prisma.UpdateAttachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.UpdateAttachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        findMany: {
+          args: Prisma.UpdateAttachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+        }
+        create: {
+          args: Prisma.UpdateAttachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        createMany: {
+          args: Prisma.UpdateAttachmentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.UpdateAttachmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+        }
+        delete: {
+          args: Prisma.UpdateAttachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        update: {
+          args: Prisma.UpdateAttachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        deleteMany: {
+          args: Prisma.UpdateAttachmentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.UpdateAttachmentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.UpdateAttachmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+        }
+        upsert: {
+          args: Prisma.UpdateAttachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+        }
+        aggregate: {
+          args: Prisma.UpdateAttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateUpdateAttachment>
+        }
+        groupBy: {
+          args: Prisma.UpdateAttachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UpdateAttachmentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.UpdateAttachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.UpdateAttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4369,6 +4444,21 @@ export const ProjectUpdateScalarFieldEnum = {
 export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
 
 
+export const UpdateAttachmentScalarFieldEnum = {
+  id: 'id',
+  updateId: 'updateId',
+  kind: 'kind',
+  title: 'title',
+  fileKey: 'fileKey',
+  contentType: 'contentType',
+  byteSize: 'byteSize',
+  sortOrder: 'sortOrder',
+  createdAt: 'createdAt'
+} as const
+
+export type UpdateAttachmentScalarFieldEnum = (typeof UpdateAttachmentScalarFieldEnum)[keyof typeof UpdateAttachmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4739,6 +4829,20 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
+ * Reference to a field of type 'AttachmentKind'
+ */
+export type EnumAttachmentKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttachmentKind'>
+    
+
+
+/**
+ * Reference to a field of type 'AttachmentKind[]'
+ */
+export type ListEnumAttachmentKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AttachmentKind[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -4945,6 +5049,7 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   diagram?: Prisma.DiagramOmit
   projectUpdate?: Prisma.ProjectUpdateOmit
+  updateAttachment?: Prisma.UpdateAttachmentOmit
 }
 
 /* Types for Logging */

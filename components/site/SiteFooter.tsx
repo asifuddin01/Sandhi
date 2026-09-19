@@ -12,10 +12,13 @@ import {
 export function SiteFooter({
   hiddenPaths = [],
   social = {},
+  signedIn = false,
 }: {
   /** Sections switched off in site settings. */
   hiddenPaths?: string[];
   social?: SiteSettings["social"];
+  /** Whether this request carries a member's session. */
+  signedIn?: boolean;
 }) {
   const socialLinks = socialPlatforms.flatMap(({ key, label }) => {
     const href = social[key];
@@ -72,7 +75,9 @@ export function SiteFooter({
           <nav aria-label="Legal and member links">
             <Link href="/privacy">Privacy</Link>
             <Link href="/terms">Terms</Link>
-            <Link href="/portal/sign-in">Sign in</Link>
+            <Link href={signedIn ? "/portal" : "/portal/sign-in"}>
+              {signedIn ? "Portal" : "Sign in"}
+            </Link>
           </nav>
           <ReduceMotionToggle />
         </div>
