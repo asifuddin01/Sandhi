@@ -2,6 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 
+import type { Prisma } from "@/generated/prisma/client";
+
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { publicAreaWhere, publicOpportunityWhere } from "@/lib/visibility";
 
@@ -140,13 +142,13 @@ export async function getPublicOpportunities(
   }));
 }
 
-async function loadPublicOpportunityBySlug(
-  slug: string,
+async function loadOpportunityDetail(
+  where: Prisma.OpportunityWhereInput,
 ): Promise<PublicOpportunityDetail | null> {
   if (!isDatabaseConfigured()) return null;
 
   const row = await getDb().opportunity.findFirst({
-    where: { AND: [publicOpportunityWhere(), { slug }] },
+    where,
     select: opportunitySelect,
   });
   if (!row) return null;
@@ -167,4 +169,14 @@ async function loadPublicOpportunityBySlug(
   };
 }
 
-export const getPublicOpportunityBySlug = cache(loadPublicOpportunityBySlug);
+export const getPublicOpportunityBySlug = cache(
+  (slug: string): Promise<PublicOpportunityDetail | null> =>
+    loadOpportunityDetail({ AND: [publicOpportunityWhere(), { slug }] }),
+);
+
+/** Any opportunity by id, as its page would show it: admin preview only. */
+export function getOpportunityForPreview(
+  id: string,
+): Promise<PublicOpportunityDetail | null> {
+  return loadOpportunityDetail({ id });
+}

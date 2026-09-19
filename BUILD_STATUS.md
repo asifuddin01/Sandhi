@@ -282,19 +282,24 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - Public rendering fixes found while building the preview: maths rendered twice because no KaTeX stylesheet was loaded (now MathML only), Markdown lists had no markers (the global reset removed them), and highlighted code had no colours (the two-theme variables were never applied; now GitHub's high-contrast themes follow the site theme). Light-theme status colours now meet 4.5:1 and are checked by `pnpm contrast`.
 - Tests: publishing rules, Dhaka time, and the math regression in unit tests; end to end, the full write–preview–schedule–publish–archive–delete flow, sanitised live preview, duplicate addresses, reviewer access, member refusal including direct posts, and axe on the list and editor.
 
+### Milestone 5 slice 4 — Events and Opportunities (committed)
+
+- Shared pieces extracted from News: `lib/admin/content-actions.ts` (field parsing with https-only links, one-per-line lists, Dhaka times, change diffs, and a generic bulk runner with per-record delete guards) and `components/admin/ContentIndex.tsx` (the list view with search, filters, always-mounted bulk form, status cell, and pagination). News now uses them too.
+- `/admin/events` (staff): kind, start and end (end must follow start), speakers, location, online flag, built-in or external registration, recording and slides links, state. Internal events are never public and preview as such. The editor shows the registration count; only administrators see registrants' names and emails. Events with registrations cannot be deleted (archive instead). The preview renders the shared `EventDetail` with the registration form replaced.
+- `/admin/opportunities` (administrators): kind, research areas (validated), description, responsibilities and requirements, duration, location, remote flag, deadline, state. Openings close on their own after the deadline ("Closed" in the list). Opportunities with applications cannot be deleted. The preview renders the shared `OpportunityDetail`.
+- Fixed: the Markdown preview faded its text while refreshing, dropping contrast to 3:1; busy is now shown by the border.
+
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
 
 ## 10a. Portal and admin routes still to build
 
 ### Admin routes (Milestone 5)
 
-Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, and the sign-in, reset, and invitation routes (slices 1–3). Still to build:
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, and the sign-in, reset, and invitation routes (slices 1–4). Still to build:
 
 - `/admin/research`
 - `/admin/projects`
 - `/admin/publications`
-- `/admin/events`
-- `/admin/opportunities`
 - `/admin/applications`
 - `/admin/resources`
 - `/admin/insights`

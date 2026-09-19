@@ -15,6 +15,12 @@ export const metadata: Metadata = {
 const sections: Array<AdminNavItem & { capability: Capability }> = [
   { href: "/admin", label: "Dashboard", capability: "admin:access" },
   { href: "/admin/news", label: "News", capability: "content:manage" },
+  { href: "/admin/events", label: "Events", capability: "content:manage" },
+  {
+    href: "/admin/opportunities",
+    label: "Opportunities",
+    capability: "opportunities:manage",
+  },
   { href: "/admin/members", label: "Members", capability: "members:manage" },
   { href: "/admin/settings", label: "Settings", capability: "settings:manage" },
   { href: "/admin/audit", label: "Audit log", capability: "audit:view" },

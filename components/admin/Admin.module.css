@@ -496,8 +496,9 @@
   background: var(--ink-raised);
 }
 
+/* Busy is shown by the border: fading the text would drop its contrast. */
 .markdownPreview[aria-busy="true"] {
-  opacity: 0.7;
+  border-color: var(--mist);
 }
 
 /* The preview reads like the public article body. */

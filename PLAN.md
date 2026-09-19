@@ -51,7 +51,7 @@ This checklist follows the supplied build specification. Milestones are complete
 
 - [x] Configure Better Auth for invitations, verification, reset, sessions, and rate limits.
 - [x] Enforce server authorization in `lib/authz.ts` and protected-route middleware (`proxy.ts`).
-- [ ] Build the admin dashboard and every specified content, member, applications, approvals, settings, and audit manager. (Dashboard, members, settings, audit, and news are built, with the shared content framework; the other content managers, applications, and approvals remain.)
+- [ ] Build the admin dashboard and every specified content, member, applications, approvals, settings, and audit manager. (Dashboard, members, settings, audit, news, events, and opportunities are built on the shared content framework; research, projects, publications, resources, insights, partners, applications, and approvals remain.)
 - [ ] Add DOI and arXiv import, review workflows, previews, bulk actions, and mandatory image alt text.
 - [ ] Write an audit record and revalidate cache tags on every admin mutation.
 - [ ] Prove a Member cannot reach any admin page or mutation directly.

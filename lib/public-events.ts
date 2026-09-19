@@ -159,3 +159,19 @@ export const getPublicEventBySlug = cache(
     return row ? toPublicEvent(row, now) : null;
   },
 );
+
+/**
+ * Any event by id, as its public page would show it, for the admin preview.
+ * Internal events have no public page, so they preview as null.
+ */
+export async function getEventForPreview(
+  id: string,
+  now = new Date(),
+): Promise<PublicEvent | null> {
+  if (!isDatabaseConfigured()) return null;
+  const row = await getDb().event.findUnique({
+    where: { id },
+    select: eventSelect,
+  });
+  return row ? toPublicEvent(row, now) : null;
+}

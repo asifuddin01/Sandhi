@@ -9,6 +9,10 @@ test.skip(
   "Needs the fixture database and DATABASE_URL.",
 );
 
+// These tests change the same fixture members (suspending, promoting,
+// transferring), so they must not overlap.
+test.describe.configure({ mode: "serial" });
+
 /**
  * Opens a page and waits until it is interactive before the test acts. In
  * development, a route compiling for the first time can reload the page while
