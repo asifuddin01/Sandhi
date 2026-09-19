@@ -295,16 +295,19 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - `/admin/partners` (administrators): name, kind, description, relationship, https website, display order, state. The preview renders the partner's card through the public `PartnerDirectory`. Existing logos are kept; logo upload arrives with image uploads.
 - Fixed: the partner card's text wordmark (shown when there is no logo) repeated the name to screen readers; it is now hidden from them, since the heading names the partner.
 
+### Milestone 5 slice 6 — Projects and Research (committed)
+
+- `/admin/projects` (staff): title, address, one-line description, research question, abstract, Markdown motivation, approach, experiments, and results (with the results-public switch), project status, dates (end after start), https code, dataset, and demo links, featured flag, research areas, related projects, and the team (`components/admin/TeamField.tsx`: people in order with role and lead flag; each person once). Projects with publications, tasks, or meetings are archived, not deleted. The preview renders the shared `ProjectDetail`; private team members never appear publicly.
+- `/admin/research` and `/admin/research/areas` (administrators): themes (name, address, short description, Markdown overview, order, state) and areas (name, address, theme, summary, overview, open questions, order, state). Renaming an area's address updates opportunities that name it. Themes with areas, and areas linked to projects, publications, people, or resources, are never deleted. Previews render the shared `ThemeDetail` and `AreaDetail`.
+
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
 
 ## 10a. Portal and admin routes still to build
 
 ### Admin routes (Milestone 5)
 
-Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, `/admin/resources`, `/admin/partners`, and the sign-in, reset, and invitation routes (slices 1–5). Still to build:
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, `/admin/resources`, `/admin/partners`, `/admin/projects`, `/admin/research`, and the sign-in, reset, and invitation routes (slices 1–6). Still to build:
 
-- `/admin/research`
-- `/admin/projects`
 - `/admin/publications`
 - `/admin/applications`
 - `/admin/insights`

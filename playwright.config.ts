@@ -25,7 +25,10 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_BASE_URL
     ? undefined
     : {
-        command: "pnpm exec next dev --hostname 127.0.0.1 --port 3100",
+        // The development server restarts itself near its memory limit,
+        // refusing requests mid-run; a larger heap keeps it up.
+        command:
+          "NODE_OPTIONS=--max-old-space-size=4096 pnpm exec next dev --hostname 127.0.0.1 --port 3100",
         url: baseURL,
         reuseExistingServer: !process.env.CI,
         timeout: 120_000,

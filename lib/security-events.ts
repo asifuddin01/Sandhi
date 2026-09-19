@@ -18,7 +18,8 @@ import {
 import { siteOrigin } from "@/lib/site-url";
 
 /**
- * Account security events, written to the audit log (entity "User") so the
+ * Account security events, written to the audit log (entity "User", which
+ * leads the audit index, so lookups name it) so the
  * Owner and Admins can review them, and emailed to the account holder when
  * they may signal someone else using the account.
  */
@@ -142,6 +143,7 @@ export async function recordSignIn(session: {
     const fingerprint = fingerprintFrom(session.ipAddress, session.userAgent);
     const previous = await db.auditLog.findMany({
       where: {
+        entity: "User",
         action: "auth.sign_in",
         entityId: session.userId,
         createdAt: { gte: new Date(Date.now() - KNOWN_SIGN_IN_WINDOW_MS) },
@@ -211,6 +213,7 @@ export async function recordSignInFailure(
     const [failures, lastAlert] = await Promise.all([
       db.auditLog.count({
         where: {
+          entity: "User",
           action: "auth.sign_in_failed",
           entityId: user.id,
           createdAt: {
@@ -221,6 +224,7 @@ export async function recordSignInFailure(
       }),
       db.auditLog.findFirst({
         where: {
+          entity: "User",
           action: "auth.alert_sent",
           entityId: user.id,
           createdAt: { gte: new Date(now.getTime() - ALERT_COOLDOWN_MS) },
@@ -272,6 +276,7 @@ export async function recordRateLimited(
     if (!user) return;
     const recent = await db.auditLog.count({
       where: {
+        entity: "User",
         action: "auth.rate_limited",
         entityId: user.id,
         createdAt: { gte: new Date(Date.now() - FAILED_ATTEMPT_WINDOW_MS) },

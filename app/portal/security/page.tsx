@@ -78,7 +78,11 @@ export default async function AccountSecurityPage({
       },
     }),
     db.auditLog.findMany({
-      where: { entityId: viewer.userId, action: { startsWith: "auth." } },
+      where: {
+        entity: "User",
+        entityId: viewer.userId,
+        action: { startsWith: "auth." },
+      },
       orderBy: { createdAt: "desc" },
       take: 12,
       select: { id: true, action: true, diff: true, createdAt: true },

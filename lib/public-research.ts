@@ -407,139 +407,163 @@ export const getResearchIndex = cache(async (): Promise<ResearchIndexData> => {
   });
 });
 
-export const getThemeBySlug = cache(
-  async (slug: string): Promise<ThemeDetailData | null> =>
-    queryPublic(null, async () => {
-      const theme = await getDb().researchTheme.findFirst({
-        where: { slug, ...publicThemeWhere },
-        select: {
-          slug: true,
-          name: true,
-          gloss: true,
-          overview: true,
-          areas: {
-            where: publicAreaWhere,
-            orderBy: { sortOrder: "asc" },
-            select: {
-              slug: true,
-              name: true,
-              summary: true,
-              overview: true,
-              projects: {
-                where: { project: publicProjectWhere },
-                select: { project: { select: projectSummarySelect } },
-              },
-              publications: {
-                where: { publication: publicPublicationWhere },
-                select: {
-                  publication: { select: publicationSummarySelect },
-                },
+function loadThemeDetail(
+  where: Prisma.ResearchThemeWhereInput,
+): Promise<ThemeDetailData | null> {
+  return queryPublic(null, async () => {
+    const theme = await getDb().researchTheme.findFirst({
+      where,
+      select: {
+        slug: true,
+        name: true,
+        gloss: true,
+        overview: true,
+        areas: {
+          where: publicAreaWhere,
+          orderBy: { sortOrder: "asc" },
+          select: {
+            slug: true,
+            name: true,
+            summary: true,
+            overview: true,
+            projects: {
+              where: { project: publicProjectWhere },
+              select: { project: { select: projectSummarySelect } },
+            },
+            publications: {
+              where: { publication: publicPublicationWhere },
+              select: {
+                publication: { select: publicationSummarySelect },
               },
             },
           },
         },
-      });
+      },
+    });
 
-      if (!theme) return null;
+    if (!theme) return null;
 
-      return {
-        slug: theme.slug,
-        name: theme.name,
-        gloss: theme.gloss,
-        overview: theme.overview,
-        areas: theme.areas.map((area) => ({
-          slug: area.slug,
-          name: area.name,
-          summary: area.summary,
-          overview: area.overview,
-        })),
-        projects: uniqueBySlug(
-          theme.areas.flatMap((area) =>
-            area.projects.map(({ project }) => mapProject(project)),
-          ),
-        ),
-        publications: uniqueBySlug(
-          theme.areas.flatMap((area) =>
-            area.publications.map(({ publication }) =>
-              mapPublication(publication),
-            ),
-          ),
-        ),
-      };
-    }),
-);
-
-export const getAreaBySlug = cache(
-  async (slug: string): Promise<AreaDetailData | null> =>
-    queryPublic(null, async () => {
-      const area = await getDb().researchArea.findFirst({
-        where: { slug, ...publicAreaWhere },
-        select: {
-          slug: true,
-          name: true,
-          summary: true,
-          overview: true,
-          questions: true,
-          theme: {
-            select: { slug: true, name: true, gloss: true },
-          },
-          projects: {
-            where: { project: publicProjectWhere },
-            select: { project: { select: projectSummarySelect } },
-          },
-          publications: {
-            where: { publication: publicPublicationWhere },
-            select: { publication: { select: publicationSummarySelect } },
-          },
-          members: {
-            where: { member: publicMemberWhere },
-            select: { member: { select: memberSummarySelect } },
-          },
-          resources: {
-            where: { resource: publicResourceWhere },
-            select: {
-              resource: {
-                select: {
-                  slug: true,
-                  name: true,
-                  kind: true,
-                  description: true,
-                },
-              },
-            },
-          },
-        },
-      });
-
-      if (!area) return null;
-
-      const relatedAreas = await getDb().researchArea.findMany({
-        where: {
-          ...publicAreaWhere,
-          theme: { ...publicThemeWhere, slug: area.theme.slug },
-          slug: { not: area.slug },
-        },
-        orderBy: { sortOrder: "asc" },
-        select: { slug: true, name: true },
-      });
-
-      return {
+    return {
+      slug: theme.slug,
+      name: theme.name,
+      gloss: theme.gloss,
+      overview: theme.overview,
+      areas: theme.areas.map((area) => ({
         slug: area.slug,
         name: area.name,
         summary: area.summary,
         overview: area.overview,
-        questions: area.questions,
-        theme: area.theme,
-        projects: area.projects.map(({ project }) => mapProject(project)),
-        publications: area.publications.map(({ publication }) =>
-          mapPublication(publication),
+      })),
+      projects: uniqueBySlug(
+        theme.areas.flatMap((area) =>
+          area.projects.map(({ project }) => mapProject(project)),
         ),
-        researchers: area.members.map(({ member }) => mapMember(member)),
-        resources: area.resources.map(({ resource }) => resource),
-        relatedAreas,
-      };
-    }),
+      ),
+      publications: uniqueBySlug(
+        theme.areas.flatMap((area) =>
+          area.publications.map(({ publication }) =>
+            mapPublication(publication),
+          ),
+        ),
+      ),
+    };
+  });
+}
+
+export const getThemeBySlug = cache(
+  (slug: string): Promise<ThemeDetailData | null> =>
+    loadThemeDetail({ slug, ...publicThemeWhere }),
 );
+
+/** Any record by id, as its page would show it: admin preview only. */
+export function getThemeForPreview(
+  id: string,
+): Promise<ThemeDetailData | null> {
+  return loadThemeDetail({ id });
+}
+
+function loadAreaDetail(
+  where: Prisma.ResearchAreaWhereInput,
+): Promise<AreaDetailData | null> {
+  return queryPublic(null, async () => {
+    const area = await getDb().researchArea.findFirst({
+      where,
+      select: {
+        slug: true,
+        name: true,
+        summary: true,
+        overview: true,
+        questions: true,
+        theme: {
+          select: { slug: true, name: true, gloss: true },
+        },
+        projects: {
+          where: { project: publicProjectWhere },
+          select: { project: { select: projectSummarySelect } },
+        },
+        publications: {
+          where: { publication: publicPublicationWhere },
+          select: { publication: { select: publicationSummarySelect } },
+        },
+        members: {
+          where: { member: publicMemberWhere },
+          select: { member: { select: memberSummarySelect } },
+        },
+        resources: {
+          where: { resource: publicResourceWhere },
+          select: {
+            resource: {
+              select: {
+                slug: true,
+                name: true,
+                kind: true,
+                description: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!area) return null;
+
+    const relatedAreas = await getDb().researchArea.findMany({
+      where: {
+        ...publicAreaWhere,
+        theme: { ...publicThemeWhere, slug: area.theme.slug },
+        slug: { not: area.slug },
+      },
+      orderBy: { sortOrder: "asc" },
+      select: { slug: true, name: true },
+    });
+
+    return {
+      slug: area.slug,
+      name: area.name,
+      summary: area.summary,
+      overview: area.overview,
+      questions: area.questions,
+      theme: area.theme,
+      projects: area.projects.map(({ project }) => mapProject(project)),
+      publications: area.publications.map(({ publication }) =>
+        mapPublication(publication),
+      ),
+      researchers: area.members.map(({ member }) => mapMember(member)),
+      resources: area.resources.map(({ resource }) => resource),
+      relatedAreas,
+    };
+  });
+}
+
+export const getAreaBySlug = cache(
+  (slug: string): Promise<AreaDetailData | null> =>
+    loadAreaDetail({ slug, ...publicAreaWhere }),
+);
+
+/** Any record by id, as its page would show it: admin preview only. */
+export function getAreaForPreview(id: string): Promise<AreaDetailData | null> {
+  return loadAreaDetail({ id });
+}
 
 export async function getProjectsIndex(
   filters: ProjectFilters,
@@ -621,72 +645,89 @@ export async function getProjectsIndex(
   );
 }
 
-export const getProjectBySlug = cache(
-  async (slug: string): Promise<ProjectDetailData | null> =>
-    queryPublic(null, async () => {
-      const project = await getDb().project.findFirst({
-        where: { slug, ...publicProjectWhere },
-        select: {
-          ...projectSummarySelect,
-          abstract: true,
-          question: true,
-          motivation: true,
-          approach: true,
-          experiments: true,
-          results: true,
-          resultsPublic: true,
-          endedAt: true,
-          codeUrl: true,
-          datasetUrl: true,
-          demoUrl: true,
-          publications: {
-            where: publicPublicationWhere,
-            orderBy: [{ year: "desc" }, { title: "asc" }],
-            select: publicationSummarySelect,
-          },
-          relatedFrom: {
-            where: { to: publicProjectWhere },
-            select: {
-              to: { select: { slug: true, title: true, gloss: true } },
-            },
-          },
-          relatedTo: {
-            where: { from: publicProjectWhere },
-            select: {
-              from: { select: { slug: true, title: true, gloss: true } },
-            },
+/**
+ * A project as its public page shows it. Related work appears only when it
+ * is public itself, so an admin preview shows exactly what visitors will see.
+ */
+function loadProjectDetail(
+  where: Prisma.ProjectWhereInput,
+): Promise<ProjectDetailData | null> {
+  return queryPublic(null, async () => {
+    const project = await getDb().project.findFirst({
+      where,
+      select: {
+        ...projectSummarySelect,
+        abstract: true,
+        question: true,
+        motivation: true,
+        approach: true,
+        experiments: true,
+        results: true,
+        resultsPublic: true,
+        endedAt: true,
+        codeUrl: true,
+        datasetUrl: true,
+        demoUrl: true,
+        publications: {
+          where: publicPublicationWhere,
+          orderBy: [{ year: "desc" }, { title: "asc" }],
+          select: publicationSummarySelect,
+        },
+        relatedFrom: {
+          where: { to: publicProjectWhere },
+          select: {
+            to: { select: { slug: true, title: true, gloss: true } },
           },
         },
-      });
+        relatedTo: {
+          where: { from: publicProjectWhere },
+          select: {
+            from: { select: { slug: true, title: true, gloss: true } },
+          },
+        },
+      },
+    });
 
-      if (!project) return null;
+    if (!project) return null;
 
-      const safeProject = publicProjectResearch(project);
-      const links = [
-        { label: "Code", href: externalUrl(project.codeUrl) },
-        { label: "Dataset", href: externalUrl(project.datasetUrl) },
-        { label: "Demo", href: externalUrl(project.demoUrl) },
-      ].flatMap(({ label, href }) => (href ? [{ label, href }] : []));
+    const safeProject = publicProjectResearch(project);
+    const links = [
+      { label: "Code", href: externalUrl(project.codeUrl) },
+      { label: "Dataset", href: externalUrl(project.datasetUrl) },
+      { label: "Demo", href: externalUrl(project.demoUrl) },
+    ].flatMap(({ label, href }) => (href ? [{ label, href }] : []));
 
-      return {
-        ...mapProject(project),
-        abstract: project.abstract,
-        question: project.question,
-        motivation: project.motivation,
-        approach: project.approach,
-        experiments: safeProject.experiments,
-        results: safeProject.results,
-        resultsPublic: project.resultsPublic,
-        endedAt: project.endedAt?.toISOString() ?? null,
-        links,
-        publications: project.publications.map(mapPublication),
-        relatedProjects: uniqueBySlug([
-          ...project.relatedFrom.map(({ to }) => to),
-          ...project.relatedTo.map(({ from }) => from),
-        ]),
-      };
-    }),
+    return {
+      ...mapProject(project),
+      abstract: project.abstract,
+      question: project.question,
+      motivation: project.motivation,
+      approach: project.approach,
+      experiments: safeProject.experiments,
+      results: safeProject.results,
+      resultsPublic: project.resultsPublic,
+      endedAt: project.endedAt?.toISOString() ?? null,
+      links,
+      publications: project.publications.map(mapPublication),
+      relatedProjects: uniqueBySlug([
+        ...project.relatedFrom.map(({ to }) => to),
+        ...project.relatedTo.map(({ from }) => from),
+      ]),
+    };
+  });
+}
+
+export const getProjectBySlug = cache(
+  (slug: string): Promise<ProjectDetailData | null> =>
+    loadProjectDetail({ slug, ...publicProjectWhere }),
 );
+
+/** Any project by id, as its page would show it: admin preview only. */
+export function getProjectForPreview(
+  id: string,
+): Promise<ProjectDetailData | null> {
+  return loadProjectDetail({ id });
+}
 
 export async function getPeopleIndex(area?: string): Promise<PeopleIndexData> {
   return queryPublic({ people: [], areas: [] }, async () => {
