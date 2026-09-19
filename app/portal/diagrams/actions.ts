@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import type { Prisma } from "@/generated/prisma/client";
 import type { ActionState } from "@/lib/admin/actions";
 import { authorize, AuthorizationError, type Viewer } from "@/lib/authz";
 import { getDb } from "@/lib/db";
@@ -73,6 +74,31 @@ function readTitle(formData: FormData): string {
   return title;
 }
 
+const MAX_LAYOUT_LENGTH = 400_000;
+
+/**
+ * Positions and colours, as the canvas sent them. Parsed here only to refuse
+ * what is not a JSON object; every value inside is checked again on read, in
+ * `lib/diagrams/persist.ts`, because a stored document is never trusted.
+ */
+function readLayout(formData: FormData): Prisma.InputJsonValue {
+  const raw = field(formData, "layout").trim();
+  if (!raw) return {};
+  if (raw.length > MAX_LAYOUT_LENGTH) {
+    throw new DiagramError("That diagram has too many parts to save.");
+  }
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    throw new DiagramError("The canvas could not be saved. Reload and retry.");
+  }
+  if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+    throw new DiagramError("The canvas could not be saved. Reload and retry.");
+  }
+  return parsed as Prisma.InputJsonValue;
+}
+
 function readSource(formData: FormData): string {
   const source = field(formData, "source");
   if (!source.trim()) throw new DiagramError("The diagram is empty.");
@@ -107,6 +133,7 @@ export async function createDiagramAction(
       data: {
         title: readTitle(formData),
         source: readSource(formData),
+        layout: readLayout(formData),
         ownerId: workspaceMemberId(viewer)!,
         projectId: await readProjectId(viewer, formData),
       },
@@ -136,6 +163,7 @@ export async function saveDiagramAction(
       data: {
         title: readTitle(formData),
         source: readSource(formData),
+        layout: readLayout(formData),
         projectId: await readProjectId(viewer, formData),
       },
     });

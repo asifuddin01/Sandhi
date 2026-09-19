@@ -28,6 +28,8 @@ export interface DiagramSummary {
 
 export interface DiagramRecord extends DiagramSummary {
   source: string;
+  /** Positions and colours, checked again on read (`lib/diagrams/persist.ts`). */
+  layout: unknown;
   projectId: string | null;
 }
 
@@ -108,6 +110,7 @@ export async function getDiagram(
       id: true,
       title: true,
       source: true,
+      layout: true,
       projectId: true,
       updatedAt: true,
       ownerId: true,
@@ -119,6 +122,7 @@ export async function getDiagram(
   return {
     ...toSummary(row, memberId),
     source: row.source,
+    layout: row.layout,
     projectId: row.projectId,
   };
 }

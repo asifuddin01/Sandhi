@@ -964,6 +964,9 @@ model Diagram {
   id        String   @id @default(cuid())
   title     String
   source    String
+  /// Where each box sits and how it looks. Mermaid cannot express either, so
+  /// the canvas keeps them beside the source rather than inside it.
+  layout    Json?
   ownerId   String
   projectId String?
   owner     Member   @relation("DiagramOwner", fields: [ownerId], references: [id], onDelete: Cascade)

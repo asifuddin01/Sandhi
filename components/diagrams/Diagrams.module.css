@@ -15,6 +15,187 @@
   gap: 1rem;
 }
 
+/* Shapes, canvas, and what is selected — the three things an editor needs
+   within reach of each other. */
+.studio {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr) 16rem;
+  gap: 1rem;
+  align-items: start;
+}
+
+.rail {
+  display: grid;
+  gap: 0.75rem;
+  align-content: start;
+  max-height: 40rem;
+  padding: 1rem;
+  overflow-y: auto;
+  border: 1px solid var(--ink-line);
+  border-radius: 2px;
+  background: var(--ink-raised);
+}
+
+.rail h3 {
+  margin: 0;
+  font-size: var(--text-ui);
+}
+
+.shapeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.shapeButton {
+  display: grid;
+  justify-items: center;
+  gap: 0.3rem;
+  padding: 0.5rem 0.25rem;
+  border: 1px solid var(--ink-line);
+  border-radius: 2px;
+  background: none;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: 0.72rem;
+  cursor: pointer;
+}
+
+.shapeButton:hover,
+.shapeButton:focus-visible {
+  border-color: var(--lamplight);
+  color: var(--lamplight);
+}
+
+.shapeIcon {
+  width: 2.5rem;
+  height: 1.75rem;
+}
+
+.boardWrap {
+  min-width: 0;
+  overflow: auto;
+  border: 1px solid var(--ink-line);
+  border-radius: 2px;
+  background: #0d131c;
+}
+
+.board {
+  display: block;
+  width: 100%;
+  min-height: 30rem;
+  touch-action: none;
+}
+
+.board:focus-visible {
+  outline: 2px solid var(--lamplight);
+  outline-offset: -2px;
+}
+
+.node {
+  cursor: grab;
+}
+
+.selectionRing {
+  fill: none;
+  stroke: #c9a55c;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.dropTarget {
+  fill: none;
+  stroke: #4b9c8a;
+  stroke-width: 2;
+}
+
+.handle {
+  fill: #c9a55c;
+  cursor: nwse-resize;
+}
+
+.port {
+  fill: #4b9c8a;
+  cursor: crosshair;
+}
+
+.pendingEdge {
+  stroke: #4b9c8a;
+  stroke-width: 1.5;
+  stroke-dasharray: 5 4;
+}
+
+.edgeChosen line:last-of-type {
+  stroke: #c9a55c !important;
+}
+
+.edgeLabel {
+  fill: #d9dee8;
+  font-family: var(--font-interface);
+  font-size: 12px;
+  paint-order: stroke;
+  stroke: #0d131c;
+  stroke-width: 4px;
+}
+
+.colourField {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.colourField input[type="color"] {
+  width: 3rem;
+  min-height: 2.25rem;
+  padding: 0.15rem;
+}
+
+.fieldPair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  cursor: pointer;
+}
+
+.codeSection {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.cropRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-block-start: 0.75rem;
+}
+
+.cropFigure {
+  display: grid;
+  gap: 0.35rem;
+  margin: 0;
+  color: var(--mist);
+  font-size: var(--text-meta);
+  text-align: center;
+}
+
+@media (width < 62rem) {
+  .studio {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rail {
+    max-height: none;
+  }
+}
+
 /* Picture and text side by side, so an edit and its effect stay in one view. */
 .split {
   display: grid;

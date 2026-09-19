@@ -171,3 +171,38 @@ describe("editing the model", () => {
     expect(nextNodeId(model, "2fa")).toMatch(/^node_/u);
   });
 });
+
+describe("the architecture shapes", () => {
+  /**
+   * `[/…/]`, `[/…\\]` and `>…]` overlap: the reader has to try the longest
+   * delimiters first, or an input box reads as a manual step.
+   */
+  it("tells the overlapping delimiters apart, both ways", () => {
+    const written = `flowchart TD
+  a[/"Input"/]
+  b[\\"Output"\\]
+  c[/"Manual"\\]
+  d>"Note"]
+  e((("Start")))
+`;
+    const { model, problem } = parseFlowchart(written);
+    expect(problem).toBeNull();
+    expect(model.nodes.map((node) => [node.id, node.shape])).toEqual([
+      ["a", "parallelogram"],
+      ["b", "parallelogramAlt"],
+      ["c", "trapezoid"],
+      ["d", "flag"],
+      ["e", "doubleCircle"],
+    ]);
+    // And they survive being written out and read back.
+    expect(parseFlowchart(toMermaid(model)).model.nodes).toEqual(model.nodes);
+  });
+
+  it("still reads a plain arrow as an arrow, not as a note", () => {
+    const { model } = parseFlowchart(`flowchart TD
+  a["A"] --> b["B"]
+`);
+    expect(model.edges).toHaveLength(1);
+    expect(model.nodes.every((node) => node.shape === "rectangle")).toBe(true);
+  });
+});

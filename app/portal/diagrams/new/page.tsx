@@ -29,6 +29,7 @@ export default async function NewDiagramPage() {
         action={createDiagramAction}
         initialTitle=""
         initialSource={STARTER_SOURCE}
+        initialLayout={null}
         initialProjectId={null}
         projects={projects}
         canSave

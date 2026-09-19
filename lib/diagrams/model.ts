@@ -28,6 +28,13 @@ export const NODE_SHAPES = {
   circle: { open: "((", close: "))", label: "Circle" },
   diamond: { open: "{", close: "}", label: "Decision" },
   hexagon: { open: "{{", close: "}}", label: "Hexagon" },
+  // Input and output, the manual step, a note, and a start or end point:
+  // the rest of what an architecture or pipeline drawing is made of.
+  parallelogram: { open: "[/", close: "/]", label: "Input" },
+  parallelogramAlt: { open: "[\\", close: "\\]", label: "Output" },
+  trapezoid: { open: "[/", close: "\\]", label: "Manual step" },
+  flag: { open: ">", close: "]", label: "Note" },
+  doubleCircle: { open: "(((", close: ")))", label: "Start or end" },
 } as const;
 
 export type NodeShape = keyof typeof NODE_SHAPES;
@@ -41,6 +48,37 @@ export const EDGE_KINDS = {
 
 export type EdgeKind = keyof typeof EDGE_KINDS;
 
+/** Where a box sits on the canvas. Mermaid has no coordinates, so this is
+ * ours: it is stored beside the source, not inside it. */
+export interface NodeGeometry {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * A box's own colours and line, set on the canvas. Anything left null falls
+ * back to the colour class, and then to the theme.
+ */
+export interface ShapeStyle {
+  fill: string | null;
+  stroke: string | null;
+  text: string | null;
+  strokeWidth: number | null;
+  fontSize: number | null;
+  dashed: boolean;
+}
+
+export const emptyStyle: ShapeStyle = {
+  fill: null,
+  stroke: null,
+  text: null,
+  strokeWidth: null,
+  fontSize: null,
+  dashed: false,
+};
+
 export interface DiagramNode {
   /** The Mermaid identifier. Unique within a diagram. */
   id: string;
@@ -48,6 +86,14 @@ export interface DiagramNode {
   shape: NodeShape;
   /** The name of a colour class from `palette.ts`, when one is applied. */
   className: string | null;
+  /**
+   * A mark drawn inside the box (`glyphs.ts`). Mermaid cannot express it, so
+   * it lives with the geometry and travels in a picture, not in the text.
+   */
+  glyph?: string | null;
+  /** Absent until the diagram has been laid out. */
+  geometry?: NodeGeometry;
+  style?: ShapeStyle;
 }
 
 export interface DiagramEdge {
@@ -55,12 +101,26 @@ export interface DiagramEdge {
   to: string;
   label: string | null;
   kind: EdgeKind;
+  style?: { stroke: string | null; strokeWidth: number | null };
 }
+
+export interface CanvasSettings {
+  grid: number;
+  showGrid: boolean;
+  snap: boolean;
+}
+
+export const defaultCanvas: CanvasSettings = {
+  grid: 10,
+  showGrid: true,
+  snap: true,
+};
 
 export interface DiagramModel {
   direction: DiagramDirection;
   nodes: DiagramNode[];
   edges: DiagramEdge[];
+  canvas?: CanvasSettings;
   /**
    * Lines the reader did not recognise — subgraphs, comments, click handlers,
    * anything newer than this model. Kept and re-emitted unchanged.
@@ -130,6 +190,25 @@ export function renameNode(
       to: edge.to === from ? to : edge.to,
     })),
   };
+}
+
+/** The size a new box of each shape gets, before anyone resizes it. */
+export function defaultSize(shape: NodeShape): {
+  width: number;
+  height: number;
+} {
+  if (shape === "circle" || shape === "doubleCircle") {
+    return { width: 110, height: 110 };
+  }
+  if (shape === "diamond") return { width: 150, height: 110 };
+  if (shape === "cylinder") return { width: 150, height: 100 };
+  return { width: 160, height: 70 };
+}
+
+export function snapTo(value: number, grid: number, enabled: boolean): number {
+  return enabled && grid > 0
+    ? Math.round(value / grid) * grid
+    : Math.round(value);
 }
 
 export function moveNode(

@@ -47,6 +47,7 @@ export default async function DiagramPage({
         id={diagram.id}
         initialTitle={diagram.title}
         initialSource={diagram.source}
+        initialLayout={diagram.layout}
         initialProjectId={diagram.projectId}
         projects={projects}
         canSave={diagram.mine}
@@ -54,7 +55,11 @@ export default async function DiagramPage({
       />
 
       {diagram.mine ? (
-        <DeleteDiagram id={diagram.id} title={diagram.title} action={deleteDiagramAction} />
+        <DeleteDiagram
+          id={diagram.id}
+          title={diagram.title}
+          action={deleteDiagramAction}
+        />
       ) : null}
     </div>
   );
