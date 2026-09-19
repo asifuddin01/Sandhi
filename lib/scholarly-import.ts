@@ -4,17 +4,12 @@
  * import cannot be turned against other servers.
  */
 
-export const PUBLICATION_TYPES = [
-  "CONFERENCE",
-  "JOURNAL",
-  "WORKSHOP",
-  "PREPRINT",
-  "TECHNICAL_REPORT",
-  "DATASET",
-  "BENCHMARK",
-  "THESIS",
-] as const;
-export type PublicationTypeValue = (typeof PUBLICATION_TYPES)[number];
+import type { PublicationType as PublicationTypeValue } from "@/lib/bibtex";
+
+// One list, shared with the BibTeX writer, so an import can never produce a
+// type the citation generator does not know.
+export { PUBLICATION_TYPES } from "@/lib/bibtex";
+export type { PublicationTypeValue };
 
 export type ImportedPublication = {
   title: string;

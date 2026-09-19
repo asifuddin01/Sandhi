@@ -142,6 +142,26 @@ export function isUniqueConflict(error: unknown): boolean {
 }
 
 /**
+ * Which unique field a conflict was about, lower-cased, so a manager can name
+ * it in the message. Where it is recorded depends on the driver: the classic
+ * client puts the fields in `meta.target`, while the pg adapter reports the
+ * constraint under `meta.driverAdapterError`. Everything available is
+ * searched, including the message, rather than relying on one of them.
+ */
+export function uniqueConflictTarget(error: unknown): string {
+  if (!isUniqueConflict(error)) return "";
+  const known = error as Prisma.PrismaClientKnownRequestError;
+  const target = known.meta?.target;
+  return [
+    Array.isArray(target) ? target.join(" ") : (target ?? ""),
+    JSON.stringify(known.meta?.driverAdapterError ?? ""),
+    known.message,
+  ]
+    .join(" ")
+    .toLowerCase();
+}
+
+/**
  * What changed, for the audit log. Long text fields are recorded as changed
  * rather than copied, so the log never duplicates whole articles.
  */

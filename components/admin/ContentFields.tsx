@@ -29,7 +29,9 @@ export function TitleSlugFields({
   pathPrefix: string;
 }) {
   const [title, setTitle] = useState(defaultTitle);
-  const [slug, setSlug] = useState(defaultSlug);
+  // A record that arrives with a title but no address (an imported
+  // publication) gets one straight away, rather than only once someone types.
+  const [slug, setSlug] = useState(defaultSlug || slugify(defaultTitle));
   const [followsTitle, setFollowsTitle] = useState(!defaultSlug);
 
   return (

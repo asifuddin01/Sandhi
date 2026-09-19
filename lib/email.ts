@@ -248,6 +248,30 @@ export async function sendInvitationEmail(
 }
 
 /**
+ * Tells the people who can review that a publication is waiting for them.
+ * Sent when its stage moves to internal review.
+ */
+export async function sendPublicationReviewEmail(
+  {
+    to,
+    title,
+    url,
+    movedBy,
+  }: { to: string[]; title: string; url: string; movedBy: string },
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  return sendEmail(
+    {
+      to,
+      subject: `Ready for internal review: ${title}`,
+      text: `${movedBy} moved "${title}" to internal review.\n\nRead it and record your decision:\n${url}\n\nSANDHI Research Lab`,
+      html: `<p>${escapeHtml(movedBy)} moved &ldquo;${escapeHtml(title)}&rdquo; to internal review.</p><p><a href="${escapeHtml(url)}">Read it and record your decision</a></p><p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}
+
+/**
  * A short security notice to an account holder: what happened, and what to
  * do if it was not them. Lines are plain text and escaped for HTML.
  */

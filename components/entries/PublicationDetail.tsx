@@ -145,10 +145,19 @@ export function PublicationDetail({
                   author.name
                 )}
                 {author.equalContribution ? (
-                  <sup aria-label="equal contribution">*</sup>
+                  <sup>
+                    *
+                    <span className="visually-hidden"> equal contribution</span>
+                  </sup>
                 ) : null}
                 {author.corresponding ? (
-                  <sup aria-label="corresponding author">†</sup>
+                  <sup>
+                    †
+                    <span className="visually-hidden">
+                      {" "}
+                      corresponding author
+                    </span>
+                  </sup>
                 ) : null}
                 {author.affiliation ? (
                   <span className={styles.affiliation}>
@@ -161,7 +170,11 @@ export function PublicationDetail({
           </p>
         ) : null}
         {publication.award ? <p>{publication.award}</p> : null}
-        <div className={styles.detailLinks} aria-label="Publication links">
+        <div
+          className={styles.detailLinks}
+          role="group"
+          aria-label="Publication links"
+        >
           {paperUrl ? (
             <a href={paperUrl} rel="noreferrer">
               Paper
