@@ -9,6 +9,8 @@ vi.mock("@/lib/auth", () => ({
 import { readSignInOutcome, viewerPayload } from "@/lib/api/mobile-auth";
 import type { Viewer } from "@/lib/authz";
 
+// Every token and challenge below is invented. A real one is signed by Better
+// Auth, lives for minutes, and has no place in a repository.
 function headers(entries: Array<[string, string]>): Headers {
   const value = new Headers();
   for (const [name, item] of entries) value.append(name, item);
@@ -19,16 +21,16 @@ describe("readSignInOutcome", () => {
   it("returns the bearer token and when it expires", () => {
     const outcome = readSignInOutcome(
       headers([
-        ["set-auth-token", "token.signature"],
+        ["set-auth-token", "fixture-token.fixture-signature"],
         [
           "set-cookie",
-          "better-auth.session_token=token.signature; Path=/; HttpOnly; Max-Age=604800",
+          "better-auth.session_token=fixture-token.fixture-signature; Path=/; HttpOnly; Max-Age=604800",
         ],
       ]),
     );
     expect(outcome).toMatchObject({
       status: "signed-in",
-      token: "token.signature",
+      token: "fixture-token.fixture-signature",
     });
     expect(
       new Date((outcome as { expiresAt: string }).expiresAt).getTime(),
@@ -62,7 +64,7 @@ describe("readSignInOutcome", () => {
   it("asks for a code even when the discarded session's token is still stamped on", () => {
     const outcome = readSignInOutcome(
       headers([
-        ["set-auth-token", "discarded.signature"],
+        ["set-auth-token", "fixture-discarded.fixture-signature"],
         [
           "set-cookie",
           "better-auth.session_token=; Path=/; Max-Age=0; HttpOnly; SameSite=lax",
@@ -73,7 +75,7 @@ describe("readSignInOutcome", () => {
         ],
         [
           "set-cookie",
-          "better-auth.two_factor=2fa-ozdfpZT4niUTTN7TKP6r.Vu0nt10g%2BQ%3D; Path=/; Max-Age=600; HttpOnly; SameSite=lax",
+          "better-auth.two_factor=2fa-fixture-challenge.fixture-signature%3D; Path=/; Max-Age=600; HttpOnly; SameSite=lax",
         ],
       ]),
     );
@@ -97,11 +99,14 @@ describe("readSignInOutcome", () => {
         headers([
           [
             "set-cookie",
-            "better-auth.session_token=token.sig%2Bnature; Path=/; Max-Age=604800",
+            "better-auth.session_token=fixture-token.fixture-sig%2Bnature; Path=/; Max-Age=604800",
           ],
         ]),
       ),
-    ).toMatchObject({ status: "signed-in", token: "token.sig+nature" });
+    ).toMatchObject({
+      status: "signed-in",
+      token: "fixture-token.fixture-sig+nature",
+    });
   });
 
   it("reports nothing when neither a session nor a challenge was set", () => {
@@ -111,7 +116,9 @@ describe("readSignInOutcome", () => {
     ).toBeNull();
     // A token header on its own establishes nothing.
     expect(
-      readSignInOutcome(headers([["set-auth-token", "token.signature"]])),
+      readSignInOutcome(
+        headers([["set-auth-token", "fixture-token.fixture-signature"]]),
+      ),
     ).toBeNull();
   });
 });

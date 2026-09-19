@@ -10,14 +10,16 @@ import {
   parseSetCookies,
 } from "@/lib/api/auth-cookies";
 
-const challengeCookie =
-  "better-auth.two_factor=abc123.signature; Path=/; HttpOnly; SameSite=Lax; Max-Age=600";
+// Made-up values, written so a secret scanner reads them as the fixtures they
+// are: the real cookie is signed by Better Auth and never appears in a test.
+const CHALLENGE_VALUE = "fixture-challenge.fixture-signature";
+const challengeCookie = `better-auth.two_factor=${CHALLENGE_VALUE}; Path=/; HttpOnly; SameSite=Lax; Max-Age=600`;
 
 describe("parseSetCookie", () => {
   it("reads the pair and lower-cases the attribute names", () => {
     expect(parseSetCookie(challengeCookie)).toEqual({
       name: "better-auth.two_factor",
-      value: "abc123.signature",
+      value: CHALLENGE_VALUE,
       attributes: {
         path: "/",
         httponly: "",
@@ -74,7 +76,7 @@ describe("the two-factor challenge round trip", () => {
     const encoded = encodeTwoFactorChallenge(parseSetCookie(challengeCookie)!);
     expect(encoded).not.toContain("two_factor");
     expect(decodeTwoFactorChallenge(encoded)).toBe(
-      "better-auth.two_factor=abc123.signature",
+      `better-auth.two_factor=${CHALLENGE_VALUE}`,
     );
   });
 
