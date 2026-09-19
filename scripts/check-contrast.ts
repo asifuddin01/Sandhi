@@ -43,6 +43,8 @@ const SPECIFIED_TOKENS: Record<ThemeName, Partial<ThemeTokens>> = {
     mist: "#56607a",
     lamplight: "#836323",
     lotus: "#5e5282",
+    "signal-ok": "#40634e",
+    "signal-warn": "#8b4c2d",
   },
 };
 
@@ -56,6 +58,18 @@ const CONTRAST_PAIRS: readonly ContrastPair[] = [
         background,
         minimum: 4.5,
         role: foreground === "lotus" ? "link text" : "text",
+      })),
+    ),
+  ),
+  // Status messages (saved, refused) are text in both themes.
+  ...(["light"] as const).flatMap((theme) =>
+    (["signal-ok", "signal-warn"] as const).flatMap((foreground) =>
+      (["ink", "ink-raised"] as const).map((background) => ({
+        theme,
+        foreground,
+        background,
+        minimum: 4.5,
+        role: "status text",
       })),
     ),
   ),

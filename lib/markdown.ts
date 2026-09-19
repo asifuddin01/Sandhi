@@ -130,13 +130,17 @@ export const safeMarkdownOptions = {
     [rehypeSanitize, markdownSanitizeSchema],
     rehypeHeadingIds,
     rehypeFigureCaptions,
-    rehypeKatex,
+    // MathML only: browsers render it natively and accessibly, so no KaTeX
+    // stylesheet is needed (without one, the HTML rendering showed twice).
+    [rehypeKatex, { output: "mathml" }],
     [
       rehypePrettyCode,
       {
+        // High-contrast variants keep every token above 4.5:1 on the
+        // site's code panels in both themes.
         theme: {
-          dark: "github-dark-default",
-          light: "github-light-default",
+          dark: "github-dark-high-contrast",
+          light: "github-light-high-contrast",
         },
         keepBackground: false,
       },

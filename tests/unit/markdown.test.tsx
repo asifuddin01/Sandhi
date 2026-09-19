@@ -23,6 +23,8 @@ describe("Prose", () => {
 
     expect(html).toContain('class="katex"');
     expect(html).toContain("<math");
+    // MathML only: without a KaTeX stylesheet the HTML copy showed twice.
+    expect(html).not.toContain("katex-html");
     expect(html).toContain("a^2 + b^2 = c^2");
   });
 

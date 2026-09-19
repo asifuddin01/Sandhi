@@ -274,18 +274,25 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - Tests: settings parsing and validation unit tests; end-to-end invitation and withdrawal, Owner protection, suspension signing a member out, removal by name, settings changing the public site at once and being audited, and Members and Reviewers failing to invite, promote, or change settings even by posting harvested server-action references directly.
 - The settings end-to-end tests change every public page, so Playwright runs them alone after the rest of the suite (`chrome-site-wide` project).
 
+### Milestone 5 slice 3 — content framework and News (committed)
+
+- Shared publishing rules (`lib/content-state.ts`): the five states, slugs, scheduling, bulk actions, and which states may be deleted. Scheduled news goes live on its own once its time passes (`publicNewsWhere` now includes `SCHEDULED` with a past `publishAt`); no cron flips states. Admin forms read and show times in Dhaka time (`lib/dhaka-time.ts`).
+- Shared editor pieces (`components/admin/ContentFields.tsx`): title and address fields where the address follows the title until edited; a Markdown field whose live preview is rendered by a server action with the public `Prose` component (`app/admin/preview-actions.tsx`), so the preview is sanitised and styled exactly like the site; a select-all checkbox for bulk actions.
+- `/admin/news`: search, state and category filters, pagination, bulk publish, draft, archive, and delete (drafts and archived only); status shows Live, "Scheduled for …", or the state. The editor covers title, address, summary, Markdown body, category, state, publish time, author, and related project and publication; duplicate addresses are refused. `/admin/news/[id]/preview` renders the shared `NewsArticle` component, so the preview is the public page. Every change is audited (body edits recorded as changed, not copied).
+- Public rendering fixes found while building the preview: maths rendered twice because no KaTeX stylesheet was loaded (now MathML only), Markdown lists had no markers (the global reset removed them), and highlighted code had no colours (the two-theme variables were never applied; now GitHub's high-contrast themes follow the site theme). Light-theme status colours now meet 4.5:1 and are checked by `pnpm contrast`.
+- Tests: publishing rules, Dhaka time, and the math regression in unit tests; end to end, the full write–preview–schedule–publish–archive–delete flow, sanitised live preview, duplicate addresses, reviewer access, member refusal including direct posts, and axe on the list and editor.
+
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
 
 ## 10a. Portal and admin routes still to build
 
 ### Admin routes (Milestone 5)
 
-Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, and the sign-in, reset, and invitation routes (slices 1 and 2). Still to build:
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, and the sign-in, reset, and invitation routes (slices 1–3). Still to build:
 
 - `/admin/research`
 - `/admin/projects`
 - `/admin/publications`
-- `/admin/news`
 - `/admin/events`
 - `/admin/opportunities`
 - `/admin/applications`

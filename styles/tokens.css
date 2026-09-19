@@ -53,6 +53,9 @@
   --mist: #56607a;
   --lamplight: #836323;
   --lotus: #5e5282;
+  /* Darker status colours keep 4.5:1 on the light surfaces. */
+  --signal-ok: #40634e;
+  --signal-warn: #8b4c2d;
 }
 
 @media (prefers-color-scheme: light) {
@@ -65,6 +68,9 @@
     --mist: #56607a;
     --lamplight: #836323;
     --lotus: #5e5282;
+    /* Darker status colours keep 4.5:1 on the light surfaces. */
+    --signal-ok: #40634e;
+    --signal-warn: #8b4c2d;
   }
 }
 

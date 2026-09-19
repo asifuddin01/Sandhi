@@ -1937,3 +1937,37 @@ html[data-reduce-motion="true"]::view-transition-group(*) {
     animation-delay: 0ms !important;
   }
 }
+
+/* Rendered Markdown. The reset above removes list markers, which articles
+   need back; highlighted code carries both themes' colours as variables. */
+.prose ul {
+  padding-inline-start: 1.4em;
+  list-style: disc;
+}
+
+.prose ol {
+  padding-inline-start: 1.4em;
+  list-style: decimal;
+}
+
+.prose li + li {
+  margin-block-start: 0.35em;
+}
+
+.prose math[display="block"] {
+  overflow-x: auto;
+}
+
+.prose code[data-theme] span {
+  color: var(--shiki-dark);
+}
+
+:root[data-theme="light"] .prose code[data-theme] span {
+  color: var(--shiki-light);
+}
+
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme]) .prose code[data-theme] span {
+    color: var(--shiki-light);
+  }
+}

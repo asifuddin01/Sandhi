@@ -180,11 +180,13 @@
 .fieldRow {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+  align-items: start;
   gap: 1rem;
 }
 
 .field {
   display: grid;
+  align-content: start;
   gap: 0.45rem;
 }
 
@@ -471,4 +473,77 @@
   .nav a[aria-current="page"] {
     border-block-end-color: var(--lamplight);
   }
+}
+
+.markdownField {
+  display: grid;
+  gap: 1rem;
+}
+
+@media (min-width: 72rem) {
+  .markdownField {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.markdownPreview {
+  min-height: 12rem;
+  max-height: 42rem;
+  padding: 1rem 1.25rem;
+  overflow: auto;
+  border: 1px solid var(--ink-line);
+  background: var(--ink-raised);
+}
+
+.markdownPreview[aria-busy="true"] {
+  opacity: 0.7;
+}
+
+/* The preview reads like the public article body. */
+.markdownPreview :global(.prose) {
+  color: var(--moonstone);
+  font-family: var(--font-display);
+  font-size: var(--text-body);
+  line-height: 1.82;
+}
+
+.markdownPreview :global(.prose pre) {
+  overflow-x: auto;
+  padding: 1rem;
+  border: 1px solid var(--ink-line);
+  font-size: 0.84rem;
+}
+
+.previewLabel {
+  margin: 0 0 0.75rem;
+  color: var(--mist);
+  font-size: var(--text-meta);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bulkBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+  margin-block: 0 1rem;
+}
+
+.statusLive {
+  color: var(--signal-ok);
+}
+
+.statusScheduled {
+  color: var(--moonstone);
+  font-style: italic;
+}
+
+.previewBanner {
+  margin: 0 0 1.5rem;
+  padding: 0.85rem 1rem;
+  border-inline-start: 3px solid var(--lamplight);
+  background: var(--ink-raised);
+  color: var(--moonstone);
 }

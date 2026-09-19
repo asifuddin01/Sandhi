@@ -41,10 +41,19 @@ export const publicPartnerWhere = {
   state: "PUBLISHED",
 } satisfies Prisma.PartnerWhereInput;
 
+/**
+ * Published posts whose time has come, and scheduled posts once their time
+ * passes: scheduling needs no job to flip the state.
+ */
 export function publicNewsWhere(now = new Date()) {
   return {
-    state: "PUBLISHED",
-    OR: [{ publishAt: null }, { publishAt: { lte: now } }],
+    OR: [
+      {
+        state: "PUBLISHED",
+        OR: [{ publishAt: null }, { publishAt: { lte: now } }],
+      },
+      { state: "SCHEDULED", publishAt: { lte: now } },
+    ],
   } satisfies Prisma.NewsPostWhereInput;
 }
 

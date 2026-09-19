@@ -541,73 +541,90 @@ export async function getPublicNews(
   });
 }
 
+/**
+ * A news post as its public page shows it. Related people, projects, and
+ * publications appear only when they are public themselves, so an admin
+ * preview of a draft shows exactly what readers will see.
+ */
+async function loadNewsDetail(
+  where: Prisma.NewsPostWhereInput,
+): Promise<PublicNewsDetail | null> {
+  if (!isDatabaseConfigured()) return null;
+
+  const db = getDb();
+  const row = await db.newsPost.findFirst({
+    where,
+    select: {
+      id: true,
+      slug: true,
+      title: true,
+      excerpt: true,
+      body: true,
+      category: true,
+      coverKey: true,
+      coverAlt: true,
+      publishAt: true,
+      authorId: true,
+      projectId: true,
+      publicationId: true,
+      createdAt: true,
+      updatedAt: true,
+    },
+  });
+  if (!row) return null;
+
+  const [author, project, publication] = await Promise.all([
+    row.authorId
+      ? db.member.findFirst({
+          where: { AND: [publicMemberWhere, { id: row.authorId }] },
+          select: { slug: true, name: true },
+        })
+      : null,
+    row.projectId
+      ? db.project.findFirst({
+          where: { AND: [publicProjectWhere, { id: row.projectId }] },
+          select: { slug: true, title: true },
+        })
+      : null,
+    row.publicationId
+      ? db.publication.findFirst({
+          where: {
+            AND: [publicPublicationWhere, { id: row.publicationId }],
+          },
+          select: { slug: true, title: true },
+        })
+      : null,
+  ]);
+
+  return {
+    id: row.id,
+    slug: row.slug,
+    title: row.title,
+    excerpt: row.excerpt,
+    body: row.body,
+    category: row.category,
+    coverUrl: publicAssetUrl(row.coverKey),
+    coverAlt: row.coverAlt,
+    publishAt: row.publishAt,
+    createdAt: row.createdAt,
+    updatedAt: row.updatedAt,
+    author,
+    project,
+    publication,
+  };
+}
+
 export const getPublicNewsBySlug = cache(
-  async (slug: string): Promise<PublicNewsDetail | null> => {
-    if (!isDatabaseConfigured()) return null;
-
-    const db = getDb();
-    const row = await db.newsPost.findFirst({
-      where: { AND: [publicNewsWhere(), { slug }] },
-      select: {
-        id: true,
-        slug: true,
-        title: true,
-        excerpt: true,
-        body: true,
-        category: true,
-        coverKey: true,
-        coverAlt: true,
-        publishAt: true,
-        authorId: true,
-        projectId: true,
-        publicationId: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    if (!row) return null;
-
-    const [author, project, publication] = await Promise.all([
-      row.authorId
-        ? db.member.findFirst({
-            where: { AND: [publicMemberWhere, { id: row.authorId }] },
-            select: { slug: true, name: true },
-          })
-        : null,
-      row.projectId
-        ? db.project.findFirst({
-            where: { AND: [publicProjectWhere, { id: row.projectId }] },
-            select: { slug: true, title: true },
-          })
-        : null,
-      row.publicationId
-        ? db.publication.findFirst({
-            where: {
-              AND: [publicPublicationWhere, { id: row.publicationId }],
-            },
-            select: { slug: true, title: true },
-          })
-        : null,
-    ]);
-
-    return {
-      id: row.id,
-      slug: row.slug,
-      title: row.title,
-      excerpt: row.excerpt,
-      body: row.body,
-      category: row.category,
-      coverUrl: publicAssetUrl(row.coverKey),
-      coverAlt: row.coverAlt,
-      publishAt: row.publishAt,
-      createdAt: row.createdAt,
-      updatedAt: row.updatedAt,
-      author,
-      project,
-      publication,
-    };
-  },
+  (slug: string): Promise<PublicNewsDetail | null> =>
+    loadNewsDetail({ AND: [publicNewsWhere(), { slug }] }),
 );
+
+/** Any news post by id, visible or not: for the admin preview only. */
+export function getNewsDetailForPreview(
+  id: string,
+): Promise<PublicNewsDetail | null> {
+  return loadNewsDetail({ id });
+}
 
 export async function getPublicSitemapEntries(): Promise<PublicSitemapEntry[]> {
   if (!isDatabaseConfigured()) return [];
