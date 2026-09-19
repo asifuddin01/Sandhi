@@ -41,8 +41,8 @@
     "motion": "^13.3.0",
     "next": "16.3.5",
     "pg": "^8.23.0",
-    "react": "19.2.8",
-    "react-dom": "19.2.8",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
     "react-markdown": "^10.1.0",
     "rehype-katex": "^7.0.1",
     "rehype-pretty-code": "^0.14.5",
@@ -71,7 +71,7 @@
     "tailwindcss": "^4",
     "tsx": "^4.23.13",
     "typescript": "^5",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.1"
   },
   "packageManager": "pnpm@11.19.0"
 }
