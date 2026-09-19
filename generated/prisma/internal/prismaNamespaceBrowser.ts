@@ -92,7 +92,8 @@ export const ModelName = {
   ChangeRequest: 'ChangeRequest',
   SiteSetting: 'SiteSetting',
   AuditLog: 'AuditLog',
-  Diagram: 'Diagram'
+  Diagram: 'Diagram',
+  ProjectUpdate: 'ProjectUpdate'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -782,6 +783,22 @@ export const DiagramScalarFieldEnum = {
 } as const
 
 export type DiagramScalarFieldEnum = (typeof DiagramScalarFieldEnum)[keyof typeof DiagramScalarFieldEnum]
+
+
+export const ProjectUpdateScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  authorId: 'authorId',
+  title: 'title',
+  body: 'body',
+  nextUp: 'nextUp',
+  isPublic: 'isPublic',
+  stage: 'stage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
 
 
 export const SortOrder = {

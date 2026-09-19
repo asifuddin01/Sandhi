@@ -346,6 +346,7 @@ model Member {
   applicationNotes       ApplicationNote[]        @relation("ApplicationNoteAuthor")
   uploadedDocuments      Document[]               @relation("DocumentUploader")
   diagrams               Diagram[]                @relation("DiagramOwner")
+  projectUpdates         ProjectUpdate[]          @relation("ProjectUpdateAuthor")
   announcements          Announcement[]           @relation("AnnouncementAuthor")
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt
@@ -440,6 +441,7 @@ model Project {
   meetings       Meeting[]
   documents      Document[]
   diagrams       Diagram[]
+  updates        ProjectUpdate[]
   experimentsLog Experiment[]
   newsPosts      NewsPost[]
   createdAt      DateTime                 @default(now())
@@ -976,4 +978,28 @@ model Diagram {
 
   @@index([ownerId, updatedAt])
   @@index([projectId])
+}
+
+/// What the team has done on a project and what comes next. Internal unless
+/// someone deliberately makes it public, so a working note never becomes a
+/// public statement by accident.
+model ProjectUpdate {
+  id        String   @id @default(cuid())
+  projectId String
+  authorId  String?
+  title     String
+  body      String
+  /// What the team expects to do next. Optional: not every update has one.
+  nextUp    String?
+  isPublic  Boolean  @default(false)
+  /// The stage the project was at when this was written, so the public
+  /// history reads correctly even after the project moves on.
+  stage     ProjectStatus
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  author    Member?  @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId, isPublic, createdAt])
+  @@index([authorId])
 }

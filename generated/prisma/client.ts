@@ -254,3 +254,10 @@ export type AuditLog = Prisma.AuditLogModel
  * every export is produced from it on demand.
  */
 export type Diagram = Prisma.DiagramModel
+/**
+ * Model ProjectUpdate
+ * What the team has done on a project and what comes next. Internal unless
+ * someone deliberately makes it public, so a working note never becomes a
+ * public statement by accident.
+ */
+export type ProjectUpdate = Prisma.ProjectUpdateModel

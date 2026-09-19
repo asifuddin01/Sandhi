@@ -4,6 +4,8 @@ import {
   isPublicationPublic,
   isPublishedAndDue,
   publicProjectResearch,
+  publicProjectUpdateWhere,
+  publicProjectWhere,
 } from "@/lib/visibility";
 
 describe("public visibility", () => {
@@ -74,6 +76,15 @@ describe("public visibility", () => {
     ).toMatchObject({
       experiments: "public experiment",
       results: "public result",
+    });
+  });
+
+  it("needs both halves before a progress update is public", () => {
+    // Publishing a project must not retroactively publish working notes, and
+    // publishing a note must not leak an unpublished project.
+    expect(publicProjectUpdateWhere).toEqual({
+      isPublic: true,
+      project: publicProjectWhere,
     });
   });
 });

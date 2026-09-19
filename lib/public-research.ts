@@ -4,27 +4,28 @@ import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
+import type { ProjectStatusValue } from "@/lib/project-status";
 import {
   publicAreaWhere,
   publicInsightWhere,
   publicMemberWhere,
+  PUBLIC_MEMBER_STATUSES,
   publicProjectResearch,
+  publicProjectUpdateWhere,
   publicProjectWhere,
   publicPublicationWhere,
   publicResourceWhere,
   publicThemeWhere,
 } from "@/lib/visibility";
 
-export const PROJECT_STATUSES = [
-  "PROPOSED",
-  "ACTIVE",
-  "COMPLETED",
-  "SUBMITTED",
-  "PUBLISHED",
-  "ARCHIVED",
-] as const;
+export {
+  isProjectStatus,
+  PROJECT_STATUSES,
+  type ProjectStatusValue,
+} from "@/lib/project-status";
 
-export type ProjectStatusValue = (typeof PROJECT_STATUSES)[number];
+/** How many published updates a project page carries; the rest are history. */
+const PUBLIC_UPDATES = 20;
 
 export interface AreaLink {
   slug: string;
@@ -133,6 +134,18 @@ export interface ProjectsIndexData {
   };
 }
 
+/** One published progress update, as the project's public page shows it. */
+export interface ProjectUpdateEntry {
+  id: string;
+  title: string;
+  body: string;
+  nextUp: string | null;
+  /** The stage the project was at when this was written, not where it is now. */
+  stage: ProjectStatusValue;
+  author: { name: string; memberSlug: string | null } | null;
+  postedAt: string;
+}
+
 export interface ProjectDetailData extends ProjectSummary {
   abstract: string;
   question: string;
@@ -145,6 +158,7 @@ export interface ProjectDetailData extends ProjectSummary {
   links: Array<{ label: string; href: string }>;
   publications: PublicationSummary[];
   relatedProjects: Array<{ slug: string; title: string; gloss: string }>;
+  updates: ProjectUpdateEntry[];
 }
 
 export interface PeopleIndexData {
@@ -222,6 +236,16 @@ const projectSummarySelect = {
   },
 } satisfies Prisma.ProjectSelect;
 
+const projectUpdateSelect = {
+  id: true,
+  title: true,
+  body: true,
+  nextUp: true,
+  stage: true,
+  createdAt: true,
+  author: { select: { slug: true, name: true, isPublic: true, status: true } },
+} satisfies Prisma.ProjectUpdateSelect;
+
 const publicationSummarySelect = {
   slug: true,
   title: true,
@@ -250,6 +274,9 @@ type ProjectSummaryRecord = Prisma.ProjectGetPayload<{
 }>;
 type PublicationSummaryRecord = Prisma.PublicationGetPayload<{
   select: typeof publicationSummarySelect;
+}>;
+type ProjectUpdateRecord = Prisma.ProjectUpdateGetPayload<{
+  select: typeof projectUpdateSelect;
 }>;
 type MemberSummaryRecord = Prisma.MemberGetPayload<{
   select: typeof memberSummarySelect;
@@ -346,6 +373,25 @@ function mapPublication(record: PublicationSummaryRecord): PublicationSummary {
         memberSlug: memberIsPublic ? (author.member?.slug ?? null) : null,
       };
     }),
+  };
+}
+
+function mapProjectUpdate(record: ProjectUpdateRecord): ProjectUpdateEntry {
+  const author = record.author;
+  const authorIsPublic =
+    author?.isPublic === true &&
+    PUBLIC_MEMBER_STATUSES.some((status) => status === author.status);
+
+  return {
+    id: record.id,
+    title: record.title,
+    body: record.body,
+    nextUp: record.nextUp,
+    stage: record.stage as ProjectStatusValue,
+    // A member who left, or who keeps no public profile, is still credited by
+    // the team internally but is not named here.
+    author: authorIsPublic ? { name: author.name, memberSlug: author.slug } : null,
+    postedAt: record.createdAt.toISOString(),
   };
 }
 
@@ -673,6 +719,14 @@ function loadProjectDetail(
           orderBy: [{ year: "desc" }, { title: "asc" }],
           select: publicationSummarySelect,
         },
+        updates: {
+          // Both halves of `publicProjectUpdateWhere`: publishing a project
+          // must not retroactively publish the team's working notes.
+          where: publicProjectUpdateWhere,
+          orderBy: { createdAt: "desc" },
+          take: PUBLIC_UPDATES,
+          select: projectUpdateSelect,
+        },
         relatedFrom: {
           where: { to: publicProjectWhere },
           select: {
@@ -713,6 +767,7 @@ function loadProjectDetail(
         ...project.relatedFrom.map(({ to }) => to),
         ...project.relatedTo.map(({ from }) => from),
       ]),
+      updates: project.updates.map(mapProjectUpdate),
     };
   });
 }
@@ -867,7 +922,3 @@ export const getAboutData = cache(async (): Promise<AboutData> => {
     };
   });
 });
-
-export function isProjectStatus(value: string): value is ProjectStatusValue {
-  return PROJECT_STATUSES.some((status) => status === value);
-}

@@ -19,7 +19,7 @@ export default async function NewDiagramPage() {
 
   return (
     <div className={portal.page}>
-      <nav aria-label="Breadcrumb">
+      <nav aria-label="Breadcrumb" className={portal.breadcrumb}>
         <Link href="/portal/diagrams">Diagrams</Link>
       </nav>
       <header className={portal.intro}>

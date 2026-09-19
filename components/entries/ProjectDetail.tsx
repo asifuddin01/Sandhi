@@ -1,7 +1,8 @@
 import Link from "next/link";
 
+import { ProjectStage } from "@/components/entries/ProjectStage";
+import { ProjectUpdates } from "@/components/entries/ProjectUpdates";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
-import { StatusLabel } from "@/components/entries/StatusLabel";
 import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
 import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
@@ -57,10 +58,8 @@ export function ProjectDetail({ project }: { project: ProjectDetailData }) {
         <h2 className="visually-hidden" id="status-heading">
           Project status
         </h2>
-        <div className={styles.resourceLinks}>
-          <StatusLabel status={project.status} />
-          {timeline ? <span>{timeline}</span> : null}
-        </div>
+        <ProjectStage status={project.status} heading="Where it stands" />
+        {timeline ? <p className={styles.stageAside}>{timeline}</p> : null}
       </section>
 
       <section className={styles.section} aria-labelledby="abstract-heading">
@@ -116,6 +115,16 @@ export function ProjectDetail({ project }: { project: ProjectDetailData }) {
             <h2 id="results-heading">Results</h2>
           </div>
           <Prose className={styles.prose}>{project.results}</Prose>
+        </section>
+      ) : null}
+
+      {project.updates.length > 0 ? (
+        <section className={styles.section} aria-labelledby="progress-heading">
+          <div className={styles.sectionHeader}>
+            <h2 id="progress-heading">Progress</h2>
+            <p>Updates from the team, newest first.</p>
+          </div>
+          <ProjectUpdates updates={project.updates} />
         </section>
       ) : null}
 

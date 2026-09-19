@@ -1,0 +1,128 @@
+.stage {
+  display: grid;
+  gap: 0.9rem;
+}
+
+/* A label for the strip below it, not a section title: it must not outrank
+   the heading of whatever card or section it sits in. */
+.heading {
+  margin: 0;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* A thread with a node per step: the design language's own device for a
+   sequence, rather than a progress bar borrowed from elsewhere. */
+.thread {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.step {
+  display: grid;
+  grid-template-rows: auto auto;
+  gap: 0.5rem;
+  flex: 1 1 7rem;
+  min-width: 6.5rem;
+  padding-inline-end: 0.75rem;
+}
+
+.mark {
+  position: relative;
+  display: block;
+  height: 1px;
+  background: var(--ink-line);
+}
+
+.mark::before {
+  content: "";
+  position: absolute;
+  inset-block-start: -3.5px;
+  inset-inline-start: 0;
+  width: 8px;
+  height: 8px;
+  border: 1px solid var(--ink-line);
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+.step[data-state="done"] .mark {
+  background: var(--lotus);
+}
+
+.step[data-state="done"] .mark::before {
+  border-color: var(--lotus);
+  background: var(--lotus);
+}
+
+/* Lamplight marks the one thing that matters here: where the work is now. */
+.step[data-state="now"] .mark {
+  background: var(--lamplight);
+}
+
+.step[data-state="now"] .mark::before {
+  border-color: var(--lamplight);
+  background: var(--lamplight);
+}
+
+.label {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.step[data-state="now"] .label {
+  color: var(--moonstone);
+}
+
+.nowLabel {
+  color: var(--lamplight);
+}
+
+.aside {
+  margin: 0;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+/* Narrow screens cannot hold five steps side by side: wrapping them leaves
+   half-rows with connector lines running to nothing. Stack instead, with the
+   thread running down the side. */
+@media (max-width: 34rem) {
+  .thread {
+    display: grid;
+    gap: 0.75rem;
+  }
+
+  .step {
+    display: grid;
+    grid-template-rows: none;
+    grid-template-columns: 0.75rem minmax(0, 1fr);
+    gap: 0.75rem;
+    align-items: center;
+    padding-inline-end: 0;
+  }
+
+  .mark {
+    position: relative;
+    width: 1px;
+    height: 100%;
+    min-height: 1.4rem;
+    justify-self: center;
+  }
+
+  .mark::before {
+    inset-block-start: 50%;
+    inset-inline-start: -3.5px;
+    margin-block-start: -4px;
+  }
+}

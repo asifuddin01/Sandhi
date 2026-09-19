@@ -438,7 +438,8 @@ export const ModelName = {
   ChangeRequest: 'ChangeRequest',
   SiteSetting: 'SiteSetting',
   AuditLog: 'AuditLog',
-  Diagram: 'Diagram'
+  Diagram: 'Diagram',
+  ProjectUpdate: 'ProjectUpdate'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -454,7 +455,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram"
+    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram" | "projectUpdate"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3566,6 +3567,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ProjectUpdate: {
+      payload: Prisma.$ProjectUpdatePayload<ExtArgs>
+      fields: Prisma.ProjectUpdateFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectUpdateFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectUpdateFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectUpdateFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectUpdateFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        findMany: {
+          args: Prisma.ProjectUpdateFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>[]
+        }
+        create: {
+          args: Prisma.ProjectUpdateCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        createMany: {
+          args: Prisma.ProjectUpdateCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectUpdateCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectUpdateDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        update: {
+          args: Prisma.ProjectUpdateUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectUpdateDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectUpdateUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectUpdateUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectUpdateUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectUpdatePayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectUpdateAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectUpdate>
+        }
+        groupBy: {
+          args: Prisma.ProjectUpdateGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectUpdateGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectUpdateCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectUpdateCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -4278,6 +4353,22 @@ export const DiagramScalarFieldEnum = {
 export type DiagramScalarFieldEnum = (typeof DiagramScalarFieldEnum)[keyof typeof DiagramScalarFieldEnum]
 
 
+export const ProjectUpdateScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  authorId: 'authorId',
+  title: 'title',
+  body: 'body',
+  nextUp: 'nextUp',
+  isPublic: 'isPublic',
+  stage: 'stage',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4853,6 +4944,7 @@ export type GlobalOmitConfig = {
   siteSetting?: Prisma.SiteSettingOmit
   auditLog?: Prisma.AuditLogOmit
   diagram?: Prisma.DiagramOmit
+  projectUpdate?: Prisma.ProjectUpdateOmit
 }
 
 /* Types for Logging */

@@ -380,6 +380,7 @@ export type MemberWhereInput = {
   applicationNotes?: Prisma.ApplicationNoteListRelationFilter
   uploadedDocuments?: Prisma.DocumentListRelationFilter
   diagrams?: Prisma.DiagramListRelationFilter
+  projectUpdates?: Prisma.ProjectUpdateListRelationFilter
   announcements?: Prisma.AnnouncementListRelationFilter
 }
 
@@ -424,6 +425,7 @@ export type MemberOrderByWithRelationInput = {
   applicationNotes?: Prisma.ApplicationNoteOrderByRelationAggregateInput
   uploadedDocuments?: Prisma.DocumentOrderByRelationAggregateInput
   diagrams?: Prisma.DiagramOrderByRelationAggregateInput
+  projectUpdates?: Prisma.ProjectUpdateOrderByRelationAggregateInput
   announcements?: Prisma.AnnouncementOrderByRelationAggregateInput
 }
 
@@ -471,6 +473,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   applicationNotes?: Prisma.ApplicationNoteListRelationFilter
   uploadedDocuments?: Prisma.DocumentListRelationFilter
   diagrams?: Prisma.DiagramListRelationFilter
+  projectUpdates?: Prisma.ProjectUpdateListRelationFilter
   announcements?: Prisma.AnnouncementListRelationFilter
 }, "id" | "userId" | "slug" | "orgEmail">
 
@@ -576,6 +579,7 @@ export type MemberCreateInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -619,6 +623,7 @@ export type MemberUncheckedCreateInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -662,6 +667,7 @@ export type MemberUpdateInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -705,6 +711,7 @@ export type MemberUncheckedUpdateInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1182,6 +1189,22 @@ export type MemberUpdateOneRequiredWithoutDiagramsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutDiagramsInput, Prisma.MemberUpdateWithoutDiagramsInput>, Prisma.MemberUncheckedUpdateWithoutDiagramsInput>
 }
 
+export type MemberCreateNestedOneWithoutProjectUpdatesInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProjectUpdatesInput, Prisma.MemberUncheckedCreateWithoutProjectUpdatesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProjectUpdatesInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneWithoutProjectUpdatesNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutProjectUpdatesInput, Prisma.MemberUncheckedCreateWithoutProjectUpdatesInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutProjectUpdatesInput
+  upsert?: Prisma.MemberUpsertWithoutProjectUpdatesInput
+  disconnect?: Prisma.MemberWhereInput | boolean
+  delete?: Prisma.MemberWhereInput | boolean
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProjectUpdatesInput, Prisma.MemberUpdateWithoutProjectUpdatesInput>, Prisma.MemberUncheckedUpdateWithoutProjectUpdatesInput>
+}
+
 export type MemberCreateWithoutUserInput = {
   id?: string
   slug: string
@@ -1221,6 +1244,7 @@ export type MemberCreateWithoutUserInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -1263,6 +1287,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -1321,6 +1346,7 @@ export type MemberUpdateWithoutUserInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1363,6 +1389,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1405,6 +1432,7 @@ export type MemberCreateWithoutInvitationInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -1447,6 +1475,7 @@ export type MemberUncheckedCreateWithoutInvitationInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -1505,6 +1534,7 @@ export type MemberUpdateWithoutInvitationInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1547,6 +1577,7 @@ export type MemberUncheckedUpdateWithoutInvitationInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1589,6 +1620,7 @@ export type MemberCreateWithoutAreasInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -1631,6 +1663,7 @@ export type MemberUncheckedCreateWithoutAreasInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -1689,6 +1722,7 @@ export type MemberUpdateWithoutAreasInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1731,6 +1765,7 @@ export type MemberUncheckedUpdateWithoutAreasInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1773,6 +1808,7 @@ export type MemberCreateWithoutProjectsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -1815,6 +1851,7 @@ export type MemberUncheckedCreateWithoutProjectsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -1873,6 +1910,7 @@ export type MemberUpdateWithoutProjectsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1915,6 +1953,7 @@ export type MemberUncheckedUpdateWithoutProjectsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -1957,6 +1996,7 @@ export type MemberCreateWithoutAuthorshipsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -1999,6 +2039,7 @@ export type MemberUncheckedCreateWithoutAuthorshipsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2057,6 +2098,7 @@ export type MemberUpdateWithoutAuthorshipsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2099,6 +2141,7 @@ export type MemberUncheckedUpdateWithoutAuthorshipsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2141,6 +2184,7 @@ export type MemberCreateWithoutPublicationReviewsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -2183,6 +2227,7 @@ export type MemberUncheckedCreateWithoutPublicationReviewsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2241,6 +2286,7 @@ export type MemberUpdateWithoutPublicationReviewsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2283,6 +2329,7 @@ export type MemberUncheckedUpdateWithoutPublicationReviewsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2325,6 +2372,7 @@ export type MemberCreateWithoutNewsPostsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -2367,6 +2415,7 @@ export type MemberUncheckedCreateWithoutNewsPostsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2425,6 +2474,7 @@ export type MemberUpdateWithoutNewsPostsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2467,6 +2517,7 @@ export type MemberUncheckedUpdateWithoutNewsPostsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2509,6 +2560,7 @@ export type MemberCreateWithoutInsightsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -2551,6 +2603,7 @@ export type MemberUncheckedCreateWithoutInsightsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2609,6 +2662,7 @@ export type MemberUpdateWithoutInsightsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2651,6 +2705,7 @@ export type MemberUncheckedUpdateWithoutInsightsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2693,6 +2748,7 @@ export type MemberCreateWithoutApplicationNotesInput = {
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -2735,6 +2791,7 @@ export type MemberUncheckedCreateWithoutApplicationNotesInput = {
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2793,6 +2850,7 @@ export type MemberUpdateWithoutApplicationNotesInput = {
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2835,6 +2893,7 @@ export type MemberUncheckedUpdateWithoutApplicationNotesInput = {
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -2877,6 +2936,7 @@ export type MemberCreateWithoutTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -2919,6 +2979,7 @@ export type MemberUncheckedCreateWithoutTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -2966,6 +3027,7 @@ export type MemberCreateWithoutCreatedTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -3008,6 +3070,7 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -3066,6 +3129,7 @@ export type MemberUpdateWithoutTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3108,6 +3172,7 @@ export type MemberUncheckedUpdateWithoutTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3161,6 +3226,7 @@ export type MemberUpdateWithoutCreatedTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3203,6 +3269,7 @@ export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3246,6 +3313,7 @@ export type MemberCreateWithoutAnnouncementsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
 }
 
 export type MemberUncheckedCreateWithoutAnnouncementsInput = {
@@ -3288,6 +3356,7 @@ export type MemberUncheckedCreateWithoutAnnouncementsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
 }
 
 export type MemberCreateOrConnectWithoutAnnouncementsInput = {
@@ -3346,6 +3415,7 @@ export type MemberUpdateWithoutAnnouncementsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
 }
 
 export type MemberUncheckedUpdateWithoutAnnouncementsInput = {
@@ -3388,6 +3458,7 @@ export type MemberUncheckedUpdateWithoutAnnouncementsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type MemberCreateWithoutExperimentsInput = {
@@ -3429,6 +3500,7 @@ export type MemberCreateWithoutExperimentsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -3471,6 +3543,7 @@ export type MemberUncheckedCreateWithoutExperimentsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -3529,6 +3602,7 @@ export type MemberUpdateWithoutExperimentsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3571,6 +3645,7 @@ export type MemberUncheckedUpdateWithoutExperimentsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3613,6 +3688,7 @@ export type MemberCreateWithoutUploadedDocumentsInput = {
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -3655,6 +3731,7 @@ export type MemberUncheckedCreateWithoutUploadedDocumentsInput = {
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -3713,6 +3790,7 @@ export type MemberUpdateWithoutUploadedDocumentsInput = {
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3755,6 +3833,7 @@ export type MemberUncheckedUpdateWithoutUploadedDocumentsInput = {
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -3797,6 +3876,7 @@ export type MemberCreateWithoutChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -3839,6 +3919,7 @@ export type MemberUncheckedCreateWithoutChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -3886,6 +3967,7 @@ export type MemberCreateWithoutReviewedChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -3928,6 +4010,7 @@ export type MemberUncheckedCreateWithoutReviewedChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -3986,6 +4069,7 @@ export type MemberUpdateWithoutChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4028,6 +4112,7 @@ export type MemberUncheckedUpdateWithoutChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4081,6 +4166,7 @@ export type MemberUpdateWithoutReviewedChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4123,6 +4209,7 @@ export type MemberUncheckedUpdateWithoutReviewedChangeRequestsInput = {
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4165,6 +4252,7 @@ export type MemberCreateWithoutDiagramsInput = {
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
   applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
 }
 
@@ -4207,6 +4295,7 @@ export type MemberUncheckedCreateWithoutDiagramsInput = {
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
   applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
   uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
   announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
 }
 
@@ -4265,6 +4354,7 @@ export type MemberUpdateWithoutDiagramsInput = {
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
   applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4307,6 +4397,195 @@ export type MemberUncheckedUpdateWithoutDiagramsInput = {
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
   applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
   uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type MemberCreateWithoutProjectUpdatesInput = {
+  id?: string
+  slug: string
+  name: string
+  rank: $Enums.MemberRank
+  status?: $Enums.MemberStatus
+  title?: string | null
+  bio?: string | null
+  photoKey?: string | null
+  photoAlt?: string | null
+  interests?: Prisma.MemberCreateinterestsInput | string[]
+  orgEmail?: string | null
+  showOrgEmail?: boolean
+  scholarUrl?: string | null
+  orcid?: string | null
+  githubUrl?: string | null
+  linkedinUrl?: string | null
+  websiteUrl?: string | null
+  sortOrder?: number
+  isPublic?: boolean
+  joinedAt?: Date | string | null
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutMemberInput
+  invitation?: Prisma.InvitationCreateNestedOneWithoutMemberInput
+  areas?: Prisma.MemberAreaCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
+  authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
+  publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
+  newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
+  insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
+  changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
+  reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
+  experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
+  applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
+}
+
+export type MemberUncheckedCreateWithoutProjectUpdatesInput = {
+  id?: string
+  userId?: string | null
+  slug: string
+  name: string
+  rank: $Enums.MemberRank
+  status?: $Enums.MemberStatus
+  title?: string | null
+  bio?: string | null
+  photoKey?: string | null
+  photoAlt?: string | null
+  interests?: Prisma.MemberCreateinterestsInput | string[]
+  orgEmail?: string | null
+  showOrgEmail?: boolean
+  scholarUrl?: string | null
+  orcid?: string | null
+  githubUrl?: string | null
+  linkedinUrl?: string | null
+  websiteUrl?: string | null
+  sortOrder?: number
+  isPublic?: boolean
+  joinedAt?: Date | string | null
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
+  areas?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
+  authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
+  publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
+  newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
+  insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
+  changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
+  experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
+  applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type MemberCreateOrConnectWithoutProjectUpdatesInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProjectUpdatesInput, Prisma.MemberUncheckedCreateWithoutProjectUpdatesInput>
+}
+
+export type MemberUpsertWithoutProjectUpdatesInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutProjectUpdatesInput, Prisma.MemberUncheckedUpdateWithoutProjectUpdatesInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutProjectUpdatesInput, Prisma.MemberUncheckedCreateWithoutProjectUpdatesInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutProjectUpdatesInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutProjectUpdatesInput, Prisma.MemberUncheckedUpdateWithoutProjectUpdatesInput>
+}
+
+export type MemberUpdateWithoutProjectUpdatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
+  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interests?: Prisma.MemberUpdateinterestsInput | string[]
+  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutMemberNestedInput
+  invitation?: Prisma.InvitationUpdateOneWithoutMemberNestedInput
+  areas?: Prisma.MemberAreaUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
+  authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
+  publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
+  newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
+  insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
+  changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
+  experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
+  applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutProjectUpdatesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
+  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interests?: Prisma.MemberUpdateinterestsInput | string[]
+  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
+  areas?: Prisma.MemberAreaUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
+  authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
+  publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
+  insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
+  changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
+  experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
+  applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
@@ -4330,6 +4609,7 @@ export type MemberCountOutputType = {
   applicationNotes: number
   uploadedDocuments: number
   diagrams: number
+  projectUpdates: number
   announcements: number
 }
 
@@ -4348,6 +4628,7 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   applicationNotes?: boolean | MemberCountOutputTypeCountApplicationNotesArgs
   uploadedDocuments?: boolean | MemberCountOutputTypeCountUploadedDocumentsArgs
   diagrams?: boolean | MemberCountOutputTypeCountDiagramsArgs
+  projectUpdates?: boolean | MemberCountOutputTypeCountProjectUpdatesArgs
   announcements?: boolean | MemberCountOutputTypeCountAnnouncementsArgs
 }
 
@@ -4462,6 +4743,13 @@ export type MemberCountOutputTypeCountDiagramsArgs<ExtArgs extends runtime.Types
 /**
  * MemberCountOutputType without action
  */
+export type MemberCountOutputTypeCountProjectUpdatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectUpdateWhereInput
+}
+
+/**
+ * MemberCountOutputType without action
+ */
 export type MemberCountOutputTypeCountAnnouncementsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AnnouncementWhereInput
 }
@@ -4508,6 +4796,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   applicationNotes?: boolean | Prisma.Member$applicationNotesArgs<ExtArgs>
   uploadedDocuments?: boolean | Prisma.Member$uploadedDocumentsArgs<ExtArgs>
   diagrams?: boolean | Prisma.Member$diagramsArgs<ExtArgs>
+  projectUpdates?: boolean | Prisma.Member$projectUpdatesArgs<ExtArgs>
   announcements?: boolean | Prisma.Member$announcementsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["member"]>
@@ -4613,6 +4902,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   applicationNotes?: boolean | Prisma.Member$applicationNotesArgs<ExtArgs>
   uploadedDocuments?: boolean | Prisma.Member$uploadedDocumentsArgs<ExtArgs>
   diagrams?: boolean | Prisma.Member$diagramsArgs<ExtArgs>
+  projectUpdates?: boolean | Prisma.Member$projectUpdatesArgs<ExtArgs>
   announcements?: boolean | Prisma.Member$announcementsArgs<ExtArgs>
   _count?: boolean | Prisma.MemberCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -4642,6 +4932,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     applicationNotes: Prisma.$ApplicationNotePayload<ExtArgs>[]
     uploadedDocuments: Prisma.$DocumentPayload<ExtArgs>[]
     diagrams: Prisma.$DiagramPayload<ExtArgs>[]
+    projectUpdates: Prisma.$ProjectUpdatePayload<ExtArgs>[]
     announcements: Prisma.$AnnouncementPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -5079,6 +5370,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   applicationNotes<T extends Prisma.Member$applicationNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$applicationNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApplicationNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   uploadedDocuments<T extends Prisma.Member$uploadedDocumentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$uploadedDocumentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagrams<T extends Prisma.Member$diagramsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$diagramsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagramPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  projectUpdates<T extends Prisma.Member$projectUpdatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$projectUpdatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectUpdatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   announcements<T extends Prisma.Member$announcementsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$announcementsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AnnouncementPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -5905,6 +6197,30 @@ export type Member$diagramsArgs<ExtArgs extends runtime.Types.Extensions.Interna
   take?: number
   skip?: number
   distinct?: Prisma.DiagramScalarFieldEnum | Prisma.DiagramScalarFieldEnum[]
+}
+
+/**
+ * Member.projectUpdates
+ */
+export type Member$projectUpdatesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectUpdate
+   */
+  select?: Prisma.ProjectUpdateSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectUpdate
+   */
+  omit?: Prisma.ProjectUpdateOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectUpdateInclude<ExtArgs> | null
+  where?: Prisma.ProjectUpdateWhereInput
+  orderBy?: Prisma.ProjectUpdateOrderByWithRelationInput | Prisma.ProjectUpdateOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectUpdateWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectUpdateScalarFieldEnum | Prisma.ProjectUpdateScalarFieldEnum[]
 }
 
 /**

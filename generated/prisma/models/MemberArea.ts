@@ -130,13 +130,13 @@ export type MemberAreaAggregateArgs<ExtArgs extends runtime.Types.Extensions.Int
   _count?: true | MemberAreaCountAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to average
   **/
   _avg?: MemberAreaAvgAggregateInputType
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-   *
+   * 
    * Select which fields to sum
   **/
   _sum?: MemberAreaSumAggregateInputType

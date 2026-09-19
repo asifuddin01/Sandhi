@@ -1,0 +1,106 @@
+/* The same thread the news and publication lists use, so "a sequence of
+   things over time" reads identically everywhere on the site. */
+.thread {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.update {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
+  gap: 1rem;
+  padding-block: 1.6rem;
+  border-block-start: 1px solid var(--ink-line);
+}
+
+.marker {
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.marker::before {
+  position: absolute;
+  inset-block: -1.6rem;
+  width: 1px;
+  background: var(--ink-line);
+  content: "";
+}
+
+.marker span {
+  position: relative;
+  z-index: 1;
+  width: 0.42rem;
+  height: 0.42rem;
+  margin-block-start: 0.42rem;
+  border: 1px solid var(--lotus);
+  border-radius: 50%;
+  background: var(--ink);
+}
+
+/* Lamplight on the newest one only: where the work stands right now. */
+.update[data-latest="true"] .marker span {
+  border-color: var(--lamplight);
+  background: var(--lamplight);
+}
+
+.body {
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+  margin: 0 0 0.55rem;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.meta > * + * {
+  padding-inline-start: 1rem;
+  border-inline-start: 1px solid var(--ink-line);
+}
+
+.title {
+  max-width: 52rem;
+  margin: 0 0 0.6rem;
+  font-size: var(--text-h3);
+}
+
+.prose {
+  max-width: 52rem;
+}
+
+.next {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.75rem;
+  max-width: 52rem;
+  margin-block-start: 0.9rem;
+  padding-inline-start: 0.9rem;
+  border-inline-start: 1px solid var(--lotus);
+  color: var(--moonstone);
+}
+
+.nextLabel {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 40rem) {
+  .update {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+
+  .marker {
+    display: none;
+  }
+}

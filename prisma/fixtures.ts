@@ -204,6 +204,7 @@ async function main(): Promise<void> {
 
     // Private accounts for each role; never public members.
     const passwordHash = await hashPassword(FIXTURE_PASSWORD);
+    const accountMembers = new Map<string, string>();
     for (const account of fixtureAccounts) {
       const emailVerified =
         "emailVerified" in account ? account.emailVerified : true;
@@ -233,7 +234,7 @@ async function main(): Promise<void> {
           password: passwordHash,
         },
       });
-      await db.member.upsert({
+      const accountMember = await db.member.upsert({
         where: { userId: user.id },
         update: { name: account.name, status, isPublic: false },
         create: {
@@ -245,7 +246,51 @@ async function main(): Promise<void> {
           isPublic: false,
         },
       });
+      accountMembers.set(account.email, accountMember.id);
     }
+
+    // A published project the member account is actually on, so the progress
+    // tests can walk the whole round trip: write in the portal, publish, read
+    // it on the public page. Separate from `fixture-public-project` so the
+    // visibility fixtures keep exactly the shape those tests assert.
+    const teamProject = await db.project.upsert({
+      where: { slug: "fixture-team-project" },
+      update: {},
+      create: {
+        slug: "fixture-team-project",
+        title: "[Fixture] Team project",
+        gloss: "Fixture content used only by automated tests.",
+        abstract: "Fixture content used only by automated tests.",
+        question: "Can a team report its progress in public?",
+        status: "ACTIVE",
+        state: "PUBLISHED",
+        areas: { create: { areaId: area.id } },
+        members: {
+          create: {
+            memberId: member.id,
+            role: "Fixture researcher",
+            sortOrder: 1,
+          },
+        },
+      },
+    });
+
+    const memberAccountId = accountMembers.get("fixture-member@sandhi.test")!;
+    await db.projectMember.upsert({
+      where: {
+        projectId_memberId: {
+          projectId: teamProject.id,
+          memberId: memberAccountId,
+        },
+      },
+      update: { isLead: true },
+      create: {
+        projectId: teamProject.id,
+        memberId: memberAccountId,
+        role: "Fixture lead",
+        isLead: true,
+      },
+    });
 
     await db.siteSetting.upsert({
       where: { key: "features.showNumbers" },

@@ -130,6 +130,16 @@ export function isPublishedAndDue(
   return !Number.isNaN(publishAt.getTime()) && publishAt <= now;
 }
 
+/**
+ * A progress update reaches the public only when it was marked public *and*
+ * its project is. Both halves matter: publishing a project must not
+ * retroactively publish the team's working notes.
+ */
+export const publicProjectUpdateWhere = {
+  isPublic: true,
+  project: publicProjectWhere,
+} satisfies Prisma.ProjectUpdateWhereInput;
+
 export interface ProjectResearchInput {
   resultsPublic: boolean;
   experiments?: string | null;
