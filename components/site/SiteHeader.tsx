@@ -7,6 +7,7 @@ import { CommandPalette } from "@/components/ui/CommandPalette";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import {
   commandNavigation,
+  memberNavigation,
   moreNavigation,
   primaryNavigation,
 } from "@/content/strings";
@@ -23,7 +24,14 @@ export function SiteHeader({
 }) {
   const visible = <Item extends { href: string }>(items: readonly Item[]) =>
     items.filter((item) => !isPathHidden(item.href, hiddenPaths));
-  const more = visible(moreNavigation);
+  // The member's own destinations are part of More, not a second menu: the
+  // diagram builder and their projects sit with everything else the site has.
+  const more = signedIn
+    ? [...visible(moreNavigation), ...memberNavigation]
+    : visible(moreNavigation);
+  const commands = signedIn
+    ? [...visible(commandNavigation), ...memberNavigation]
+    : visible(commandNavigation);
 
   return (
     <header className="site-header">
@@ -47,7 +55,7 @@ export function SiteHeader({
 
         <div className="site-header__actions">
           <ThemeToggle />
-          <CommandPalette items={visible(commandNavigation)} />
+          <CommandPalette items={commands} />
           {/* A member who is already signed in is not asked to sign in, and
               is not invited to join the lab they are in. */}
           <Link

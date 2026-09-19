@@ -35,6 +35,7 @@ export type ProjectUpdateMinAggregateOutputType = {
   nextUp: string | null
   isPublic: boolean | null
   stage: $Enums.ProjectStatus | null
+  phase: $Enums.ResearchPhase | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -48,6 +49,7 @@ export type ProjectUpdateMaxAggregateOutputType = {
   nextUp: string | null
   isPublic: boolean | null
   stage: $Enums.ProjectStatus | null
+  phase: $Enums.ResearchPhase | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -61,6 +63,7 @@ export type ProjectUpdateCountAggregateOutputType = {
   nextUp: number
   isPublic: number
   stage: number
+  phase: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -76,6 +79,7 @@ export type ProjectUpdateMinAggregateInputType = {
   nextUp?: true
   isPublic?: true
   stage?: true
+  phase?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -89,6 +93,7 @@ export type ProjectUpdateMaxAggregateInputType = {
   nextUp?: true
   isPublic?: true
   stage?: true
+  phase?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -102,6 +107,7 @@ export type ProjectUpdateCountAggregateInputType = {
   nextUp?: true
   isPublic?: true
   stage?: true
+  phase?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -188,6 +194,7 @@ export type ProjectUpdateGroupByOutputType = {
   nextUp: string | null
   isPublic: boolean
   stage: $Enums.ProjectStatus
+  phase: $Enums.ResearchPhase | null
   createdAt: Date
   updatedAt: Date
   _count: ProjectUpdateCountAggregateOutputType | null
@@ -222,11 +229,12 @@ export type ProjectUpdateWhereInput = {
   nextUp?: Prisma.StringNullableFilter<"ProjectUpdate"> | string | null
   isPublic?: Prisma.BoolFilter<"ProjectUpdate"> | boolean
   stage?: Prisma.EnumProjectStatusFilter<"ProjectUpdate"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableFilter<"ProjectUpdate"> | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   author?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
-  attachments?: Prisma.UpdateAttachmentListRelationFilter
+  attachments?: Prisma.AttachmentListRelationFilter
 }
 
 export type ProjectUpdateOrderByWithRelationInput = {
@@ -238,11 +246,12 @@ export type ProjectUpdateOrderByWithRelationInput = {
   nextUp?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  phase?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   author?: Prisma.MemberOrderByWithRelationInput
-  attachments?: Prisma.UpdateAttachmentOrderByRelationAggregateInput
+  attachments?: Prisma.AttachmentOrderByRelationAggregateInput
 }
 
 export type ProjectUpdateWhereUniqueInput = Prisma.AtLeast<{
@@ -257,11 +266,12 @@ export type ProjectUpdateWhereUniqueInput = Prisma.AtLeast<{
   nextUp?: Prisma.StringNullableFilter<"ProjectUpdate"> | string | null
   isPublic?: Prisma.BoolFilter<"ProjectUpdate"> | boolean
   stage?: Prisma.EnumProjectStatusFilter<"ProjectUpdate"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableFilter<"ProjectUpdate"> | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   author?: Prisma.XOR<Prisma.MemberNullableScalarRelationFilter, Prisma.MemberWhereInput> | null
-  attachments?: Prisma.UpdateAttachmentListRelationFilter
+  attachments?: Prisma.AttachmentListRelationFilter
 }, "id">
 
 export type ProjectUpdateOrderByWithAggregationInput = {
@@ -273,6 +283,7 @@ export type ProjectUpdateOrderByWithAggregationInput = {
   nextUp?: Prisma.SortOrderInput | Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  phase?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ProjectUpdateCountOrderByAggregateInput
@@ -292,6 +303,7 @@ export type ProjectUpdateScalarWhereWithAggregatesInput = {
   nextUp?: Prisma.StringNullableWithAggregatesFilter<"ProjectUpdate"> | string | null
   isPublic?: Prisma.BoolWithAggregatesFilter<"ProjectUpdate"> | boolean
   stage?: Prisma.EnumProjectStatusWithAggregatesFilter<"ProjectUpdate"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableWithAggregatesFilter<"ProjectUpdate"> | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectUpdate"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"ProjectUpdate"> | Date | string
 }
@@ -303,11 +315,12 @@ export type ProjectUpdateCreateInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
   author?: Prisma.MemberCreateNestedOneWithoutProjectUpdatesInput
-  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateInput = {
@@ -319,9 +332,10 @@ export type ProjectUpdateUncheckedCreateInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUpdateInput = {
@@ -331,11 +345,12 @@ export type ProjectUpdateUpdateInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
   author?: Prisma.MemberUpdateOneWithoutProjectUpdatesNestedInput
-  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateInput = {
@@ -347,9 +362,10 @@ export type ProjectUpdateUncheckedUpdateInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateCreateManyInput = {
@@ -361,6 +377,7 @@ export type ProjectUpdateCreateManyInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -372,6 +389,7 @@ export type ProjectUpdateUpdateManyMutationInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -385,6 +403,7 @@ export type ProjectUpdateUncheckedUpdateManyInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -408,6 +427,7 @@ export type ProjectUpdateCountOrderByAggregateInput = {
   nextUp?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -421,6 +441,7 @@ export type ProjectUpdateMaxOrderByAggregateInput = {
   nextUp?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -434,13 +455,14 @@ export type ProjectUpdateMinOrderByAggregateInput = {
   nextUp?: Prisma.SortOrder
   isPublic?: Prisma.SortOrder
   stage?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
 
-export type ProjectUpdateScalarRelationFilter = {
-  is?: Prisma.ProjectUpdateWhereInput
-  isNot?: Prisma.ProjectUpdateWhereInput
+export type ProjectUpdateNullableScalarRelationFilter = {
+  is?: Prisma.ProjectUpdateWhereInput | null
+  isNot?: Prisma.ProjectUpdateWhereInput | null
 }
 
 export type ProjectUpdateCreateNestedManyWithoutAuthorInput = {
@@ -533,10 +555,12 @@ export type ProjectUpdateCreateNestedOneWithoutAttachmentsInput = {
   connect?: Prisma.ProjectUpdateWhereUniqueInput
 }
 
-export type ProjectUpdateUpdateOneRequiredWithoutAttachmentsNestedInput = {
+export type ProjectUpdateUpdateOneWithoutAttachmentsNestedInput = {
   create?: Prisma.XOR<Prisma.ProjectUpdateCreateWithoutAttachmentsInput, Prisma.ProjectUpdateUncheckedCreateWithoutAttachmentsInput>
   connectOrCreate?: Prisma.ProjectUpdateCreateOrConnectWithoutAttachmentsInput
   upsert?: Prisma.ProjectUpdateUpsertWithoutAttachmentsInput
+  disconnect?: Prisma.ProjectUpdateWhereInput | boolean
+  delete?: Prisma.ProjectUpdateWhereInput | boolean
   connect?: Prisma.ProjectUpdateWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateUpdateToOneWithWhereWithoutAttachmentsInput, Prisma.ProjectUpdateUpdateWithoutAttachmentsInput>, Prisma.ProjectUpdateUncheckedUpdateWithoutAttachmentsInput>
 }
@@ -548,10 +572,11 @@ export type ProjectUpdateCreateWithoutAuthorInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
-  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateWithoutAuthorInput = {
@@ -562,9 +587,10 @@ export type ProjectUpdateUncheckedCreateWithoutAuthorInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateCreateOrConnectWithoutAuthorInput = {
@@ -605,6 +631,7 @@ export type ProjectUpdateScalarWhereInput = {
   nextUp?: Prisma.StringNullableFilter<"ProjectUpdate"> | string | null
   isPublic?: Prisma.BoolFilter<"ProjectUpdate"> | boolean
   stage?: Prisma.EnumProjectStatusFilter<"ProjectUpdate"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableFilter<"ProjectUpdate"> | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ProjectUpdate"> | Date | string
 }
@@ -616,10 +643,11 @@ export type ProjectUpdateCreateWithoutProjectInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
   author?: Prisma.MemberCreateNestedOneWithoutProjectUpdatesInput
-  attachments?: Prisma.UpdateAttachmentCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateUncheckedCreateWithoutProjectInput = {
@@ -630,9 +658,10 @@ export type ProjectUpdateUncheckedCreateWithoutProjectInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedCreateNestedManyWithoutUpdateInput
+  attachments?: Prisma.AttachmentUncheckedCreateNestedManyWithoutUpdateInput
 }
 
 export type ProjectUpdateCreateOrConnectWithoutProjectInput = {
@@ -668,6 +697,7 @@ export type ProjectUpdateCreateWithoutAttachmentsInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutUpdatesInput
@@ -683,6 +713,7 @@ export type ProjectUpdateUncheckedCreateWithoutAttachmentsInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -710,6 +741,7 @@ export type ProjectUpdateUpdateWithoutAttachmentsInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
@@ -725,6 +757,7 @@ export type ProjectUpdateUncheckedUpdateWithoutAttachmentsInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -737,6 +770,7 @@ export type ProjectUpdateCreateManyAuthorInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -748,10 +782,11 @@ export type ProjectUpdateUpdateWithoutAuthorInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutUpdatesNestedInput
-  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateWithoutAuthorInput = {
@@ -762,9 +797,10 @@ export type ProjectUpdateUncheckedUpdateWithoutAuthorInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateManyWithoutAuthorInput = {
@@ -775,6 +811,7 @@ export type ProjectUpdateUncheckedUpdateManyWithoutAuthorInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -787,6 +824,7 @@ export type ProjectUpdateCreateManyProjectInput = {
   nextUp?: string | null
   isPublic?: boolean
   stage: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -798,10 +836,11 @@ export type ProjectUpdateUpdateWithoutProjectInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   author?: Prisma.MemberUpdateOneWithoutProjectUpdatesNestedInput
-  attachments?: Prisma.UpdateAttachmentUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateWithoutProjectInput = {
@@ -812,9 +851,10 @@ export type ProjectUpdateUncheckedUpdateWithoutProjectInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  attachments?: Prisma.UpdateAttachmentUncheckedUpdateManyWithoutUpdateNestedInput
+  attachments?: Prisma.AttachmentUncheckedUpdateManyWithoutUpdateNestedInput
 }
 
 export type ProjectUpdateUncheckedUpdateManyWithoutProjectInput = {
@@ -825,6 +865,7 @@ export type ProjectUpdateUncheckedUpdateManyWithoutProjectInput = {
   nextUp?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   stage?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -856,7 +897,7 @@ export type ProjectUpdateCountOutputTypeDefaultArgs<ExtArgs extends runtime.Type
  * ProjectUpdateCountOutputType without action
  */
 export type ProjectUpdateCountOutputTypeCountAttachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.UpdateAttachmentWhereInput
+  where?: Prisma.AttachmentWhereInput
 }
 
 
@@ -869,6 +910,7 @@ export type ProjectUpdateSelect<ExtArgs extends runtime.Types.Extensions.Interna
   nextUp?: boolean
   isPublic?: boolean
   stage?: boolean
+  phase?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -886,6 +928,7 @@ export type ProjectUpdateSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   nextUp?: boolean
   isPublic?: boolean
   stage?: boolean
+  phase?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -901,6 +944,7 @@ export type ProjectUpdateSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   nextUp?: boolean
   isPublic?: boolean
   stage?: boolean
+  phase?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -916,11 +960,12 @@ export type ProjectUpdateSelectScalar = {
   nextUp?: boolean
   isPublic?: boolean
   stage?: boolean
+  phase?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProjectUpdateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "authorId" | "title" | "body" | "nextUp" | "isPublic" | "stage" | "createdAt" | "updatedAt", ExtArgs["result"]["projectUpdate"]>
+export type ProjectUpdateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "projectId" | "authorId" | "title" | "body" | "nextUp" | "isPublic" | "stage" | "phase" | "createdAt" | "updatedAt", ExtArgs["result"]["projectUpdate"]>
 export type ProjectUpdateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   author?: boolean | Prisma.ProjectUpdate$authorArgs<ExtArgs>
@@ -941,7 +986,7 @@ export type $ProjectUpdatePayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     project: Prisma.$ProjectPayload<ExtArgs>
     author: Prisma.$MemberPayload<ExtArgs> | null
-    attachments: Prisma.$UpdateAttachmentPayload<ExtArgs>[]
+    attachments: Prisma.$AttachmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -959,6 +1004,10 @@ export type $ProjectUpdatePayload<ExtArgs extends runtime.Types.Extensions.Inter
      * history reads correctly even after the project moves on.
      */
     stage: $Enums.ProjectStatus
+    /**
+     * And the finer step it was at, when the team had set one.
+     */
+    phase: $Enums.ResearchPhase | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["projectUpdate"]>
@@ -1357,7 +1406,7 @@ export interface Prisma__ProjectUpdateClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   author<T extends Prisma.ProjectUpdate$authorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectUpdate$authorArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-  attachments<T extends Prisma.ProjectUpdate$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectUpdate$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UpdateAttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attachments<T extends Prisma.ProjectUpdate$attachmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectUpdate$attachmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttachmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1395,6 +1444,7 @@ export interface ProjectUpdateFieldRefs {
   readonly nextUp: Prisma.FieldRef<"ProjectUpdate", 'String'>
   readonly isPublic: Prisma.FieldRef<"ProjectUpdate", 'Boolean'>
   readonly stage: Prisma.FieldRef<"ProjectUpdate", 'ProjectStatus'>
+  readonly phase: Prisma.FieldRef<"ProjectUpdate", 'ResearchPhase'>
   readonly createdAt: Prisma.FieldRef<"ProjectUpdate", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"ProjectUpdate", 'DateTime'>
 }
@@ -1821,23 +1871,23 @@ export type ProjectUpdate$authorArgs<ExtArgs extends runtime.Types.Extensions.In
  */
 export type ProjectUpdate$attachmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the UpdateAttachment
+   * Select specific fields to fetch from the Attachment
    */
-  select?: Prisma.UpdateAttachmentSelect<ExtArgs> | null
+  select?: Prisma.AttachmentSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the UpdateAttachment
+   * Omit specific fields from the Attachment
    */
-  omit?: Prisma.UpdateAttachmentOmit<ExtArgs> | null
+  omit?: Prisma.AttachmentOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.UpdateAttachmentInclude<ExtArgs> | null
-  where?: Prisma.UpdateAttachmentWhereInput
-  orderBy?: Prisma.UpdateAttachmentOrderByWithRelationInput | Prisma.UpdateAttachmentOrderByWithRelationInput[]
-  cursor?: Prisma.UpdateAttachmentWhereUniqueInput
+  include?: Prisma.AttachmentInclude<ExtArgs> | null
+  where?: Prisma.AttachmentWhereInput
+  orderBy?: Prisma.AttachmentOrderByWithRelationInput | Prisma.AttachmentOrderByWithRelationInput[]
+  cursor?: Prisma.AttachmentWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.UpdateAttachmentScalarFieldEnum | Prisma.UpdateAttachmentScalarFieldEnum[]
+  distinct?: Prisma.AttachmentScalarFieldEnum | Prisma.AttachmentScalarFieldEnum[]
 }
 
 /**

@@ -250,6 +250,13 @@ export type EnumProjectStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
 }
 
+export type EnumResearchPhaseNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ResearchPhase | Prisma.EnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel> | $Enums.ResearchPhase | null
+}
+
 export type EnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ProjectStatus | Prisma.EnumProjectStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ProjectStatus[] | Prisma.ListEnumProjectStatusFieldRefInput<$PrismaModel>
@@ -258,6 +265,16 @@ export type EnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel>
+}
+
+export type EnumResearchPhaseNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ResearchPhase | Prisma.EnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumResearchPhaseNullableWithAggregatesFilter<$PrismaModel> | $Enums.ResearchPhase | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel>
 }
 
 export type EnumPublicationTypeFilter<$PrismaModel = never> = {
@@ -455,6 +472,23 @@ export type EnumApplicationStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumApplicationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumApplicationStatusFilter<$PrismaModel>
+}
+
+export type EnumProposalStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProposalStatus | Prisma.EnumProposalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel> | $Enums.ProposalStatus
+}
+
+export type EnumProposalStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProposalStatus | Prisma.EnumProposalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProposalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProposalStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel>
 }
 
 export type EnumPartnerKindFilter<$PrismaModel = never> = {
@@ -876,6 +910,13 @@ export type NestedEnumProjectStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel> | $Enums.ProjectStatus
 }
 
+export type NestedEnumResearchPhaseNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.ResearchPhase | Prisma.EnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel> | $Enums.ResearchPhase | null
+}
+
 export type NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.ProjectStatus | Prisma.EnumProjectStatusFieldRefInput<$PrismaModel>
   in?: $Enums.ProjectStatus[] | Prisma.ListEnumProjectStatusFieldRefInput<$PrismaModel>
@@ -884,6 +925,16 @@ export type NestedEnumProjectStatusWithAggregatesFilter<$PrismaModel = never> = 
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumProjectStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumResearchPhaseNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ResearchPhase | Prisma.EnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  in?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.ResearchPhase[] | Prisma.ListEnumResearchPhaseFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumResearchPhaseNullableWithAggregatesFilter<$PrismaModel> | $Enums.ResearchPhase | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumResearchPhaseNullableFilter<$PrismaModel>
 }
 
 export type NestedEnumPublicationTypeFilter<$PrismaModel = never> = {
@@ -1081,6 +1132,23 @@ export type NestedEnumApplicationStatusWithAggregatesFilter<$PrismaModel = never
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumApplicationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumApplicationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumProposalStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProposalStatus | Prisma.EnumProposalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel> | $Enums.ProposalStatus
+}
+
+export type NestedEnumProposalStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ProposalStatus | Prisma.EnumProposalStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ProposalStatus[] | Prisma.ListEnumProposalStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumProposalStatusWithAggregatesFilter<$PrismaModel> | $Enums.ProposalStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumProposalStatusFilter<$PrismaModel>
 }
 
 export type NestedEnumPartnerKindFilter<$PrismaModel = never> = {

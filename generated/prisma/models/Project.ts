@@ -37,6 +37,7 @@ export type ProjectMinAggregateOutputType = {
   results: string | null
   resultsPublic: boolean | null
   status: $Enums.ProjectStatus | null
+  phase: $Enums.ResearchPhase | null
   state: $Enums.PublishState | null
   featured: boolean | null
   coverKey: string | null
@@ -63,6 +64,7 @@ export type ProjectMaxAggregateOutputType = {
   results: string | null
   resultsPublic: boolean | null
   status: $Enums.ProjectStatus | null
+  phase: $Enums.ResearchPhase | null
   state: $Enums.PublishState | null
   featured: boolean | null
   coverKey: string | null
@@ -89,6 +91,7 @@ export type ProjectCountAggregateOutputType = {
   results: number
   resultsPublic: number
   status: number
+  phase: number
   state: number
   featured: number
   coverKey: number
@@ -117,6 +120,7 @@ export type ProjectMinAggregateInputType = {
   results?: true
   resultsPublic?: true
   status?: true
+  phase?: true
   state?: true
   featured?: true
   coverKey?: true
@@ -143,6 +147,7 @@ export type ProjectMaxAggregateInputType = {
   results?: true
   resultsPublic?: true
   status?: true
+  phase?: true
   state?: true
   featured?: true
   coverKey?: true
@@ -169,6 +174,7 @@ export type ProjectCountAggregateInputType = {
   results?: true
   resultsPublic?: true
   status?: true
+  phase?: true
   state?: true
   featured?: true
   coverKey?: true
@@ -268,6 +274,7 @@ export type ProjectGroupByOutputType = {
   results: string | null
   resultsPublic: boolean
   status: $Enums.ProjectStatus
+  phase: $Enums.ResearchPhase | null
   state: $Enums.PublishState
   featured: boolean
   coverKey: string | null
@@ -315,6 +322,7 @@ export type ProjectWhereInput = {
   results?: Prisma.StringNullableFilter<"Project"> | string | null
   resultsPublic?: Prisma.BoolFilter<"Project"> | boolean
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableFilter<"Project"> | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFilter<"Project"> | $Enums.PublishState
   featured?: Prisma.BoolFilter<"Project"> | boolean
   coverKey?: Prisma.StringNullableFilter<"Project"> | string | null
@@ -337,8 +345,10 @@ export type ProjectWhereInput = {
   documents?: Prisma.DocumentListRelationFilter
   diagrams?: Prisma.DiagramListRelationFilter
   updates?: Prisma.ProjectUpdateListRelationFilter
+  sections?: Prisma.ProjectSectionListRelationFilter
   experimentsLog?: Prisma.ExperimentListRelationFilter
   newsPosts?: Prisma.NewsPostListRelationFilter
+  proposal?: Prisma.XOR<Prisma.ProposalNullableScalarRelationFilter, Prisma.ProposalWhereInput> | null
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -354,6 +364,7 @@ export type ProjectOrderByWithRelationInput = {
   results?: Prisma.SortOrderInput | Prisma.SortOrder
   resultsPublic?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  phase?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrder
   featured?: Prisma.SortOrder
   coverKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -376,8 +387,10 @@ export type ProjectOrderByWithRelationInput = {
   documents?: Prisma.DocumentOrderByRelationAggregateInput
   diagrams?: Prisma.DiagramOrderByRelationAggregateInput
   updates?: Prisma.ProjectUpdateOrderByRelationAggregateInput
+  sections?: Prisma.ProjectSectionOrderByRelationAggregateInput
   experimentsLog?: Prisma.ExperimentOrderByRelationAggregateInput
   newsPosts?: Prisma.NewsPostOrderByRelationAggregateInput
+  proposal?: Prisma.ProposalOrderByWithRelationInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -396,6 +409,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   results?: Prisma.StringNullableFilter<"Project"> | string | null
   resultsPublic?: Prisma.BoolFilter<"Project"> | boolean
   status?: Prisma.EnumProjectStatusFilter<"Project"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableFilter<"Project"> | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFilter<"Project"> | $Enums.PublishState
   featured?: Prisma.BoolFilter<"Project"> | boolean
   coverKey?: Prisma.StringNullableFilter<"Project"> | string | null
@@ -418,8 +432,10 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   documents?: Prisma.DocumentListRelationFilter
   diagrams?: Prisma.DiagramListRelationFilter
   updates?: Prisma.ProjectUpdateListRelationFilter
+  sections?: Prisma.ProjectSectionListRelationFilter
   experimentsLog?: Prisma.ExperimentListRelationFilter
   newsPosts?: Prisma.NewsPostListRelationFilter
+  proposal?: Prisma.XOR<Prisma.ProposalNullableScalarRelationFilter, Prisma.ProposalWhereInput> | null
 }, "id" | "slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -435,6 +451,7 @@ export type ProjectOrderByWithAggregationInput = {
   results?: Prisma.SortOrderInput | Prisma.SortOrder
   resultsPublic?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  phase?: Prisma.SortOrderInput | Prisma.SortOrder
   state?: Prisma.SortOrder
   featured?: Prisma.SortOrder
   coverKey?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -467,6 +484,7 @@ export type ProjectScalarWhereWithAggregatesInput = {
   results?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   resultsPublic?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
   status?: Prisma.EnumProjectStatusWithAggregatesFilter<"Project"> | $Enums.ProjectStatus
+  phase?: Prisma.EnumResearchPhaseNullableWithAggregatesFilter<"Project"> | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateWithAggregatesFilter<"Project"> | $Enums.PublishState
   featured?: Prisma.BoolWithAggregatesFilter<"Project"> | boolean
   coverKey?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
@@ -493,6 +511,7 @@ export type ProjectCreateInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -515,8 +534,10 @@ export type ProjectCreateInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -532,6 +553,7 @@ export type ProjectUncheckedCreateInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -554,8 +576,10 @@ export type ProjectUncheckedCreateInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -571,6 +595,7 @@ export type ProjectUpdateInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -593,8 +618,10 @@ export type ProjectUpdateInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -610,6 +637,7 @@ export type ProjectUncheckedUpdateInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -632,8 +660,10 @@ export type ProjectUncheckedUpdateInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -649,6 +679,7 @@ export type ProjectCreateManyInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -675,6 +706,7 @@ export type ProjectUpdateManyMutationInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -701,6 +733,7 @@ export type ProjectUncheckedUpdateManyInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -727,6 +760,7 @@ export type ProjectCountOrderByAggregateInput = {
   results?: Prisma.SortOrder
   resultsPublic?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   state?: Prisma.SortOrder
   featured?: Prisma.SortOrder
   coverKey?: Prisma.SortOrder
@@ -753,6 +787,7 @@ export type ProjectMaxOrderByAggregateInput = {
   results?: Prisma.SortOrder
   resultsPublic?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   state?: Prisma.SortOrder
   featured?: Prisma.SortOrder
   coverKey?: Prisma.SortOrder
@@ -779,6 +814,7 @@ export type ProjectMinOrderByAggregateInput = {
   results?: Prisma.SortOrder
   resultsPublic?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  phase?: Prisma.SortOrder
   state?: Prisma.SortOrder
   featured?: Prisma.SortOrder
   coverKey?: Prisma.SortOrder
@@ -804,6 +840,10 @@ export type ProjectNullableScalarRelationFilter = {
 
 export type EnumProjectStatusFieldUpdateOperationsInput = {
   set?: $Enums.ProjectStatus
+}
+
+export type NullableEnumResearchPhaseFieldUpdateOperationsInput = {
+  set?: $Enums.ResearchPhase | null
 }
 
 export type ProjectCreateNestedOneWithoutAreasInput = {
@@ -910,6 +950,22 @@ export type ProjectUpdateOneWithoutNewsPostsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutNewsPostsInput, Prisma.ProjectUpdateWithoutNewsPostsInput>, Prisma.ProjectUncheckedUpdateWithoutNewsPostsInput>
 }
 
+export type ProjectCreateNestedOneWithoutProposalInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutProposalInput, Prisma.ProjectUncheckedCreateWithoutProposalInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutProposalInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutProposalNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutProposalInput, Prisma.ProjectUncheckedCreateWithoutProposalInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutProposalInput
+  upsert?: Prisma.ProjectUpsertWithoutProposalInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutProposalInput, Prisma.ProjectUpdateWithoutProposalInput>, Prisma.ProjectUncheckedUpdateWithoutProposalInput>
+}
+
 export type ProjectCreateNestedOneWithoutTasksInput = {
   create?: Prisma.XOR<Prisma.ProjectCreateWithoutTasksInput, Prisma.ProjectUncheckedCreateWithoutTasksInput>
   connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutTasksInput
@@ -1000,6 +1056,20 @@ export type ProjectUpdateOneRequiredWithoutUpdatesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutUpdatesInput, Prisma.ProjectUpdateWithoutUpdatesInput>, Prisma.ProjectUncheckedUpdateWithoutUpdatesInput>
 }
 
+export type ProjectCreateNestedOneWithoutSectionsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutSectionsInput, Prisma.ProjectUncheckedCreateWithoutSectionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutSectionsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutSectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutSectionsInput, Prisma.ProjectUncheckedCreateWithoutSectionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutSectionsInput
+  upsert?: Prisma.ProjectUpsertWithoutSectionsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutSectionsInput, Prisma.ProjectUpdateWithoutSectionsInput>, Prisma.ProjectUncheckedUpdateWithoutSectionsInput>
+}
+
 export type ProjectCreateWithoutAreasInput = {
   id?: string
   slug: string
@@ -1013,6 +1083,7 @@ export type ProjectCreateWithoutAreasInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1034,8 +1105,10 @@ export type ProjectCreateWithoutAreasInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutAreasInput = {
@@ -1051,6 +1124,7 @@ export type ProjectUncheckedCreateWithoutAreasInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1072,8 +1146,10 @@ export type ProjectUncheckedCreateWithoutAreasInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutAreasInput = {
@@ -1105,6 +1181,7 @@ export type ProjectUpdateWithoutAreasInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1126,8 +1203,10 @@ export type ProjectUpdateWithoutAreasInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutAreasInput = {
@@ -1143,6 +1222,7 @@ export type ProjectUncheckedUpdateWithoutAreasInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1164,8 +1244,10 @@ export type ProjectUncheckedUpdateWithoutAreasInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutMembersInput = {
@@ -1181,6 +1263,7 @@ export type ProjectCreateWithoutMembersInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1202,8 +1285,10 @@ export type ProjectCreateWithoutMembersInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMembersInput = {
@@ -1219,6 +1304,7 @@ export type ProjectUncheckedCreateWithoutMembersInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1240,8 +1326,10 @@ export type ProjectUncheckedCreateWithoutMembersInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMembersInput = {
@@ -1273,6 +1361,7 @@ export type ProjectUpdateWithoutMembersInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1294,8 +1383,10 @@ export type ProjectUpdateWithoutMembersInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMembersInput = {
@@ -1311,6 +1402,7 @@ export type ProjectUncheckedUpdateWithoutMembersInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1332,8 +1424,10 @@ export type ProjectUncheckedUpdateWithoutMembersInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutRelatedFromInput = {
@@ -1349,6 +1443,7 @@ export type ProjectCreateWithoutRelatedFromInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1370,8 +1465,10 @@ export type ProjectCreateWithoutRelatedFromInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutRelatedFromInput = {
@@ -1387,6 +1484,7 @@ export type ProjectUncheckedCreateWithoutRelatedFromInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1408,8 +1506,10 @@ export type ProjectUncheckedCreateWithoutRelatedFromInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutRelatedFromInput = {
@@ -1430,6 +1530,7 @@ export type ProjectCreateWithoutRelatedToInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1451,8 +1552,10 @@ export type ProjectCreateWithoutRelatedToInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutRelatedToInput = {
@@ -1468,6 +1571,7 @@ export type ProjectUncheckedCreateWithoutRelatedToInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1489,8 +1593,10 @@ export type ProjectUncheckedCreateWithoutRelatedToInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutRelatedToInput = {
@@ -1522,6 +1628,7 @@ export type ProjectUpdateWithoutRelatedFromInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1543,8 +1650,10 @@ export type ProjectUpdateWithoutRelatedFromInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutRelatedFromInput = {
@@ -1560,6 +1669,7 @@ export type ProjectUncheckedUpdateWithoutRelatedFromInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1581,8 +1691,10 @@ export type ProjectUncheckedUpdateWithoutRelatedFromInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUpsertWithoutRelatedToInput = {
@@ -1609,6 +1721,7 @@ export type ProjectUpdateWithoutRelatedToInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1630,8 +1743,10 @@ export type ProjectUpdateWithoutRelatedToInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutRelatedToInput = {
@@ -1647,6 +1762,7 @@ export type ProjectUncheckedUpdateWithoutRelatedToInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1668,8 +1784,10 @@ export type ProjectUncheckedUpdateWithoutRelatedToInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutPublicationsInput = {
@@ -1685,6 +1803,7 @@ export type ProjectCreateWithoutPublicationsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1706,8 +1825,10 @@ export type ProjectCreateWithoutPublicationsInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutPublicationsInput = {
@@ -1723,6 +1844,7 @@ export type ProjectUncheckedCreateWithoutPublicationsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1744,8 +1866,10 @@ export type ProjectUncheckedCreateWithoutPublicationsInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutPublicationsInput = {
@@ -1777,6 +1901,7 @@ export type ProjectUpdateWithoutPublicationsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1798,8 +1923,10 @@ export type ProjectUpdateWithoutPublicationsInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutPublicationsInput = {
@@ -1815,6 +1942,7 @@ export type ProjectUncheckedUpdateWithoutPublicationsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1836,8 +1964,10 @@ export type ProjectUncheckedUpdateWithoutPublicationsInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutResourcesInput = {
@@ -1853,6 +1983,7 @@ export type ProjectCreateWithoutResourcesInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1874,8 +2005,10 @@ export type ProjectCreateWithoutResourcesInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutResourcesInput = {
@@ -1891,6 +2024,7 @@ export type ProjectUncheckedCreateWithoutResourcesInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -1912,8 +2046,10 @@ export type ProjectUncheckedCreateWithoutResourcesInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutResourcesInput = {
@@ -1945,6 +2081,7 @@ export type ProjectUpdateWithoutResourcesInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1966,8 +2103,10 @@ export type ProjectUpdateWithoutResourcesInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutResourcesInput = {
@@ -1983,6 +2122,7 @@ export type ProjectUncheckedUpdateWithoutResourcesInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2004,8 +2144,10 @@ export type ProjectUncheckedUpdateWithoutResourcesInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutNewsPostsInput = {
@@ -2021,6 +2163,7 @@ export type ProjectCreateWithoutNewsPostsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2043,7 +2186,9 @@ export type ProjectCreateWithoutNewsPostsInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutNewsPostsInput = {
@@ -2059,6 +2204,7 @@ export type ProjectUncheckedCreateWithoutNewsPostsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2081,7 +2227,9 @@ export type ProjectUncheckedCreateWithoutNewsPostsInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutNewsPostsInput = {
@@ -2113,6 +2261,7 @@ export type ProjectUpdateWithoutNewsPostsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2135,7 +2284,9 @@ export type ProjectUpdateWithoutNewsPostsInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutNewsPostsInput = {
@@ -2151,6 +2302,7 @@ export type ProjectUncheckedUpdateWithoutNewsPostsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2173,7 +2325,189 @@ export type ProjectUncheckedUpdateWithoutNewsPostsInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutProposalInput = {
+  id?: string
+  slug: string
+  title: string
+  gloss: string
+  abstract: string
+  question: string
+  motivation?: string | null
+  approach?: string | null
+  experiments?: string | null
+  results?: string | null
+  resultsPublic?: boolean
+  status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
+  state?: $Enums.PublishState
+  featured?: boolean
+  coverKey?: string | null
+  coverAlt?: string | null
+  codeUrl?: string | null
+  datasetUrl?: string | null
+  demoUrl?: string | null
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  areas?: Prisma.ProjectAreaCreateNestedManyWithoutProjectInput
+  members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
+  publications?: Prisma.PublicationCreateNestedManyWithoutProjectInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutProjectInput
+  relatedFrom?: Prisma.ProjectRelationCreateNestedManyWithoutFromInput
+  relatedTo?: Prisma.ProjectRelationCreateNestedManyWithoutToInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput
+  meetings?: Prisma.MeetingCreateNestedManyWithoutProjectInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
+  diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
+  updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
+  experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
+  newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutProposalInput = {
+  id?: string
+  slug: string
+  title: string
+  gloss: string
+  abstract: string
+  question: string
+  motivation?: string | null
+  approach?: string | null
+  experiments?: string | null
+  results?: string | null
+  resultsPublic?: boolean
+  status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
+  state?: $Enums.PublishState
+  featured?: boolean
+  coverKey?: string | null
+  coverAlt?: string | null
+  codeUrl?: string | null
+  datasetUrl?: string | null
+  demoUrl?: string | null
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  areas?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutProjectInput
+  members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+  publications?: Prisma.PublicationUncheckedCreateNestedManyWithoutProjectInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutProjectInput
+  relatedFrom?: Prisma.ProjectRelationUncheckedCreateNestedManyWithoutFromInput
+  relatedTo?: Prisma.ProjectRelationUncheckedCreateNestedManyWithoutToInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
+  meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutProjectInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
+  diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
+  updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
+  experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
+  newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutProposalInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutProposalInput, Prisma.ProjectUncheckedCreateWithoutProposalInput>
+}
+
+export type ProjectUpsertWithoutProposalInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutProposalInput, Prisma.ProjectUncheckedUpdateWithoutProposalInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutProposalInput, Prisma.ProjectUncheckedCreateWithoutProposalInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutProposalInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutProposalInput, Prisma.ProjectUncheckedUpdateWithoutProposalInput>
+}
+
+export type ProjectUpdateWithoutProposalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  gloss?: Prisma.StringFieldUpdateOperationsInput | string
+  abstract?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  motivation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experiments?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  datasetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  demoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  areas?: Prisma.ProjectAreaUpdateManyWithoutProjectNestedInput
+  members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
+  publications?: Prisma.PublicationUpdateManyWithoutProjectNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutProjectNestedInput
+  relatedFrom?: Prisma.ProjectRelationUpdateManyWithoutFromNestedInput
+  relatedTo?: Prisma.ProjectRelationUpdateManyWithoutToNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput
+  meetings?: Prisma.MeetingUpdateManyWithoutProjectNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
+  diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
+  updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
+  experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
+  newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutProposalInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  gloss?: Prisma.StringFieldUpdateOperationsInput | string
+  abstract?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  motivation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experiments?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  datasetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  demoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  areas?: Prisma.ProjectAreaUncheckedUpdateManyWithoutProjectNestedInput
+  members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+  publications?: Prisma.PublicationUncheckedUpdateManyWithoutProjectNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutProjectNestedInput
+  relatedFrom?: Prisma.ProjectRelationUncheckedUpdateManyWithoutFromNestedInput
+  relatedTo?: Prisma.ProjectRelationUncheckedUpdateManyWithoutToNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
+  meetings?: Prisma.MeetingUncheckedUpdateManyWithoutProjectNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
+  diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
+  updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
+  experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
+  newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTasksInput = {
@@ -2189,6 +2523,7 @@ export type ProjectCreateWithoutTasksInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2210,8 +2545,10 @@ export type ProjectCreateWithoutTasksInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTasksInput = {
@@ -2227,6 +2564,7 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2248,8 +2586,10 @@ export type ProjectUncheckedCreateWithoutTasksInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTasksInput = {
@@ -2281,6 +2621,7 @@ export type ProjectUpdateWithoutTasksInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2302,8 +2643,10 @@ export type ProjectUpdateWithoutTasksInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTasksInput = {
@@ -2319,6 +2662,7 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2340,8 +2684,10 @@ export type ProjectUncheckedUpdateWithoutTasksInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutMeetingsInput = {
@@ -2357,6 +2703,7 @@ export type ProjectCreateWithoutMeetingsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2378,8 +2725,10 @@ export type ProjectCreateWithoutMeetingsInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMeetingsInput = {
@@ -2395,6 +2744,7 @@ export type ProjectUncheckedCreateWithoutMeetingsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2416,8 +2766,10 @@ export type ProjectUncheckedCreateWithoutMeetingsInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMeetingsInput = {
@@ -2449,6 +2801,7 @@ export type ProjectUpdateWithoutMeetingsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2470,8 +2823,10 @@ export type ProjectUpdateWithoutMeetingsInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMeetingsInput = {
@@ -2487,6 +2842,7 @@ export type ProjectUncheckedUpdateWithoutMeetingsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2508,8 +2864,10 @@ export type ProjectUncheckedUpdateWithoutMeetingsInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutExperimentsLogInput = {
@@ -2525,6 +2883,7 @@ export type ProjectCreateWithoutExperimentsLogInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2547,7 +2906,9 @@ export type ProjectCreateWithoutExperimentsLogInput = {
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutExperimentsLogInput = {
@@ -2563,6 +2924,7 @@ export type ProjectUncheckedCreateWithoutExperimentsLogInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2585,7 +2947,9 @@ export type ProjectUncheckedCreateWithoutExperimentsLogInput = {
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutExperimentsLogInput = {
@@ -2617,6 +2981,7 @@ export type ProjectUpdateWithoutExperimentsLogInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2639,7 +3004,9 @@ export type ProjectUpdateWithoutExperimentsLogInput = {
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutExperimentsLogInput = {
@@ -2655,6 +3022,7 @@ export type ProjectUncheckedUpdateWithoutExperimentsLogInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2677,7 +3045,9 @@ export type ProjectUncheckedUpdateWithoutExperimentsLogInput = {
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutDocumentsInput = {
@@ -2693,6 +3063,7 @@ export type ProjectCreateWithoutDocumentsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2714,8 +3085,10 @@ export type ProjectCreateWithoutDocumentsInput = {
   meetings?: Prisma.MeetingCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutDocumentsInput = {
@@ -2731,6 +3104,7 @@ export type ProjectUncheckedCreateWithoutDocumentsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2752,8 +3126,10 @@ export type ProjectUncheckedCreateWithoutDocumentsInput = {
   meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutDocumentsInput = {
@@ -2785,6 +3161,7 @@ export type ProjectUpdateWithoutDocumentsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2806,8 +3183,10 @@ export type ProjectUpdateWithoutDocumentsInput = {
   meetings?: Prisma.MeetingUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutDocumentsInput = {
@@ -2823,6 +3202,7 @@ export type ProjectUncheckedUpdateWithoutDocumentsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2844,8 +3224,10 @@ export type ProjectUncheckedUpdateWithoutDocumentsInput = {
   meetings?: Prisma.MeetingUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutDiagramsInput = {
@@ -2861,6 +3243,7 @@ export type ProjectCreateWithoutDiagramsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2882,8 +3265,10 @@ export type ProjectCreateWithoutDiagramsInput = {
   meetings?: Prisma.MeetingCreateNestedManyWithoutProjectInput
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutDiagramsInput = {
@@ -2899,6 +3284,7 @@ export type ProjectUncheckedCreateWithoutDiagramsInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -2920,8 +3306,10 @@ export type ProjectUncheckedCreateWithoutDiagramsInput = {
   meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutProjectInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutDiagramsInput = {
@@ -2953,6 +3341,7 @@ export type ProjectUpdateWithoutDiagramsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -2974,8 +3363,10 @@ export type ProjectUpdateWithoutDiagramsInput = {
   meetings?: Prisma.MeetingUpdateManyWithoutProjectNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutDiagramsInput = {
@@ -2991,6 +3382,7 @@ export type ProjectUncheckedUpdateWithoutDiagramsInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3012,8 +3404,10 @@ export type ProjectUncheckedUpdateWithoutDiagramsInput = {
   meetings?: Prisma.MeetingUncheckedUpdateManyWithoutProjectNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutUpdatesInput = {
@@ -3029,6 +3423,7 @@ export type ProjectCreateWithoutUpdatesInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -3050,8 +3445,10 @@ export type ProjectCreateWithoutUpdatesInput = {
   meetings?: Prisma.MeetingCreateNestedManyWithoutProjectInput
   documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutUpdatesInput = {
@@ -3067,6 +3464,7 @@ export type ProjectUncheckedCreateWithoutUpdatesInput = {
   results?: string | null
   resultsPublic?: boolean
   status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
   state?: $Enums.PublishState
   featured?: boolean
   coverKey?: string | null
@@ -3088,8 +3486,10 @@ export type ProjectUncheckedCreateWithoutUpdatesInput = {
   meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutProjectInput
   documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
   diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutProjectInput
   experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutUpdatesInput = {
@@ -3121,6 +3521,7 @@ export type ProjectUpdateWithoutUpdatesInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3142,8 +3543,10 @@ export type ProjectUpdateWithoutUpdatesInput = {
   meetings?: Prisma.MeetingUpdateManyWithoutProjectNestedInput
   documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutUpdatesInput = {
@@ -3159,6 +3562,7 @@ export type ProjectUncheckedUpdateWithoutUpdatesInput = {
   results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
   state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
   featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
   coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -3180,8 +3584,190 @@ export type ProjectUncheckedUpdateWithoutUpdatesInput = {
   meetings?: Prisma.MeetingUncheckedUpdateManyWithoutProjectNestedInput
   documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
   diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutProjectNestedInput
   experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutSectionsInput = {
+  id?: string
+  slug: string
+  title: string
+  gloss: string
+  abstract: string
+  question: string
+  motivation?: string | null
+  approach?: string | null
+  experiments?: string | null
+  results?: string | null
+  resultsPublic?: boolean
+  status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
+  state?: $Enums.PublishState
+  featured?: boolean
+  coverKey?: string | null
+  coverAlt?: string | null
+  codeUrl?: string | null
+  datasetUrl?: string | null
+  demoUrl?: string | null
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  areas?: Prisma.ProjectAreaCreateNestedManyWithoutProjectInput
+  members?: Prisma.ProjectMemberCreateNestedManyWithoutProjectInput
+  publications?: Prisma.PublicationCreateNestedManyWithoutProjectInput
+  resources?: Prisma.ResourceCreateNestedManyWithoutProjectInput
+  relatedFrom?: Prisma.ProjectRelationCreateNestedManyWithoutFromInput
+  relatedTo?: Prisma.ProjectRelationCreateNestedManyWithoutToInput
+  tasks?: Prisma.TaskCreateNestedManyWithoutProjectInput
+  meetings?: Prisma.MeetingCreateNestedManyWithoutProjectInput
+  documents?: Prisma.DocumentCreateNestedManyWithoutProjectInput
+  diagrams?: Prisma.DiagramCreateNestedManyWithoutProjectInput
+  updates?: Prisma.ProjectUpdateCreateNestedManyWithoutProjectInput
+  experimentsLog?: Prisma.ExperimentCreateNestedManyWithoutProjectInput
+  newsPosts?: Prisma.NewsPostCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalCreateNestedOneWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutSectionsInput = {
+  id?: string
+  slug: string
+  title: string
+  gloss: string
+  abstract: string
+  question: string
+  motivation?: string | null
+  approach?: string | null
+  experiments?: string | null
+  results?: string | null
+  resultsPublic?: boolean
+  status?: $Enums.ProjectStatus
+  phase?: $Enums.ResearchPhase | null
+  state?: $Enums.PublishState
+  featured?: boolean
+  coverKey?: string | null
+  coverAlt?: string | null
+  codeUrl?: string | null
+  datasetUrl?: string | null
+  demoUrl?: string | null
+  startedAt?: Date | string | null
+  endedAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  areas?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutProjectInput
+  members?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutProjectInput
+  publications?: Prisma.PublicationUncheckedCreateNestedManyWithoutProjectInput
+  resources?: Prisma.ResourceUncheckedCreateNestedManyWithoutProjectInput
+  relatedFrom?: Prisma.ProjectRelationUncheckedCreateNestedManyWithoutFromInput
+  relatedTo?: Prisma.ProjectRelationUncheckedCreateNestedManyWithoutToInput
+  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutProjectInput
+  meetings?: Prisma.MeetingUncheckedCreateNestedManyWithoutProjectInput
+  documents?: Prisma.DocumentUncheckedCreateNestedManyWithoutProjectInput
+  diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutProjectInput
+  updates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutProjectInput
+  experimentsLog?: Prisma.ExperimentUncheckedCreateNestedManyWithoutProjectInput
+  newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutProjectInput
+  proposal?: Prisma.ProposalUncheckedCreateNestedOneWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutSectionsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutSectionsInput, Prisma.ProjectUncheckedCreateWithoutSectionsInput>
+}
+
+export type ProjectUpsertWithoutSectionsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutSectionsInput, Prisma.ProjectUncheckedUpdateWithoutSectionsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutSectionsInput, Prisma.ProjectUncheckedCreateWithoutSectionsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutSectionsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutSectionsInput, Prisma.ProjectUncheckedUpdateWithoutSectionsInput>
+}
+
+export type ProjectUpdateWithoutSectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  gloss?: Prisma.StringFieldUpdateOperationsInput | string
+  abstract?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  motivation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experiments?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  datasetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  demoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  areas?: Prisma.ProjectAreaUpdateManyWithoutProjectNestedInput
+  members?: Prisma.ProjectMemberUpdateManyWithoutProjectNestedInput
+  publications?: Prisma.PublicationUpdateManyWithoutProjectNestedInput
+  resources?: Prisma.ResourceUpdateManyWithoutProjectNestedInput
+  relatedFrom?: Prisma.ProjectRelationUpdateManyWithoutFromNestedInput
+  relatedTo?: Prisma.ProjectRelationUpdateManyWithoutToNestedInput
+  tasks?: Prisma.TaskUpdateManyWithoutProjectNestedInput
+  meetings?: Prisma.MeetingUpdateManyWithoutProjectNestedInput
+  documents?: Prisma.DocumentUpdateManyWithoutProjectNestedInput
+  diagrams?: Prisma.DiagramUpdateManyWithoutProjectNestedInput
+  updates?: Prisma.ProjectUpdateUpdateManyWithoutProjectNestedInput
+  experimentsLog?: Prisma.ExperimentUpdateManyWithoutProjectNestedInput
+  newsPosts?: Prisma.NewsPostUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUpdateOneWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutSectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  gloss?: Prisma.StringFieldUpdateOperationsInput | string
+  abstract?: Prisma.StringFieldUpdateOperationsInput | string
+  question?: Prisma.StringFieldUpdateOperationsInput | string
+  motivation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  approach?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  experiments?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  results?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resultsPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  status?: Prisma.EnumProjectStatusFieldUpdateOperationsInput | $Enums.ProjectStatus
+  phase?: Prisma.NullableEnumResearchPhaseFieldUpdateOperationsInput | $Enums.ResearchPhase | null
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  featured?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  coverKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  codeUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  datasetUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  demoUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  areas?: Prisma.ProjectAreaUncheckedUpdateManyWithoutProjectNestedInput
+  members?: Prisma.ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput
+  publications?: Prisma.PublicationUncheckedUpdateManyWithoutProjectNestedInput
+  resources?: Prisma.ResourceUncheckedUpdateManyWithoutProjectNestedInput
+  relatedFrom?: Prisma.ProjectRelationUncheckedUpdateManyWithoutFromNestedInput
+  relatedTo?: Prisma.ProjectRelationUncheckedUpdateManyWithoutToNestedInput
+  tasks?: Prisma.TaskUncheckedUpdateManyWithoutProjectNestedInput
+  meetings?: Prisma.MeetingUncheckedUpdateManyWithoutProjectNestedInput
+  documents?: Prisma.DocumentUncheckedUpdateManyWithoutProjectNestedInput
+  diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutProjectNestedInput
+  updates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutProjectNestedInput
+  experimentsLog?: Prisma.ExperimentUncheckedUpdateManyWithoutProjectNestedInput
+  newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutProjectNestedInput
+  proposal?: Prisma.ProposalUncheckedUpdateOneWithoutProjectNestedInput
 }
 
 
@@ -3201,6 +3787,7 @@ export type ProjectCountOutputType = {
   documents: number
   diagrams: number
   updates: number
+  sections: number
   experimentsLog: number
   newsPosts: number
 }
@@ -3217,6 +3804,7 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   documents?: boolean | ProjectCountOutputTypeCountDocumentsArgs
   diagrams?: boolean | ProjectCountOutputTypeCountDiagramsArgs
   updates?: boolean | ProjectCountOutputTypeCountUpdatesArgs
+  sections?: boolean | ProjectCountOutputTypeCountSectionsArgs
   experimentsLog?: boolean | ProjectCountOutputTypeCountExperimentsLogArgs
   newsPosts?: boolean | ProjectCountOutputTypeCountNewsPostsArgs
 }
@@ -3311,6 +3899,13 @@ export type ProjectCountOutputTypeCountUpdatesArgs<ExtArgs extends runtime.Types
 /**
  * ProjectCountOutputType without action
  */
+export type ProjectCountOutputTypeCountSectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectSectionWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
 export type ProjectCountOutputTypeCountExperimentsLogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ExperimentWhereInput
 }
@@ -3336,6 +3931,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   results?: boolean
   resultsPublic?: boolean
   status?: boolean
+  phase?: boolean
   state?: boolean
   featured?: boolean
   coverKey?: boolean
@@ -3358,8 +3954,10 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   documents?: boolean | Prisma.Project$documentsArgs<ExtArgs>
   diagrams?: boolean | Prisma.Project$diagramsArgs<ExtArgs>
   updates?: boolean | Prisma.Project$updatesArgs<ExtArgs>
+  sections?: boolean | Prisma.Project$sectionsArgs<ExtArgs>
   experimentsLog?: boolean | Prisma.Project$experimentsLogArgs<ExtArgs>
   newsPosts?: boolean | Prisma.Project$newsPostsArgs<ExtArgs>
+  proposal?: boolean | Prisma.Project$proposalArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -3376,6 +3974,7 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   results?: boolean
   resultsPublic?: boolean
   status?: boolean
+  phase?: boolean
   state?: boolean
   featured?: boolean
   coverKey?: boolean
@@ -3402,6 +4001,7 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   results?: boolean
   resultsPublic?: boolean
   status?: boolean
+  phase?: boolean
   state?: boolean
   featured?: boolean
   coverKey?: boolean
@@ -3428,6 +4028,7 @@ export type ProjectSelectScalar = {
   results?: boolean
   resultsPublic?: boolean
   status?: boolean
+  phase?: boolean
   state?: boolean
   featured?: boolean
   coverKey?: boolean
@@ -3441,7 +4042,7 @@ export type ProjectSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "gloss" | "abstract" | "question" | "motivation" | "approach" | "experiments" | "results" | "resultsPublic" | "status" | "state" | "featured" | "coverKey" | "coverAlt" | "codeUrl" | "datasetUrl" | "demoUrl" | "startedAt" | "endedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "gloss" | "abstract" | "question" | "motivation" | "approach" | "experiments" | "results" | "resultsPublic" | "status" | "phase" | "state" | "featured" | "coverKey" | "coverAlt" | "codeUrl" | "datasetUrl" | "demoUrl" | "startedAt" | "endedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   areas?: boolean | Prisma.Project$areasArgs<ExtArgs>
   members?: boolean | Prisma.Project$membersArgs<ExtArgs>
@@ -3454,8 +4055,10 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   documents?: boolean | Prisma.Project$documentsArgs<ExtArgs>
   diagrams?: boolean | Prisma.Project$diagramsArgs<ExtArgs>
   updates?: boolean | Prisma.Project$updatesArgs<ExtArgs>
+  sections?: boolean | Prisma.Project$sectionsArgs<ExtArgs>
   experimentsLog?: boolean | Prisma.Project$experimentsLogArgs<ExtArgs>
   newsPosts?: boolean | Prisma.Project$newsPostsArgs<ExtArgs>
+  proposal?: boolean | Prisma.Project$proposalArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3475,8 +4078,10 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     documents: Prisma.$DocumentPayload<ExtArgs>[]
     diagrams: Prisma.$DiagramPayload<ExtArgs>[]
     updates: Prisma.$ProjectUpdatePayload<ExtArgs>[]
+    sections: Prisma.$ProjectSectionPayload<ExtArgs>[]
     experimentsLog: Prisma.$ExperimentPayload<ExtArgs>[]
     newsPosts: Prisma.$NewsPostPayload<ExtArgs>[]
+    proposal: Prisma.$ProposalPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3491,6 +4096,10 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     results: string | null
     resultsPublic: boolean
     status: $Enums.ProjectStatus
+    /**
+     * The finer step inside a running project, kept by the team.
+     */
+    phase: $Enums.ResearchPhase | null
     state: $Enums.PublishState
     featured: boolean
     coverKey: string | null
@@ -3907,8 +4516,10 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   documents<T extends Prisma.Project$documentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$documentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DocumentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   diagrams<T extends Prisma.Project$diagramsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$diagramsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$DiagramPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   updates<T extends Prisma.Project$updatesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$updatesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectUpdatePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  sections<T extends Prisma.Project$sectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   experimentsLog<T extends Prisma.Project$experimentsLogArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$experimentsLogArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ExperimentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   newsPosts<T extends Prisma.Project$newsPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$newsPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  proposal<T extends Prisma.Project$proposalArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$proposalArgs<ExtArgs>>): Prisma.Prisma__ProposalClient<runtime.Types.Result.GetResult<Prisma.$ProposalPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3950,6 +4561,7 @@ export interface ProjectFieldRefs {
   readonly results: Prisma.FieldRef<"Project", 'String'>
   readonly resultsPublic: Prisma.FieldRef<"Project", 'Boolean'>
   readonly status: Prisma.FieldRef<"Project", 'ProjectStatus'>
+  readonly phase: Prisma.FieldRef<"Project", 'ResearchPhase'>
   readonly state: Prisma.FieldRef<"Project", 'PublishState'>
   readonly featured: Prisma.FieldRef<"Project", 'Boolean'>
   readonly coverKey: Prisma.FieldRef<"Project", 'String'>
@@ -4618,6 +5230,30 @@ export type Project$updatesArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Project.sections
+ */
+export type Project$sectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectSection
+   */
+  select?: Prisma.ProjectSectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectSection
+   */
+  omit?: Prisma.ProjectSectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectSectionInclude<ExtArgs> | null
+  where?: Prisma.ProjectSectionWhereInput
+  orderBy?: Prisma.ProjectSectionOrderByWithRelationInput | Prisma.ProjectSectionOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectSectionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectSectionScalarFieldEnum | Prisma.ProjectSectionScalarFieldEnum[]
+}
+
+/**
  * Project.experimentsLog
  */
 export type Project$experimentsLogArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -4663,6 +5299,25 @@ export type Project$newsPostsArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.NewsPostScalarFieldEnum | Prisma.NewsPostScalarFieldEnum[]
+}
+
+/**
+ * Project.proposal
+ */
+export type Project$proposalArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proposal
+   */
+  select?: Prisma.ProposalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proposal
+   */
+  omit?: Prisma.ProposalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProposalInclude<ExtArgs> | null
+  where?: Prisma.ProposalWhereInput
 }
 
 /**

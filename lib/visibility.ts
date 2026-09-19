@@ -131,10 +131,16 @@ export function isPublishedAndDue(
 }
 
 /**
- * A progress update reaches the public only when it was marked public *and*
- * its project is. Both halves matter: publishing a project must not
- * retroactively publish the team's working notes.
+ * What a team writes about a project reaches the public on two conditions,
+ * never one: the team published that piece *and* the project itself is
+ * published. Publishing a project must not retroactively publish the team's
+ * working notes, and publishing a note must not leak an unpublished project.
  */
+export const publicProjectSectionWhere = {
+  isPublic: true,
+  project: publicProjectWhere,
+} satisfies Prisma.ProjectSectionWhereInput;
+
 export const publicProjectUpdateWhere = {
   isPublic: true,
   project: publicProjectWhere,

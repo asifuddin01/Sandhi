@@ -206,6 +206,7 @@ export type DiagramWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Diagram"> | Date | string
   owner?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  sections?: Prisma.ProjectSectionListRelationFilter
 }
 
 export type DiagramOrderByWithRelationInput = {
@@ -219,6 +220,7 @@ export type DiagramOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   owner?: Prisma.MemberOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
+  sections?: Prisma.ProjectSectionOrderByRelationAggregateInput
 }
 
 export type DiagramWhereUniqueInput = Prisma.AtLeast<{
@@ -235,6 +237,7 @@ export type DiagramWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Diagram"> | Date | string
   owner?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
   project?: Prisma.XOR<Prisma.ProjectNullableScalarRelationFilter, Prisma.ProjectWhereInput> | null
+  sections?: Prisma.ProjectSectionListRelationFilter
 }, "id">
 
 export type DiagramOrderByWithAggregationInput = {
@@ -274,6 +277,7 @@ export type DiagramCreateInput = {
   updatedAt?: Date | string
   owner: Prisma.MemberCreateNestedOneWithoutDiagramsInput
   project?: Prisma.ProjectCreateNestedOneWithoutDiagramsInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramUncheckedCreateInput = {
@@ -285,6 +289,7 @@ export type DiagramUncheckedCreateInput = {
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramUpdateInput = {
@@ -296,6 +301,7 @@ export type DiagramUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.MemberUpdateOneRequiredWithoutDiagramsNestedInput
   project?: Prisma.ProjectUpdateOneWithoutDiagramsNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramUncheckedUpdateInput = {
@@ -307,6 +313,7 @@ export type DiagramUncheckedUpdateInput = {
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramCreateManyInput = {
@@ -379,6 +386,11 @@ export type DiagramMinOrderByAggregateInput = {
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+}
+
+export type DiagramNullableScalarRelationFilter = {
+  is?: Prisma.DiagramWhereInput | null
+  isNot?: Prisma.DiagramWhereInput | null
 }
 
 export type DiagramCreateNestedManyWithoutOwnerInput = {
@@ -465,6 +477,22 @@ export type DiagramUncheckedUpdateManyWithoutProjectNestedInput = {
   deleteMany?: Prisma.DiagramScalarWhereInput | Prisma.DiagramScalarWhereInput[]
 }
 
+export type DiagramCreateNestedOneWithoutSectionsInput = {
+  create?: Prisma.XOR<Prisma.DiagramCreateWithoutSectionsInput, Prisma.DiagramUncheckedCreateWithoutSectionsInput>
+  connectOrCreate?: Prisma.DiagramCreateOrConnectWithoutSectionsInput
+  connect?: Prisma.DiagramWhereUniqueInput
+}
+
+export type DiagramUpdateOneWithoutSectionsNestedInput = {
+  create?: Prisma.XOR<Prisma.DiagramCreateWithoutSectionsInput, Prisma.DiagramUncheckedCreateWithoutSectionsInput>
+  connectOrCreate?: Prisma.DiagramCreateOrConnectWithoutSectionsInput
+  upsert?: Prisma.DiagramUpsertWithoutSectionsInput
+  disconnect?: Prisma.DiagramWhereInput | boolean
+  delete?: Prisma.DiagramWhereInput | boolean
+  connect?: Prisma.DiagramWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.DiagramUpdateToOneWithWhereWithoutSectionsInput, Prisma.DiagramUpdateWithoutSectionsInput>, Prisma.DiagramUncheckedUpdateWithoutSectionsInput>
+}
+
 export type DiagramCreateWithoutOwnerInput = {
   id?: string
   title: string
@@ -473,6 +501,7 @@ export type DiagramCreateWithoutOwnerInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   project?: Prisma.ProjectCreateNestedOneWithoutDiagramsInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramUncheckedCreateWithoutOwnerInput = {
@@ -483,6 +512,7 @@ export type DiagramUncheckedCreateWithoutOwnerInput = {
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramCreateOrConnectWithoutOwnerInput = {
@@ -533,6 +563,7 @@ export type DiagramCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   owner: Prisma.MemberCreateNestedOneWithoutDiagramsInput
+  sections?: Prisma.ProjectSectionCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramUncheckedCreateWithoutProjectInput = {
@@ -543,6 +574,7 @@ export type DiagramUncheckedCreateWithoutProjectInput = {
   ownerId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  sections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutDiagramInput
 }
 
 export type DiagramCreateOrConnectWithoutProjectInput = {
@@ -571,6 +603,66 @@ export type DiagramUpdateManyWithWhereWithoutProjectInput = {
   data: Prisma.XOR<Prisma.DiagramUpdateManyMutationInput, Prisma.DiagramUncheckedUpdateManyWithoutProjectInput>
 }
 
+export type DiagramCreateWithoutSectionsInput = {
+  id?: string
+  title: string
+  source: string
+  layout?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  owner: Prisma.MemberCreateNestedOneWithoutDiagramsInput
+  project?: Prisma.ProjectCreateNestedOneWithoutDiagramsInput
+}
+
+export type DiagramUncheckedCreateWithoutSectionsInput = {
+  id?: string
+  title: string
+  source: string
+  layout?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownerId: string
+  projectId?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type DiagramCreateOrConnectWithoutSectionsInput = {
+  where: Prisma.DiagramWhereUniqueInput
+  create: Prisma.XOR<Prisma.DiagramCreateWithoutSectionsInput, Prisma.DiagramUncheckedCreateWithoutSectionsInput>
+}
+
+export type DiagramUpsertWithoutSectionsInput = {
+  update: Prisma.XOR<Prisma.DiagramUpdateWithoutSectionsInput, Prisma.DiagramUncheckedUpdateWithoutSectionsInput>
+  create: Prisma.XOR<Prisma.DiagramCreateWithoutSectionsInput, Prisma.DiagramUncheckedCreateWithoutSectionsInput>
+  where?: Prisma.DiagramWhereInput
+}
+
+export type DiagramUpdateToOneWithWhereWithoutSectionsInput = {
+  where?: Prisma.DiagramWhereInput
+  data: Prisma.XOR<Prisma.DiagramUpdateWithoutSectionsInput, Prisma.DiagramUncheckedUpdateWithoutSectionsInput>
+}
+
+export type DiagramUpdateWithoutSectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  layout?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  owner?: Prisma.MemberUpdateOneRequiredWithoutDiagramsNestedInput
+  project?: Prisma.ProjectUpdateOneWithoutDiagramsNestedInput
+}
+
+export type DiagramUncheckedUpdateWithoutSectionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  source?: Prisma.StringFieldUpdateOperationsInput | string
+  layout?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownerId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
 export type DiagramCreateManyOwnerInput = {
   id?: string
   title: string
@@ -589,6 +681,7 @@ export type DiagramUpdateWithoutOwnerInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneWithoutDiagramsNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramUncheckedUpdateWithoutOwnerInput = {
@@ -599,6 +692,7 @@ export type DiagramUncheckedUpdateWithoutOwnerInput = {
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramUncheckedUpdateManyWithoutOwnerInput = {
@@ -629,6 +723,7 @@ export type DiagramUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   owner?: Prisma.MemberUpdateOneRequiredWithoutDiagramsNestedInput
+  sections?: Prisma.ProjectSectionUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramUncheckedUpdateWithoutProjectInput = {
@@ -639,6 +734,7 @@ export type DiagramUncheckedUpdateWithoutProjectInput = {
   ownerId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutDiagramNestedInput
 }
 
 export type DiagramUncheckedUpdateManyWithoutProjectInput = {
@@ -652,6 +748,35 @@ export type DiagramUncheckedUpdateManyWithoutProjectInput = {
 }
 
 
+/**
+ * Count Type DiagramCountOutputType
+ */
+
+export type DiagramCountOutputType = {
+  sections: number
+}
+
+export type DiagramCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  sections?: boolean | DiagramCountOutputTypeCountSectionsArgs
+}
+
+/**
+ * DiagramCountOutputType without action
+ */
+export type DiagramCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the DiagramCountOutputType
+   */
+  select?: Prisma.DiagramCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * DiagramCountOutputType without action
+ */
+export type DiagramCountOutputTypeCountSectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProjectSectionWhereInput
+}
+
 
 export type DiagramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -664,6 +789,8 @@ export type DiagramSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   updatedAt?: boolean
   owner?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Diagram$projectArgs<ExtArgs>
+  sections?: boolean | Prisma.Diagram$sectionsArgs<ExtArgs>
+  _count?: boolean | Prisma.DiagramCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["diagram"]>
 
 export type DiagramSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -707,6 +834,8 @@ export type DiagramOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type DiagramInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
   project?: boolean | Prisma.Diagram$projectArgs<ExtArgs>
+  sections?: boolean | Prisma.Diagram$sectionsArgs<ExtArgs>
+  _count?: boolean | Prisma.DiagramCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type DiagramIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   owner?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -722,6 +851,7 @@ export type $DiagramPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
   objects: {
     owner: Prisma.$MemberPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs> | null
+    sections: Prisma.$ProjectSectionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1132,6 +1262,7 @@ export interface Prisma__DiagramClient<T, Null = never, ExtArgs extends runtime.
   readonly [Symbol.toStringTag]: "PrismaPromise"
   owner<T extends Prisma.MemberDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.MemberDefaultArgs<ExtArgs>>): Prisma.Prisma__MemberClient<runtime.Types.Result.GetResult<Prisma.$MemberPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.Diagram$projectArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Diagram$projectArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  sections<T extends Prisma.Diagram$sectionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Diagram$sectionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectSectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1586,6 +1717,30 @@ export type Diagram$projectArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.ProjectInclude<ExtArgs> | null
   where?: Prisma.ProjectWhereInput
+}
+
+/**
+ * Diagram.sections
+ */
+export type Diagram$sectionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ProjectSection
+   */
+  select?: Prisma.ProjectSectionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ProjectSection
+   */
+  omit?: Prisma.ProjectSectionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProjectSectionInclude<ExtArgs> | null
+  where?: Prisma.ProjectSectionWhereInput
+  orderBy?: Prisma.ProjectSectionOrderByWithRelationInput | Prisma.ProjectSectionOrderByWithRelationInput[]
+  cursor?: Prisma.ProjectSectionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProjectSectionScalarFieldEnum | Prisma.ProjectSectionScalarFieldEnum[]
 }
 
 /**

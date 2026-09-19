@@ -1,3 +1,10 @@
+import {
+  MAX_PROPOSAL_AFFILIATION,
+  MAX_PROPOSAL_NAME,
+  MAX_PROPOSAL_SUMMARY,
+  MAX_PROPOSAL_TEXT,
+  MAX_PROPOSAL_TITLE,
+} from "@/lib/proposals";
 import { z } from "@/lib/zod";
 
 export const joinInterestTypes = [
@@ -289,6 +296,47 @@ export const contactSubmissionSchema = z.object({
 });
 
 export type ContactSubmission = z.infer<typeof contactSubmissionSchema>;
+
+/**
+ * A research proposal. Anyone may send one — a member, a student, a
+ * colleague at another lab — so it is treated like the other public forms:
+ * same-origin, rate limited, and behind the anti-spam check. A member's own
+ * identity comes from their session, never from these fields.
+ */
+export const proposalSubmissionSchema = z.object({
+  title: z
+    .string()
+    .trim()
+    .min(6, "Give the proposal a title.")
+    .max(MAX_PROPOSAL_TITLE, "Keep the title short."),
+  summary: z
+    .string()
+    .trim()
+    .min(40, "Write a short paragraph saying what this is.")
+    .max(
+      MAX_PROPOSAL_SUMMARY,
+      `Keep the summary within ${MAX_PROPOSAL_SUMMARY} characters.`,
+    ),
+  question: z
+    .string()
+    .trim()
+    .min(20, "Say what the research would ask.")
+    .max(MAX_PROPOSAL_TEXT, "That is longer than we can take here."),
+  approach: z.string().trim().max(MAX_PROPOSAL_TEXT).optional(),
+  outcome: z.string().trim().max(MAX_PROPOSAL_TEXT).optional(),
+  areaSlug: z
+    .string()
+    .trim()
+    .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/u)
+    .max(160)
+    .optional(),
+  name: z.string().trim().min(2, "Enter your name.").max(MAX_PROPOSAL_NAME),
+  email: z.string().trim().email("Enter a valid email address."),
+  affiliation: z.string().trim().max(MAX_PROPOSAL_AFFILIATION).optional(),
+  turnstileToken: z.string().min(1, "Complete the anti-spam check."),
+});
+
+export type ProposalSubmission = z.infer<typeof proposalSubmissionSchema>;
 
 export type FieldErrors = Record<string, string>;
 

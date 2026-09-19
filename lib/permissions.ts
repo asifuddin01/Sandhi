@@ -22,6 +22,10 @@ export const capabilityRoles = {
   "partners:manage": administrators,
   "opportunities:manage": administrators,
   "applications:manage": administrators,
+  // Reading the queue, taking a proposal, queueing it or sending it back.
+  "proposals:review": staff,
+  // The decision that turns a proposal into a project with a team.
+  "proposals:approve": administrators,
   "members:manage": administrators,
   "approvals:manage": administrators,
   "settings:manage": administrators,

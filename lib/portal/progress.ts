@@ -13,6 +13,17 @@ import { memberProjectIds, workspaceMemberId } from "@/lib/portal-content";
 
 export const UPDATES_PAGE_SIZE = 50;
 
+export interface ProjectSectionEntry {
+  id: string;
+  title: string;
+  body: string;
+  isPublic: boolean;
+  sortOrder: number;
+  diagram: { id: string; title: string } | null;
+  attachments: ProgressAttachment[];
+  updatedAt: Date;
+}
+
 export interface ProgressAttachment {
   id: string;
   kind: string;
@@ -28,6 +39,7 @@ export interface ProgressUpdate {
   nextUp: string | null;
   isPublic: boolean;
   stage: string;
+  phase: string | null;
   author: { slug: string; name: string } | null;
   createdAt: Date;
   attachments: ProgressAttachment[];
@@ -41,10 +53,12 @@ export interface ProjectProgress {
   title: string;
   gloss: string;
   status: string;
+  phase: string | null;
   /** The project's own publish state: whether the outside can see it at all. */
   state: string;
   role: string;
   isLead: boolean;
+  sections: ProjectSectionEntry[];
   updates: ProgressUpdate[];
 }
 
@@ -93,10 +107,33 @@ export async function getProjectProgress(
       title: true,
       gloss: true,
       status: true,
+      phase: true,
       state: true,
       members: {
         where: { memberId },
         select: { role: true, isLead: true },
+      },
+      sections: {
+        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+        select: {
+          id: true,
+          title: true,
+          body: true,
+          isPublic: true,
+          sortOrder: true,
+          updatedAt: true,
+          diagram: { select: { id: true, title: true } },
+          attachments: {
+            orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+            select: {
+              id: true,
+              kind: true,
+              title: true,
+              contentType: true,
+              byteSize: true,
+            },
+          },
+        },
       },
       updates: {
         orderBy: { createdAt: "desc" },
@@ -108,6 +145,7 @@ export async function getProjectProgress(
           nextUp: true,
           isPublic: true,
           stage: true,
+          phase: true,
           createdAt: true,
           authorId: true,
           author: { select: { slug: true, name: true } },
@@ -134,9 +172,11 @@ export async function getProjectProgress(
     title: row.title,
     gloss: row.gloss,
     status: row.status,
+    phase: row.phase,
     state: row.state,
     role: membership?.role ?? "Member",
     isLead: membership?.isLead ?? false,
+    sections: row.sections,
     updates: row.updates.map(({ authorId, ...update }) => ({
       ...update,
       mine: authorId === memberId,
@@ -173,4 +213,53 @@ export async function canEditUpdate(
       (update.authorId === memberId || membership!.isLead),
     projectId: update.projectId,
   };
+}
+
+/**
+ * Who may change a standing section: anyone on the project. Sections are the
+ * team's shared account of the work, not one person's post, so they are not
+ * owned the way an update is.
+ */
+export async function canEditSection(
+  viewer: Viewer,
+  sectionId: string,
+): Promise<{ allowed: boolean; projectId: string | null }> {
+  const memberId = workspaceMemberId(viewer);
+  if (!memberId || !isDatabaseConfigured()) {
+    return { allowed: false, projectId: null };
+  }
+
+  const section = await getDb().projectSection.findUnique({
+    where: { id: sectionId },
+    select: {
+      projectId: true,
+      project: {
+        select: {
+          members: { where: { memberId }, select: { memberId: true } },
+        },
+      },
+    },
+  });
+  if (!section) return { allowed: false, projectId: null };
+
+  return {
+    allowed: section.project.members.length > 0,
+    projectId: section.projectId,
+  };
+}
+
+/** The diagrams this member could put beside a section of this project. */
+export async function diagramsForProject(
+  viewer: Viewer,
+  projectId: string,
+): Promise<Array<{ id: string; title: string }>> {
+  const memberId = workspaceMemberId(viewer);
+  if (!memberId || !isDatabaseConfigured()) return [];
+
+  return getDb().diagram.findMany({
+    where: { OR: [{ projectId }, { ownerId: memberId }] },
+    orderBy: { updatedAt: "desc" },
+    take: 50,
+    select: { id: true, title: true },
+  });
 }

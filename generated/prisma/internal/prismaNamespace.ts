@@ -426,6 +426,8 @@ export const ModelName = {
   Opportunity: 'Opportunity',
   Application: 'Application',
   ApplicationNote: 'ApplicationNote',
+  Proposal: 'Proposal',
+  ProposalInterest: 'ProposalInterest',
   Partner: 'Partner',
   Milestone: 'Milestone',
   ContactMessage: 'ContactMessage',
@@ -440,7 +442,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   Diagram: 'Diagram',
   ProjectUpdate: 'ProjectUpdate',
-  UpdateAttachment: 'UpdateAttachment'
+  Attachment: 'Attachment',
+  ProjectSection: 'ProjectSection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -456,7 +459,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram" | "projectUpdate" | "updateAttachment"
+    modelProps: "user" | "session" | "account" | "twoFactor" | "passkey" | "verification" | "invitation" | "member" | "researchTheme" | "researchArea" | "memberArea" | "project" | "projectArea" | "projectMember" | "projectRelation" | "publication" | "publicationAuthor" | "publicationArea" | "publicationReview" | "resource" | "resourceArea" | "newsPost" | "insight" | "insightAuthor" | "event" | "eventRegistration" | "opportunity" | "application" | "applicationNote" | "proposal" | "proposalInterest" | "partner" | "milestone" | "contactMessage" | "task" | "meeting" | "announcement" | "experiment" | "experimentLog" | "document" | "changeRequest" | "siteSetting" | "auditLog" | "diagram" | "projectUpdate" | "attachment" | "projectSection"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2606,6 +2609,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Proposal: {
+      payload: Prisma.$ProposalPayload<ExtArgs>
+      fields: Prisma.ProposalFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProposalFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProposalFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        findFirst: {
+          args: Prisma.ProposalFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProposalFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        findMany: {
+          args: Prisma.ProposalFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>[]
+        }
+        create: {
+          args: Prisma.ProposalCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        createMany: {
+          args: Prisma.ProposalCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProposalCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>[]
+        }
+        delete: {
+          args: Prisma.ProposalDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        update: {
+          args: Prisma.ProposalUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProposalDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProposalUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProposalUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProposalUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalPayload>
+        }
+        aggregate: {
+          args: Prisma.ProposalAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProposal>
+        }
+        groupBy: {
+          args: Prisma.ProposalGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProposalCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProposalInterest: {
+      payload: Prisma.$ProposalInterestPayload<ExtArgs>
+      fields: Prisma.ProposalInterestFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProposalInterestFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProposalInterestFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        findFirst: {
+          args: Prisma.ProposalInterestFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProposalInterestFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        findMany: {
+          args: Prisma.ProposalInterestFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>[]
+        }
+        create: {
+          args: Prisma.ProposalInterestCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        createMany: {
+          args: Prisma.ProposalInterestCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProposalInterestCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>[]
+        }
+        delete: {
+          args: Prisma.ProposalInterestDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        update: {
+          args: Prisma.ProposalInterestUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProposalInterestDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProposalInterestUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProposalInterestUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProposalInterestUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProposalInterestPayload>
+        }
+        aggregate: {
+          args: Prisma.ProposalInterestAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProposalInterest>
+        }
+        groupBy: {
+          args: Prisma.ProposalInterestGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalInterestGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProposalInterestCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProposalInterestCountAggregateOutputType> | number
+        }
+      }
+    }
     Partner: {
       payload: Prisma.$PartnerPayload<ExtArgs>
       fields: Prisma.PartnerFieldRefs
@@ -3642,77 +3793,151 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
-    UpdateAttachment: {
-      payload: Prisma.$UpdateAttachmentPayload<ExtArgs>
-      fields: Prisma.UpdateAttachmentFieldRefs
+    Attachment: {
+      payload: Prisma.$AttachmentPayload<ExtArgs>
+      fields: Prisma.AttachmentFieldRefs
       operations: {
         findUnique: {
-          args: Prisma.UpdateAttachmentFindUniqueArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload> | null
+          args: Prisma.AttachmentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload> | null
         }
         findUniqueOrThrow: {
-          args: Prisma.UpdateAttachmentFindUniqueOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         findFirst: {
-          args: Prisma.UpdateAttachmentFindFirstArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload> | null
+          args: Prisma.AttachmentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload> | null
         }
         findFirstOrThrow: {
-          args: Prisma.UpdateAttachmentFindFirstOrThrowArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         findMany: {
-          args: Prisma.UpdateAttachmentFindManyArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+          args: Prisma.AttachmentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>[]
         }
         create: {
-          args: Prisma.UpdateAttachmentCreateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         createMany: {
-          args: Prisma.UpdateAttachmentCreateManyArgs<ExtArgs>
+          args: Prisma.AttachmentCreateManyArgs<ExtArgs>
           result: BatchPayload
         }
         createManyAndReturn: {
-          args: Prisma.UpdateAttachmentCreateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+          args: Prisma.AttachmentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>[]
         }
         delete: {
-          args: Prisma.UpdateAttachmentDeleteArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         update: {
-          args: Prisma.UpdateAttachmentUpdateArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         deleteMany: {
-          args: Prisma.UpdateAttachmentDeleteManyArgs<ExtArgs>
+          args: Prisma.AttachmentDeleteManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateMany: {
-          args: Prisma.UpdateAttachmentUpdateManyArgs<ExtArgs>
+          args: Prisma.AttachmentUpdateManyArgs<ExtArgs>
           result: BatchPayload
         }
         updateManyAndReturn: {
-          args: Prisma.UpdateAttachmentUpdateManyAndReturnArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>[]
+          args: Prisma.AttachmentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>[]
         }
         upsert: {
-          args: Prisma.UpdateAttachmentUpsertArgs<ExtArgs>
-          result: runtime.Types.Utils.PayloadToResult<Prisma.$UpdateAttachmentPayload>
+          args: Prisma.AttachmentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$AttachmentPayload>
         }
         aggregate: {
-          args: Prisma.UpdateAttachmentAggregateArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.AggregateUpdateAttachment>
+          args: Prisma.AttachmentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateAttachment>
         }
         groupBy: {
-          args: Prisma.UpdateAttachmentGroupByArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UpdateAttachmentGroupByOutputType>[]
+          args: Prisma.AttachmentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AttachmentGroupByOutputType>[]
         }
         count: {
-          args: Prisma.UpdateAttachmentCountArgs<ExtArgs>
-          result: runtime.Types.Utils.Optional<Prisma.UpdateAttachmentCountAggregateOutputType> | number
+          args: Prisma.AttachmentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AttachmentCountAggregateOutputType> | number
+        }
+      }
+    }
+    ProjectSection: {
+      payload: Prisma.$ProjectSectionPayload<ExtArgs>
+      fields: Prisma.ProjectSectionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ProjectSectionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ProjectSectionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        findFirst: {
+          args: Prisma.ProjectSectionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ProjectSectionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        findMany: {
+          args: Prisma.ProjectSectionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>[]
+        }
+        create: {
+          args: Prisma.ProjectSectionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        createMany: {
+          args: Prisma.ProjectSectionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ProjectSectionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>[]
+        }
+        delete: {
+          args: Prisma.ProjectSectionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        update: {
+          args: Prisma.ProjectSectionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ProjectSectionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ProjectSectionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ProjectSectionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ProjectSectionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ProjectSectionPayload>
+        }
+        aggregate: {
+          args: Prisma.ProjectSectionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateProjectSection>
+        }
+        groupBy: {
+          args: Prisma.ProjectSectionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectSectionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ProjectSectionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ProjectSectionCountAggregateOutputType> | number
         }
       }
     }
@@ -3954,6 +4179,7 @@ export const ProjectScalarFieldEnum = {
   results: 'results',
   resultsPublic: 'resultsPublic',
   status: 'status',
+  phase: 'phase',
   state: 'state',
   featured: 'featured',
   coverKey: 'coverKey',
@@ -4240,6 +4466,42 @@ export const ApplicationNoteScalarFieldEnum = {
 export type ApplicationNoteScalarFieldEnum = (typeof ApplicationNoteScalarFieldEnum)[keyof typeof ApplicationNoteScalarFieldEnum]
 
 
+export const ProposalScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  summary: 'summary',
+  question: 'question',
+  approach: 'approach',
+  outcome: 'outcome',
+  status: 'status',
+  areaId: 'areaId',
+  proposerId: 'proposerId',
+  proposerName: 'proposerName',
+  proposerEmail: 'proposerEmail',
+  proposerAffiliation: 'proposerAffiliation',
+  reviewerId: 'reviewerId',
+  decidedById: 'decidedById',
+  decisionNote: 'decisionNote',
+  decidedAt: 'decidedAt',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
+
+
+export const ProposalInterestScalarFieldEnum = {
+  proposalId: 'proposalId',
+  memberId: 'memberId',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type ProposalInterestScalarFieldEnum = (typeof ProposalInterestScalarFieldEnum)[keyof typeof ProposalInterestScalarFieldEnum]
+
+
 export const PartnerScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -4437,6 +4699,7 @@ export const ProjectUpdateScalarFieldEnum = {
   nextUp: 'nextUp',
   isPublic: 'isPublic',
   stage: 'stage',
+  phase: 'phase',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -4444,8 +4707,9 @@ export const ProjectUpdateScalarFieldEnum = {
 export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
 
 
-export const UpdateAttachmentScalarFieldEnum = {
+export const AttachmentScalarFieldEnum = {
   id: 'id',
+  sectionId: 'sectionId',
   updateId: 'updateId',
   kind: 'kind',
   title: 'title',
@@ -4456,7 +4720,23 @@ export const UpdateAttachmentScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type UpdateAttachmentScalarFieldEnum = (typeof UpdateAttachmentScalarFieldEnum)[keyof typeof UpdateAttachmentScalarFieldEnum]
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const ProjectSectionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  body: 'body',
+  diagramId: 'diagramId',
+  isPublic: 'isPublic',
+  sortOrder: 'sortOrder',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectSectionScalarFieldEnum = (typeof ProjectSectionScalarFieldEnum)[keyof typeof ProjectSectionScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -4633,6 +4913,20 @@ export type ListEnumProjectStatusFieldRefInput<$PrismaModel> = FieldRefInputType
 
 
 /**
+ * Reference to a field of type 'ResearchPhase'
+ */
+export type EnumResearchPhaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResearchPhase'>
+    
+
+
+/**
+ * Reference to a field of type 'ResearchPhase[]'
+ */
+export type ListEnumResearchPhaseFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ResearchPhase[]'>
+    
+
+
+/**
  * Reference to a field of type 'PublicationType'
  */
 export type EnumPublicationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PublicationType'>
@@ -4769,6 +5063,20 @@ export type EnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType
  * Reference to a field of type 'ApplicationStatus[]'
  */
 export type ListEnumApplicationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApplicationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'ProposalStatus'
+ */
+export type EnumProposalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProposalStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'ProposalStatus[]'
+ */
+export type ListEnumProposalStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ProposalStatus[]'>
     
 
 
@@ -5035,6 +5343,8 @@ export type GlobalOmitConfig = {
   opportunity?: Prisma.OpportunityOmit
   application?: Prisma.ApplicationOmit
   applicationNote?: Prisma.ApplicationNoteOmit
+  proposal?: Prisma.ProposalOmit
+  proposalInterest?: Prisma.ProposalInterestOmit
   partner?: Prisma.PartnerOmit
   milestone?: Prisma.MilestoneOmit
   contactMessage?: Prisma.ContactMessageOmit
@@ -5049,7 +5359,8 @@ export type GlobalOmitConfig = {
   auditLog?: Prisma.AuditLogOmit
   diagram?: Prisma.DiagramOmit
   projectUpdate?: Prisma.ProjectUpdateOmit
-  updateAttachment?: Prisma.UpdateAttachmentOmit
+  attachment?: Prisma.AttachmentOmit
+  projectSection?: Prisma.ProjectSectionOmit
 }
 
 /* Types for Logging */

@@ -1,7 +1,7 @@
 import { humanSize } from "@/lib/portal/attachment-input";
 import type { ProjectUpdateFile } from "@/lib/public-research";
 
-import styles from "./UpdateFiles.module.css";
+import styles from "./AttachedFiles.module.css";
 
 /** Words for what a file is, for people who cannot see the icon of it. */
 const TYPE_NAMES: Record<string, string> = {
@@ -28,10 +28,10 @@ function describe(file: ProjectUpdateFile): string {
  * offered as downloads, because a table of numbers is read in a spreadsheet,
  * not squinted at in a column of prose.
  *
- * Every file is fetched through `/files/updates/[id]`, which decides who may
+ * Every file is fetched through `/files/attachments/[id]`, which decides who may
  * read it. The URL is not the permission.
  */
-export function UpdateFiles({ files }: { files: ProjectUpdateFile[] }) {
+export function AttachedFiles({ files }: { files: ProjectUpdateFile[] }) {
   if (files.length === 0) return null;
 
   const figures = files.filter((file) => file.kind === "FIGURE");
@@ -49,7 +49,7 @@ export function UpdateFiles({ files }: { files: ProjectUpdateFile[] }) {
             className={styles.image}
             loading="lazy"
             decoding="async"
-            src={`/files/updates/${figure.id}`}
+            src={`/files/attachments/${figure.id}`}
           />
           <figcaption className={styles.caption}>
             {figure.title}
@@ -62,7 +62,7 @@ export function UpdateFiles({ files }: { files: ProjectUpdateFile[] }) {
         <ul className={styles.list}>
           {rest.map((file) => (
             <li key={file.id}>
-              <a className={styles.link} href={`/files/updates/${file.id}`}>
+              <a className={styles.link} href={`/files/attachments/${file.id}`}>
                 {file.title}
               </a>
               <span className={styles.meta}>{describe(file)}</span>

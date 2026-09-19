@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { AttachedFiles } from "@/components/entries/AttachedFiles";
 import { ProjectStage } from "@/components/entries/ProjectStage";
 import { ProjectUpdates } from "@/components/entries/ProjectUpdates";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
@@ -65,7 +66,11 @@ export function ProjectDetail({
         <h2 className="visually-hidden" id="status-heading">
           Project status
         </h2>
-        <ProjectStage status={project.status} heading="Where it stands" />
+        <ProjectStage
+          status={project.status}
+          phase={project.phase}
+          heading="Where it stands"
+        />
         {timeline ? <p className={styles.stageAside}>{timeline}</p> : null}
         {membership ? (
           <p className={styles.ownerBar}>
@@ -97,6 +102,20 @@ export function ProjectDetail({
         </div>
         <Prose className={styles.prose}>{project.question}</Prose>
       </section>
+
+      {project.sections.map((section) => (
+        <section
+          className={styles.section}
+          aria-labelledby={`section-${section.id}`}
+          key={section.id}
+        >
+          <div className={styles.sectionHeader}>
+            <h2 id={`section-${section.id}`}>{section.title}</h2>
+          </div>
+          <Prose className={styles.prose}>{section.body}</Prose>
+          <AttachedFiles files={section.attachments} />
+        </section>
+      ))}
 
       {project.motivation ? (
         <section

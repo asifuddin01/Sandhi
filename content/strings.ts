@@ -30,6 +30,16 @@ export const moreNavigation = [
   { label: "Contact", href: "/contact" },
 ] as const;
 
+/**
+ * Destinations that only exist for someone signed in. They join the More menu
+ * and the command palette for members, and are absent for everyone else
+ * rather than shown and then refused.
+ */
+export const memberNavigation = [
+  { label: "My projects", href: "/portal/projects" },
+  { label: "Diagram builder", href: "/portal/diagrams" },
+] as const;
+
 export const commandNavigation = [
   ...primaryNavigation,
   ...moreNavigation,

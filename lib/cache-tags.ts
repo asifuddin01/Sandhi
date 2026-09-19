@@ -7,6 +7,7 @@ export const cacheTags = {
   members: "members",
   research: "research",
   projects: "projects",
+  proposals: "proposals",
   publications: "publications",
   news: "news",
   events: "events",

@@ -164,6 +164,19 @@ export type Application = Prisma.ApplicationModel
  */
 export type ApplicationNote = Prisma.ApplicationNoteModel
 /**
+ * Model Proposal
+ * A research idea anyone may send in: a member, or someone outside the lab.
+ * A reviewer takes it and either queues it or sends it back; an administrator
+ * approves it, and an approved proposal becomes a project with a team.
+ */
+export type Proposal = Prisma.ProposalModel
+/**
+ * Model ProposalInterest
+ * A member saying they would work on a proposal. Interest is how a team is
+ * formed: an administrator reads this list when assigning people.
+ */
+export type ProposalInterest = Prisma.ProposalInterestModel
+/**
  * Model Partner
  * 
  */
@@ -238,9 +251,18 @@ export type Diagram = Prisma.DiagramModel
  */
 export type ProjectUpdate = Prisma.ProjectUpdateModel
 /**
- * Model UpdateAttachment
- * A file a team attached to a progress update: an architecture or pipeline
- * figure, a dataset description, a table. It is only as public as the update
- * that carries it, so every read goes through that update's visibility.
+ * Model Attachment
+ * A file a team attached to a project: an architecture or pipeline figure, a
+ * dataset description, a table. It hangs off exactly one owner — a standing
+ * section of the project, or one dated progress update — and is only as
+ * public as that owner, so every read goes through the owner's visibility.
  */
-export type UpdateAttachment = Prisma.UpdateAttachmentModel
+export type Attachment = Prisma.AttachmentModel
+/**
+ * Model ProjectSection
+ * A standing part of a project's account of itself — methodology, datasets,
+ * architecture, evaluation — written and kept up to date by the team from
+ * the website. Unlike a progress update, which is dated and never changes,
+ * a section is the current answer and is edited in place.
+ */
+export type ProjectSection = Prisma.ProjectSectionModel

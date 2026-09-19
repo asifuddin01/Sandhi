@@ -11,7 +11,7 @@ vi.mock("server-only", () => ({}));
 
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
-    updateAttachment: { findUnique: mocks.attachmentFindUnique },
+    attachment: { findUnique: mocks.attachmentFindUnique },
     projectMember: { findUnique: mocks.projectMemberFindUnique },
   }),
   isDatabaseConfigured: () => true,
@@ -24,12 +24,13 @@ vi.mock("@/lib/storage", () => ({
   PRIVATE_DOWNLOAD_SECONDS: 600,
 }));
 
-import { GET } from "@/app/files/updates/[id]/route";
+import { GET } from "@/app/files/attachments/[id]/route";
 
 function attachment(overrides: { isPublic: boolean; state: string }) {
   return {
     fileKey: "projects/updates/x/figure.png",
     contentType: "image/png",
+    section: null,
     update: {
       isPublic: overrides.isPublic,
       projectId: "project-1",
@@ -60,7 +61,7 @@ function viewer(memberId: string | null) {
 }
 
 async function get() {
-  return GET(new Request("http://localhost/files/updates/file-1"), {
+  return GET(new Request("http://localhost/files/attachments/file-1"), {
     params: Promise.resolve({ id: "file-1" }),
   });
 }

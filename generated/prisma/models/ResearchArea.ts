@@ -265,6 +265,7 @@ export type ResearchAreaWhereInput = {
   publications?: Prisma.PublicationAreaListRelationFilter
   members?: Prisma.MemberAreaListRelationFilter
   resources?: Prisma.ResourceAreaListRelationFilter
+  proposals?: Prisma.ProposalListRelationFilter
 }
 
 export type ResearchAreaOrderByWithRelationInput = {
@@ -284,6 +285,7 @@ export type ResearchAreaOrderByWithRelationInput = {
   publications?: Prisma.PublicationAreaOrderByRelationAggregateInput
   members?: Prisma.MemberAreaOrderByRelationAggregateInput
   resources?: Prisma.ResourceAreaOrderByRelationAggregateInput
+  proposals?: Prisma.ProposalOrderByRelationAggregateInput
 }
 
 export type ResearchAreaWhereUniqueInput = Prisma.AtLeast<{
@@ -306,6 +308,7 @@ export type ResearchAreaWhereUniqueInput = Prisma.AtLeast<{
   publications?: Prisma.PublicationAreaListRelationFilter
   members?: Prisma.MemberAreaListRelationFilter
   resources?: Prisma.ResourceAreaListRelationFilter
+  proposals?: Prisma.ProposalListRelationFilter
 }, "id" | "slug">
 
 export type ResearchAreaOrderByWithAggregationInput = {
@@ -360,6 +363,7 @@ export type ResearchAreaCreateInput = {
   publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateInput = {
@@ -378,6 +382,7 @@ export type ResearchAreaUncheckedCreateInput = {
   publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUpdateInput = {
@@ -396,6 +401,7 @@ export type ResearchAreaUpdateInput = {
   publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateInput = {
@@ -414,6 +420,7 @@ export type ResearchAreaUncheckedUpdateInput = {
   publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaCreateManyInput = {
@@ -518,6 +525,11 @@ export type ResearchAreaSumOrderByAggregateInput = {
 export type ResearchAreaScalarRelationFilter = {
   is?: Prisma.ResearchAreaWhereInput
   isNot?: Prisma.ResearchAreaWhereInput
+}
+
+export type ResearchAreaNullableScalarRelationFilter = {
+  is?: Prisma.ResearchAreaWhereInput | null
+  isNot?: Prisma.ResearchAreaWhereInput | null
 }
 
 export type ResearchAreaCreateNestedManyWithoutThemeInput = {
@@ -627,6 +639,22 @@ export type ResearchAreaUpdateOneRequiredWithoutResourcesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ResearchAreaUpdateToOneWithWhereWithoutResourcesInput, Prisma.ResearchAreaUpdateWithoutResourcesInput>, Prisma.ResearchAreaUncheckedUpdateWithoutResourcesInput>
 }
 
+export type ResearchAreaCreateNestedOneWithoutProposalsInput = {
+  create?: Prisma.XOR<Prisma.ResearchAreaCreateWithoutProposalsInput, Prisma.ResearchAreaUncheckedCreateWithoutProposalsInput>
+  connectOrCreate?: Prisma.ResearchAreaCreateOrConnectWithoutProposalsInput
+  connect?: Prisma.ResearchAreaWhereUniqueInput
+}
+
+export type ResearchAreaUpdateOneWithoutProposalsNestedInput = {
+  create?: Prisma.XOR<Prisma.ResearchAreaCreateWithoutProposalsInput, Prisma.ResearchAreaUncheckedCreateWithoutProposalsInput>
+  connectOrCreate?: Prisma.ResearchAreaCreateOrConnectWithoutProposalsInput
+  upsert?: Prisma.ResearchAreaUpsertWithoutProposalsInput
+  disconnect?: Prisma.ResearchAreaWhereInput | boolean
+  delete?: Prisma.ResearchAreaWhereInput | boolean
+  connect?: Prisma.ResearchAreaWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ResearchAreaUpdateToOneWithWhereWithoutProposalsInput, Prisma.ResearchAreaUpdateWithoutProposalsInput>, Prisma.ResearchAreaUncheckedUpdateWithoutProposalsInput>
+}
+
 export type ResearchAreaCreateWithoutThemeInput = {
   id?: string
   slug: string
@@ -642,6 +670,7 @@ export type ResearchAreaCreateWithoutThemeInput = {
   publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateWithoutThemeInput = {
@@ -659,6 +688,7 @@ export type ResearchAreaUncheckedCreateWithoutThemeInput = {
   publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaCreateOrConnectWithoutThemeInput = {
@@ -719,6 +749,7 @@ export type ResearchAreaCreateWithoutMembersInput = {
   projects?: Prisma.ProjectAreaCreateNestedManyWithoutAreaInput
   publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateWithoutMembersInput = {
@@ -736,6 +767,7 @@ export type ResearchAreaUncheckedCreateWithoutMembersInput = {
   projects?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutAreaInput
   publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaCreateOrConnectWithoutMembersInput = {
@@ -769,6 +801,7 @@ export type ResearchAreaUpdateWithoutMembersInput = {
   projects?: Prisma.ProjectAreaUpdateManyWithoutAreaNestedInput
   publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateWithoutMembersInput = {
@@ -786,6 +819,7 @@ export type ResearchAreaUncheckedUpdateWithoutMembersInput = {
   projects?: Prisma.ProjectAreaUncheckedUpdateManyWithoutAreaNestedInput
   publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaCreateWithoutProjectsInput = {
@@ -803,6 +837,7 @@ export type ResearchAreaCreateWithoutProjectsInput = {
   publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateWithoutProjectsInput = {
@@ -820,6 +855,7 @@ export type ResearchAreaUncheckedCreateWithoutProjectsInput = {
   publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaCreateOrConnectWithoutProjectsInput = {
@@ -853,6 +889,7 @@ export type ResearchAreaUpdateWithoutProjectsInput = {
   publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateWithoutProjectsInput = {
@@ -870,6 +907,7 @@ export type ResearchAreaUncheckedUpdateWithoutProjectsInput = {
   publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaCreateWithoutPublicationsInput = {
@@ -887,6 +925,7 @@ export type ResearchAreaCreateWithoutPublicationsInput = {
   projects?: Prisma.ProjectAreaCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateWithoutPublicationsInput = {
@@ -904,6 +943,7 @@ export type ResearchAreaUncheckedCreateWithoutPublicationsInput = {
   projects?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
   resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaCreateOrConnectWithoutPublicationsInput = {
@@ -937,6 +977,7 @@ export type ResearchAreaUpdateWithoutPublicationsInput = {
   projects?: Prisma.ProjectAreaUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateWithoutPublicationsInput = {
@@ -954,6 +995,7 @@ export type ResearchAreaUncheckedUpdateWithoutPublicationsInput = {
   projects?: Prisma.ProjectAreaUncheckedUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaCreateWithoutResourcesInput = {
@@ -971,6 +1013,7 @@ export type ResearchAreaCreateWithoutResourcesInput = {
   projects?: Prisma.ProjectAreaCreateNestedManyWithoutAreaInput
   publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaUncheckedCreateWithoutResourcesInput = {
@@ -988,6 +1031,7 @@ export type ResearchAreaUncheckedCreateWithoutResourcesInput = {
   projects?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutAreaInput
   publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
   members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutAreaInput
 }
 
 export type ResearchAreaCreateOrConnectWithoutResourcesInput = {
@@ -1021,6 +1065,7 @@ export type ResearchAreaUpdateWithoutResourcesInput = {
   projects?: Prisma.ProjectAreaUpdateManyWithoutAreaNestedInput
   publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateWithoutResourcesInput = {
@@ -1038,6 +1083,95 @@ export type ResearchAreaUncheckedUpdateWithoutResourcesInput = {
   projects?: Prisma.ProjectAreaUncheckedUpdateManyWithoutAreaNestedInput
   publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
+}
+
+export type ResearchAreaCreateWithoutProposalsInput = {
+  id?: string
+  slug: string
+  name: string
+  summary: string
+  overview?: string | null
+  questions?: Prisma.ResearchAreaCreatequestionsInput | string[]
+  sortOrder?: number
+  state?: $Enums.PublishState
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  theme: Prisma.ResearchThemeCreateNestedOneWithoutAreasInput
+  projects?: Prisma.ProjectAreaCreateNestedManyWithoutAreaInput
+  publications?: Prisma.PublicationAreaCreateNestedManyWithoutAreaInput
+  members?: Prisma.MemberAreaCreateNestedManyWithoutAreaInput
+  resources?: Prisma.ResourceAreaCreateNestedManyWithoutAreaInput
+}
+
+export type ResearchAreaUncheckedCreateWithoutProposalsInput = {
+  id?: string
+  slug: string
+  name: string
+  summary: string
+  overview?: string | null
+  questions?: Prisma.ResearchAreaCreatequestionsInput | string[]
+  sortOrder?: number
+  state?: $Enums.PublishState
+  themeId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  projects?: Prisma.ProjectAreaUncheckedCreateNestedManyWithoutAreaInput
+  publications?: Prisma.PublicationAreaUncheckedCreateNestedManyWithoutAreaInput
+  members?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutAreaInput
+  resources?: Prisma.ResourceAreaUncheckedCreateNestedManyWithoutAreaInput
+}
+
+export type ResearchAreaCreateOrConnectWithoutProposalsInput = {
+  where: Prisma.ResearchAreaWhereUniqueInput
+  create: Prisma.XOR<Prisma.ResearchAreaCreateWithoutProposalsInput, Prisma.ResearchAreaUncheckedCreateWithoutProposalsInput>
+}
+
+export type ResearchAreaUpsertWithoutProposalsInput = {
+  update: Prisma.XOR<Prisma.ResearchAreaUpdateWithoutProposalsInput, Prisma.ResearchAreaUncheckedUpdateWithoutProposalsInput>
+  create: Prisma.XOR<Prisma.ResearchAreaCreateWithoutProposalsInput, Prisma.ResearchAreaUncheckedCreateWithoutProposalsInput>
+  where?: Prisma.ResearchAreaWhereInput
+}
+
+export type ResearchAreaUpdateToOneWithWhereWithoutProposalsInput = {
+  where?: Prisma.ResearchAreaWhereInput
+  data: Prisma.XOR<Prisma.ResearchAreaUpdateWithoutProposalsInput, Prisma.ResearchAreaUncheckedUpdateWithoutProposalsInput>
+}
+
+export type ResearchAreaUpdateWithoutProposalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.StringFieldUpdateOperationsInput | string
+  overview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questions?: Prisma.ResearchAreaUpdatequestionsInput | string[]
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  theme?: Prisma.ResearchThemeUpdateOneRequiredWithoutAreasNestedInput
+  projects?: Prisma.ProjectAreaUpdateManyWithoutAreaNestedInput
+  publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
+  members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
+  resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+}
+
+export type ResearchAreaUncheckedUpdateWithoutProposalsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.StringFieldUpdateOperationsInput | string
+  overview?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  questions?: Prisma.ResearchAreaUpdatequestionsInput | string[]
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  state?: Prisma.EnumPublishStateFieldUpdateOperationsInput | $Enums.PublishState
+  themeId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projects?: Prisma.ProjectAreaUncheckedUpdateManyWithoutAreaNestedInput
+  publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
+  members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
+  resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaCreateManyThemeInput = {
@@ -1068,6 +1202,7 @@ export type ResearchAreaUpdateWithoutThemeInput = {
   publications?: Prisma.PublicationAreaUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateWithoutThemeInput = {
@@ -1085,6 +1220,7 @@ export type ResearchAreaUncheckedUpdateWithoutThemeInput = {
   publications?: Prisma.PublicationAreaUncheckedUpdateManyWithoutAreaNestedInput
   members?: Prisma.MemberAreaUncheckedUpdateManyWithoutAreaNestedInput
   resources?: Prisma.ResourceAreaUncheckedUpdateManyWithoutAreaNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutAreaNestedInput
 }
 
 export type ResearchAreaUncheckedUpdateManyWithoutThemeInput = {
@@ -1110,6 +1246,7 @@ export type ResearchAreaCountOutputType = {
   publications: number
   members: number
   resources: number
+  proposals: number
 }
 
 export type ResearchAreaCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1117,6 +1254,7 @@ export type ResearchAreaCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   publications?: boolean | ResearchAreaCountOutputTypeCountPublicationsArgs
   members?: boolean | ResearchAreaCountOutputTypeCountMembersArgs
   resources?: boolean | ResearchAreaCountOutputTypeCountResourcesArgs
+  proposals?: boolean | ResearchAreaCountOutputTypeCountProposalsArgs
 }
 
 /**
@@ -1157,6 +1295,13 @@ export type ResearchAreaCountOutputTypeCountResourcesArgs<ExtArgs extends runtim
   where?: Prisma.ResourceAreaWhereInput
 }
 
+/**
+ * ResearchAreaCountOutputType without action
+ */
+export type ResearchAreaCountOutputTypeCountProposalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ProposalWhereInput
+}
+
 
 export type ResearchAreaSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1175,6 +1320,7 @@ export type ResearchAreaSelect<ExtArgs extends runtime.Types.Extensions.Internal
   publications?: boolean | Prisma.ResearchArea$publicationsArgs<ExtArgs>
   members?: boolean | Prisma.ResearchArea$membersArgs<ExtArgs>
   resources?: boolean | Prisma.ResearchArea$resourcesArgs<ExtArgs>
+  proposals?: boolean | Prisma.ResearchArea$proposalsArgs<ExtArgs>
   _count?: boolean | Prisma.ResearchAreaCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["researchArea"]>
 
@@ -1229,6 +1375,7 @@ export type ResearchAreaInclude<ExtArgs extends runtime.Types.Extensions.Interna
   publications?: boolean | Prisma.ResearchArea$publicationsArgs<ExtArgs>
   members?: boolean | Prisma.ResearchArea$membersArgs<ExtArgs>
   resources?: boolean | Prisma.ResearchArea$resourcesArgs<ExtArgs>
+  proposals?: boolean | Prisma.ResearchArea$proposalsArgs<ExtArgs>
   _count?: boolean | Prisma.ResearchAreaCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ResearchAreaIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1246,6 +1393,7 @@ export type $ResearchAreaPayload<ExtArgs extends runtime.Types.Extensions.Intern
     publications: Prisma.$PublicationAreaPayload<ExtArgs>[]
     members: Prisma.$MemberAreaPayload<ExtArgs>[]
     resources: Prisma.$ResourceAreaPayload<ExtArgs>[]
+    proposals: Prisma.$ProposalPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1658,6 +1806,7 @@ export interface Prisma__ResearchAreaClient<T, Null = never, ExtArgs extends run
   publications<T extends Prisma.ResearchArea$publicationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResearchArea$publicationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PublicationAreaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   members<T extends Prisma.ResearchArea$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResearchArea$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MemberAreaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   resources<T extends Prisma.ResearchArea$resourcesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResearchArea$resourcesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ResourceAreaPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  proposals<T extends Prisma.ResearchArea$proposalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ResearchArea$proposalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProposalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2192,6 +2341,30 @@ export type ResearchArea$resourcesArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.ResourceAreaScalarFieldEnum | Prisma.ResourceAreaScalarFieldEnum[]
+}
+
+/**
+ * ResearchArea.proposals
+ */
+export type ResearchArea$proposalsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Proposal
+   */
+  select?: Prisma.ProposalSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Proposal
+   */
+  omit?: Prisma.ProposalOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ProposalInclude<ExtArgs> | null
+  where?: Prisma.ProposalWhereInput
+  orderBy?: Prisma.ProposalOrderByWithRelationInput | Prisma.ProposalOrderByWithRelationInput[]
+  cursor?: Prisma.ProposalWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ProposalScalarFieldEnum | Prisma.ProposalScalarFieldEnum[]
 }
 
 /**

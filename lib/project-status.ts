@@ -40,3 +40,41 @@ export function projectStatusLabel(status: string): string {
 export function isProjectStatus(value: string): value is ProjectStatusValue {
   return PROJECT_STATUSES.some((status) => status === value);
 }
+
+/**
+ * The finer step inside a running project. "Under way" covers a year of very
+ * different work, and this is what the team actually wants to say: we have
+ * the data, we are training, we are writing.
+ */
+export const RESEARCH_PHASES = [
+  "PROPOSAL_ACCEPTED",
+  "DESIGN",
+  "DATA",
+  "TRAINING",
+  "ANALYSIS",
+  "WRITING",
+  "MANUSCRIPT_READY",
+] as const;
+
+export type ResearchPhaseValue = (typeof RESEARCH_PHASES)[number];
+
+export const RESEARCH_PHASE_LABELS: Record<string, string> = {
+  PROPOSAL_ACCEPTED: "Proposal accepted",
+  DESIGN: "Design and setup",
+  DATA: "Data",
+  TRAINING: "Training and experiments",
+  ANALYSIS: "Analysis",
+  WRITING: "Writing",
+  MANUSCRIPT_READY: "Manuscript ready",
+};
+
+export function researchPhaseLabel(
+  phase: string | null | undefined,
+): string | null {
+  if (!phase) return null;
+  return RESEARCH_PHASE_LABELS[phase] ?? phase;
+}
+
+export function isResearchPhase(value: string): value is ResearchPhaseValue {
+  return RESEARCH_PHASES.some((phase) => phase === value);
+}

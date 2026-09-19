@@ -20,10 +20,11 @@ function gone() {
 }
 
 /**
- * One file attached to a progress update. Attachments live in private
- * storage, so this route is the authorization decision and the signed link is
- * its last step: public when the update and its project are both published,
- * otherwise only for someone on that project.
+ * One file a team attached to a project — to a standing section of it, or to
+ * a dated progress update. Attachments live in private storage, so this route
+ * is the authorization decision and the signed link is its last step: public
+ * when its owner and the project are both published, otherwise only for
+ * someone on that project.
  */
 export async function GET(
   _request: Request,
@@ -32,25 +33,24 @@ export async function GET(
   const { id } = await params;
   if (!isDatabaseConfigured()) return gone();
 
-  const attachment = await getDb().updateAttachment.findUnique({
+  const owner = {
+    isPublic: true,
+    projectId: true,
+    project: { select: { state: true } },
+  } as const;
+  const attachment = await getDb().attachment.findUnique({
     where: { id },
     select: {
       fileKey: true,
-      contentType: true,
-      update: {
-        select: {
-          isPublic: true,
-          projectId: true,
-          project: { select: { state: true } },
-        },
-      },
+      section: { select: owner },
+      update: { select: owner },
     },
   });
-  if (!attachment) return gone();
+  const carrier = attachment?.section ?? attachment?.update;
+  if (!attachment || !carrier) return gone();
 
   const readableByAnyone =
-    attachment.update.isPublic &&
-    attachment.update.project.state === publicProjectWhere.state;
+    carrier.isPublic && carrier.project.state === publicProjectWhere.state;
 
   if (!readableByAnyone) {
     const viewer = await getViewer();
@@ -58,10 +58,7 @@ export async function GET(
     if (!memberId) return gone();
     const onProject = await getDb().projectMember.findUnique({
       where: {
-        projectId_memberId: {
-          projectId: attachment.update.projectId,
-          memberId,
-        },
+        projectId_memberId: { projectId: carrier.projectId, memberId },
       },
       select: { memberId: true },
     });

@@ -80,6 +80,8 @@ export const ModelName = {
   Opportunity: 'Opportunity',
   Application: 'Application',
   ApplicationNote: 'ApplicationNote',
+  Proposal: 'Proposal',
+  ProposalInterest: 'ProposalInterest',
   Partner: 'Partner',
   Milestone: 'Milestone',
   ContactMessage: 'ContactMessage',
@@ -94,7 +96,8 @@ export const ModelName = {
   AuditLog: 'AuditLog',
   Diagram: 'Diagram',
   ProjectUpdate: 'ProjectUpdate',
-  UpdateAttachment: 'UpdateAttachment'
+  Attachment: 'Attachment',
+  ProjectSection: 'ProjectSection'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -312,6 +315,7 @@ export const ProjectScalarFieldEnum = {
   results: 'results',
   resultsPublic: 'resultsPublic',
   status: 'status',
+  phase: 'phase',
   state: 'state',
   featured: 'featured',
   coverKey: 'coverKey',
@@ -598,6 +602,42 @@ export const ApplicationNoteScalarFieldEnum = {
 export type ApplicationNoteScalarFieldEnum = (typeof ApplicationNoteScalarFieldEnum)[keyof typeof ApplicationNoteScalarFieldEnum]
 
 
+export const ProposalScalarFieldEnum = {
+  id: 'id',
+  slug: 'slug',
+  title: 'title',
+  summary: 'summary',
+  question: 'question',
+  approach: 'approach',
+  outcome: 'outcome',
+  status: 'status',
+  areaId: 'areaId',
+  proposerId: 'proposerId',
+  proposerName: 'proposerName',
+  proposerEmail: 'proposerEmail',
+  proposerAffiliation: 'proposerAffiliation',
+  reviewerId: 'reviewerId',
+  decidedById: 'decidedById',
+  decisionNote: 'decisionNote',
+  decidedAt: 'decidedAt',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProposalScalarFieldEnum = (typeof ProposalScalarFieldEnum)[keyof typeof ProposalScalarFieldEnum]
+
+
+export const ProposalInterestScalarFieldEnum = {
+  proposalId: 'proposalId',
+  memberId: 'memberId',
+  note: 'note',
+  createdAt: 'createdAt'
+} as const
+
+export type ProposalInterestScalarFieldEnum = (typeof ProposalInterestScalarFieldEnum)[keyof typeof ProposalInterestScalarFieldEnum]
+
+
 export const PartnerScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -795,6 +835,7 @@ export const ProjectUpdateScalarFieldEnum = {
   nextUp: 'nextUp',
   isPublic: 'isPublic',
   stage: 'stage',
+  phase: 'phase',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -802,8 +843,9 @@ export const ProjectUpdateScalarFieldEnum = {
 export type ProjectUpdateScalarFieldEnum = (typeof ProjectUpdateScalarFieldEnum)[keyof typeof ProjectUpdateScalarFieldEnum]
 
 
-export const UpdateAttachmentScalarFieldEnum = {
+export const AttachmentScalarFieldEnum = {
   id: 'id',
+  sectionId: 'sectionId',
   updateId: 'updateId',
   kind: 'kind',
   title: 'title',
@@ -814,7 +856,23 @@ export const UpdateAttachmentScalarFieldEnum = {
   createdAt: 'createdAt'
 } as const
 
-export type UpdateAttachmentScalarFieldEnum = (typeof UpdateAttachmentScalarFieldEnum)[keyof typeof UpdateAttachmentScalarFieldEnum]
+export type AttachmentScalarFieldEnum = (typeof AttachmentScalarFieldEnum)[keyof typeof AttachmentScalarFieldEnum]
+
+
+export const ProjectSectionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  title: 'title',
+  body: 'body',
+  diagramId: 'diagramId',
+  isPublic: 'isPublic',
+  sortOrder: 'sortOrder',
+  authorId: 'authorId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ProjectSectionScalarFieldEnum = (typeof ProjectSectionScalarFieldEnum)[keyof typeof ProjectSectionScalarFieldEnum]
 
 
 export const SortOrder = {

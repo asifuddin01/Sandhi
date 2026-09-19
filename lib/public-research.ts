@@ -11,6 +11,7 @@ import {
   publicMemberWhere,
   PUBLIC_MEMBER_STATUSES,
   publicProjectResearch,
+  publicProjectSectionWhere,
   publicProjectUpdateWhere,
   publicProjectWhere,
   publicPublicationWhere,
@@ -50,6 +51,8 @@ export interface ProjectSummary {
   title: string;
   gloss: string;
   status: ProjectStatusValue;
+  /** The finer step inside a running project, when the team has set one. */
+  phase: string | null;
   startedAt: string | null;
   areas: AreaLink[];
   members: Array<{
@@ -134,6 +137,17 @@ export interface ProjectsIndexData {
   };
 }
 
+/**
+ * A standing part of a project's account of itself, published by the team:
+ * methodology, datasets, architecture. Ordered as the team arranged it.
+ */
+export interface ProjectSectionEntry {
+  id: string;
+  title: string;
+  body: string;
+  attachments: ProjectUpdateFile[];
+}
+
 /** One published progress update, as the project's public page shows it. */
 export interface ProjectUpdateEntry {
   id: string;
@@ -142,6 +156,7 @@ export interface ProjectUpdateEntry {
   nextUp: string | null;
   /** The stage the project was at when this was written, not where it is now. */
   stage: ProjectStatusValue;
+  phase: string | null;
   author: { name: string; memberSlug: string | null } | null;
   postedAt: string;
   attachments: ProjectUpdateFile[];
@@ -168,6 +183,7 @@ export interface ProjectDetailData extends ProjectSummary {
   links: Array<{ label: string; href: string }>;
   publications: PublicationSummary[];
   relatedProjects: Array<{ slug: string; title: string; gloss: string }>;
+  sections: ProjectSectionEntry[];
   updates: ProjectUpdateEntry[];
 }
 
@@ -221,6 +237,7 @@ const projectSummarySelect = {
   title: true,
   gloss: true,
   status: true,
+  phase: true,
   startedAt: true,
   areas: {
     where: { area: publicAreaWhere },
@@ -246,23 +263,36 @@ const projectSummarySelect = {
   },
 } satisfies Prisma.ProjectSelect;
 
+const attachmentSelect = {
+  id: true,
+  kind: true,
+  title: true,
+  contentType: true,
+  byteSize: true,
+} satisfies Prisma.AttachmentSelect;
+
+const projectSectionSelect = {
+  id: true,
+  title: true,
+  body: true,
+  attachments: {
+    orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+    select: attachmentSelect,
+  },
+} satisfies Prisma.ProjectSectionSelect;
+
 const projectUpdateSelect = {
   id: true,
   title: true,
   body: true,
   nextUp: true,
   stage: true,
+  phase: true,
   createdAt: true,
   author: { select: { slug: true, name: true, isPublic: true, status: true } },
   attachments: {
     orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-    select: {
-      id: true,
-      kind: true,
-      title: true,
-      contentType: true,
-      byteSize: true,
-    },
+    select: attachmentSelect,
   },
 } satisfies Prisma.ProjectUpdateSelect;
 
@@ -298,6 +328,30 @@ type PublicationSummaryRecord = Prisma.PublicationGetPayload<{
 type ProjectUpdateRecord = Prisma.ProjectUpdateGetPayload<{
   select: typeof projectUpdateSelect;
 }>;
+type ProjectSectionRecord = Prisma.ProjectSectionGetPayload<{
+  select: typeof projectSectionSelect;
+}>;
+
+function mapAttachments(
+  files: ProjectUpdateRecord["attachments"],
+): ProjectUpdateFile[] {
+  return files.map((file) => ({
+    id: file.id,
+    kind: file.kind as ProjectUpdateFile["kind"],
+    title: file.title,
+    contentType: file.contentType,
+    byteSize: file.byteSize,
+  }));
+}
+
+function mapProjectSection(record: ProjectSectionRecord): ProjectSectionEntry {
+  return {
+    id: record.id,
+    title: record.title,
+    body: record.body,
+    attachments: mapAttachments(record.attachments),
+  };
+}
 type MemberSummaryRecord = Prisma.MemberGetPayload<{
   select: typeof memberSummarySelect;
 }>;
@@ -361,6 +415,7 @@ function mapProject(record: ProjectSummaryRecord): ProjectSummary {
     title: record.title,
     gloss: record.gloss,
     status: record.status,
+    phase: record.phase,
     startedAt: record.startedAt?.toISOString() ?? null,
     areas: record.areas.map(({ area }) => area),
     members: record.members.map(({ member, role, isLead }) => ({
@@ -408,19 +463,14 @@ function mapProjectUpdate(record: ProjectUpdateRecord): ProjectUpdateEntry {
     body: record.body,
     nextUp: record.nextUp,
     stage: record.stage as ProjectStatusValue,
+    phase: record.phase,
     // A member who left, or who keeps no public profile, is still credited by
     // the team internally but is not named here.
     author: authorIsPublic
       ? { name: author.name, memberSlug: author.slug }
       : null,
     postedAt: record.createdAt.toISOString(),
-    attachments: record.attachments.map((file) => ({
-      id: file.id,
-      kind: file.kind as ProjectUpdateFile["kind"],
-      title: file.title,
-      contentType: file.contentType,
-      byteSize: file.byteSize,
-    })),
+    attachments: mapAttachments(record.attachments),
   };
 }
 
@@ -748,6 +798,13 @@ function loadProjectDetail(
           orderBy: [{ year: "desc" }, { title: "asc" }],
           select: publicationSummarySelect,
         },
+        sections: {
+          // Both halves again: a section reaches the public only when the
+          // team published it and the project is published.
+          where: publicProjectSectionWhere,
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          select: projectSectionSelect,
+        },
         updates: {
           // Both halves of `publicProjectUpdateWhere`: publishing a project
           // must not retroactively publish the team's working notes.
@@ -796,6 +853,7 @@ function loadProjectDetail(
         ...project.relatedFrom.map(({ to }) => to),
         ...project.relatedTo.map(({ from }) => from),
       ]),
+      sections: project.sections.map(mapProjectSection),
       updates: project.updates.map(mapProjectUpdate),
     };
   });

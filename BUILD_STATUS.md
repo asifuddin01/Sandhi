@@ -384,23 +384,36 @@ team chooses to show.
   (the update public _and_ its project published), so publishing a project
   cannot retroactively publish working notes and publishing a note cannot leak
   an unpublished project.
-- **`UpdateAttachment`** carries the materials: a figure (architecture or
-  pipeline diagram, plot, screenshot) shown inline, and documents and data
-  files (dataset descriptions, tables, protocols) offered as downloads. The
+- **`ProjectSection`** is the project's standing account of itself —
+  Methodology, Datasets, Architecture, Evaluation — written by the team and
+  edited in place, unlike an update, which is dated and never changes. A
+  section appears on the public project page after the research question,
+  once the team publishes it.
+- **`ResearchPhase`** is the finer step inside a running project — proposal
+  accepted, design, data, training, analysis, writing, manuscript ready. It is
+  the team's to set; the five-stage `ProjectStatus` above it stays
+  administrative. Both threads are drawn together, the phase only while the
+  project is under way, and an update records the phase it was written at.
+- **`Attachment`** carries the materials for either owner: a figure
+  (architecture or pipeline diagram, plot, screenshot) shown inline, and
+  documents and data files (dataset descriptions, tables, protocols) offered
+  as downloads. A database check constraint holds it to exactly one owner. The
   browser uploads straight to the private bucket with a ten-minute signed URL
   minted only for a member on that project; the server then reads the object
   back and checks its type, size and format signature before a row exists.
   SVG is refused because figures are drawn inline. Tables and maths belong in
   the update body, which is the site's sanitised Markdown.
-- **`/files/updates/[id]`** is the authorization decision; the signed link is
+- **`/files/attachments/[id]`** is the authorization decision; the signed link is
   its last step. Public when the update and project both are, otherwise only
   for someone on that project, and the same 404 for every other case.
 - **The controls live where the work is read.** `/projects/[slug]` shows an
   "Update this project" button to whoever is on that project — `membershipOf()`
   is one indexed row — and nothing at all to everyone else. The header, mobile
   menu and footer say "Portal" rather than "Sign in" to someone signed in.
+- **The diagram builder is in the More menu** for anyone signed in, beside
+  My projects, and in the command palette. Signed-out visitors see neither.
 - **Routes:** `/portal/projects`, `/portal/projects/[slug]`,
-  `/api/portal/attachments`, `/files/updates/[id]`.
+  `/api/portal/attachments`, `/files/attachments/[id]`.
 
 Still to build here: the proposal-to-team pipeline (submit, queue, approve,
 mark interested, assign), and admin control of the stage from the project

@@ -21,7 +21,7 @@ const KIND_COPY: Record<AttachmentKindInput, { label: string; hint: string }> =
   {
     figure: {
       label: "Figure",
-      hint: "An architecture or pipeline diagram, a plot, a screenshot. Shown in the update.",
+      hint: "An architecture or pipeline diagram, a plot, a screenshot. Drawn in place.",
     },
     document: {
       label: "Document",
@@ -60,9 +60,12 @@ async function message(response: Response, fallback: string) {
 export function AttachFile({
   slug,
   updateId,
+  sectionId,
 }: {
   slug: string;
-  updateId: string;
+  /** Exactly one of these: the file hangs off an update or off a section. */
+  updateId?: string;
+  sectionId?: string;
 }) {
   const fieldId = useId();
   const picker = useRef<HTMLInputElement>(null);
@@ -130,7 +133,8 @@ export function AttachFile({
   return (
     <form className={styles.attachForm} action={formAction} onSubmit={onSubmit}>
       <input type="hidden" name="slug" value={slug} />
-      <input type="hidden" name="id" value={updateId} />
+      <input type="hidden" name="id" value={updateId ?? ""} />
+      <input type="hidden" name="sectionId" value={sectionId ?? ""} />
       <input type="hidden" name="kind" value={kind} />
 
       <div className={styles.field}>

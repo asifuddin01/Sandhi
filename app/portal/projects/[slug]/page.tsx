@@ -7,13 +7,19 @@ import styles from "@/components/portal/Portal.module.css";
 import { Prose } from "@/components/Prose";
 import { requireViewer } from "@/lib/authz";
 import { humanSize } from "@/lib/portal/attachment-input";
-import { projectStatusLabel } from "@/lib/project-status";
-import { getProjectProgress } from "@/lib/portal/progress";
+import { diagramsForProject, getProjectProgress } from "@/lib/portal/progress";
+import { projectStatusLabel, researchPhaseLabel } from "@/lib/project-status";
 
 import { AttachFile } from "./AttachFile";
 import { PostUpdate, RemoveAttachment, UpdateControls } from "./ProgressForms";
+import {
+  PhasePicker,
+  SectionControls,
+  SectionEditor,
+  SectionPresets,
+} from "./SectionForms";
 
-export const metadata: Metadata = { title: "Project progress" };
+export const metadata: Metadata = { title: "Project workspace" };
 
 const FILE_KINDS: Record<string, string> = {
   FIGURE: "Figure",
@@ -30,7 +36,39 @@ function when(value: Date): string {
   });
 }
 
-export default async function ProjectProgressPage({
+function FileList({
+  files,
+  slug,
+  editable,
+}: {
+  files: Array<{
+    id: string;
+    kind: string;
+    title: string;
+    byteSize: number;
+  }>;
+  slug: string;
+  editable: boolean;
+}) {
+  if (files.length === 0) return null;
+  return (
+    <ul className={styles.attachList}>
+      {files.map((file) => (
+        <li key={file.id}>
+          <a href={`/files/attachments/${file.id}`}>{file.title}</a>
+          <span className={styles.cardMeta}>
+            {FILE_KINDS[file.kind] ?? file.kind} · {humanSize(file.byteSize)}
+          </span>
+          {editable ? (
+            <RemoveAttachment slug={slug} attachmentId={file.id} />
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+export default async function ProjectWorkspacePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
@@ -39,12 +77,17 @@ export default async function ProjectProgressPage({
   const viewer = await requireViewer(`/portal/projects/${slug}`);
   const project = await getProjectProgress(viewer, slug);
   if (!project) notFound();
+  const diagrams = await diagramsForProject(viewer, project.id);
 
   const isPublic = project.state === "PUBLISHED";
   const published = project.updates.filter((update) => update.isPublic).length;
+  const sectionsPublic = project.sections.filter(
+    (section) => section.isPublic,
+  ).length;
 
   return (
     <div className={styles.page}>
+      <SectionPresets />
       <nav aria-label="Breadcrumb" className={styles.breadcrumb}>
         <Link href="/portal/projects">My projects</Link>
       </nav>
@@ -54,7 +97,11 @@ export default async function ProjectProgressPage({
         <p className={styles.cardMeta}>
           {project.role}
           {project.isLead ? " · lead" : ""} ·{" "}
-          {projectStatusLabel(project.status)} ·{" "}
+          {projectStatusLabel(project.status)}
+          {researchPhaseLabel(project.phase)
+            ? ` · ${researchPhaseLabel(project.phase)}`
+            : ""}{" "}
+          ·{" "}
           {isPublic ? (
             <Link href={`/projects/${project.slug}`}>public page</Link>
           ) : (
@@ -63,21 +110,83 @@ export default async function ProjectProgressPage({
         </p>
       </header>
 
-      <section className={styles.section} aria-label="Stage">
-        <ProjectStage status={project.status} />
+      <section className={styles.section} aria-label="Where the work stands">
+        <ProjectStage status={project.status} phase={project.phase} />
+        <PhasePicker slug={project.slug} phase={project.phase} />
         <p className={styles.cardMeta}>
-          An administrator sets the stage in the Projects manager.{" "}
-          {published > 0
-            ? `${published} of ${project.updates.length} updates ${published === 1 ? "is" : "are"} public.`
-            : "No update is public yet."}
+          An administrator sets the five stages; the step inside{" "}
+          {projectStatusLabel("ACTIVE").toLowerCase()} is yours.
         </p>
+      </section>
+
+      <section className={styles.section} aria-labelledby="sections">
+        <h2 id="sections">What this project is</h2>
+        <p className={styles.cardMeta}>
+          The standing account of the work — methodology, datasets, architecture
+          — kept up to date in place.{" "}
+          {sectionsPublic > 0
+            ? `${sectionsPublic} of ${project.sections.length} ${project.sections.length === 1 ? "is" : "are"} public.`
+            : "None is public yet."}
+        </p>
+      </section>
+
+      {project.sections.map((section) => (
+        <section
+          className={styles.workSection}
+          aria-label={section.title}
+          key={section.id}
+        >
+          <h3 className={styles.workHeading}>
+            {section.title}
+            <span className={styles.cardMeta}>
+              {" "}
+              · {section.isPublic ? "public" : "internal"}
+            </span>
+          </h3>
+          <SectionEditor
+            slug={project.slug}
+            section={section}
+            diagrams={diagrams}
+          />
+          {section.diagram ? (
+            <p className={styles.cardMeta}>
+              Diagram:{" "}
+              <Link href={`/portal/diagrams/${section.diagram.id}`}>
+                {section.diagram.title}
+              </Link>
+            </p>
+          ) : null}
+          <FileList files={section.attachments} slug={project.slug} editable />
+          <AttachFile
+            key={section.attachments.length}
+            slug={project.slug}
+            sectionId={section.id}
+          />
+          <SectionControls
+            slug={project.slug}
+            sectionId={section.id}
+            isPublic={section.isPublic}
+            projectIsPublic={isPublic}
+          />
+        </section>
+      ))}
+
+      <section className={styles.section} aria-labelledby="add-section">
+        <h3 id="add-section" className={styles.workHeading}>
+          Add a section
+        </h3>
+        <SectionEditor slug={project.slug} diagrams={diagrams} />
       </section>
 
       <section className={styles.section} aria-labelledby="post-update">
         <h2 id="post-update">Post an update</h2>
         <p className={styles.cardMeta}>
-          Written for the team. Publishing it to the project&rsquo;s public page
-          is a separate step, so a working note is never published by accident.
+          A dated note for the team: what happened, what comes next. Publishing
+          it to the project&rsquo;s public page is a separate step, so a working
+          note is never published by accident.{" "}
+          {published > 0
+            ? `${published} of ${project.updates.length} updates ${published === 1 ? "is" : "are"} public.`
+            : "No update is public yet."}
         </p>
         <PostUpdate slug={project.slug} />
       </section>
@@ -90,60 +199,52 @@ export default async function ProjectProgressPage({
           <p className={styles.cardMeta}>Nothing written yet.</p>
         ) : (
           <ol className={styles.cardList}>
-            {project.updates.map((update) => (
-              <li className={styles.card} key={update.id}>
-                <h3>{update.title}</h3>
-                <p className={styles.cardMeta}>
-                  {update.author?.name ?? "A former member"} ·{" "}
-                  <time dateTime={update.createdAt.toISOString()}>
-                    {when(update.createdAt)}
-                  </time>{" "}
-                  · at {projectStatusLabel(update.stage)} ·{" "}
-                  {update.isPublic ? "public" : "internal"}
-                </p>
-                <Prose>{update.body}</Prose>
-                {update.nextUp ? (
-                  <p className={styles.cardNext}>
-                    <span className={styles.cardNextLabel}>Next</span>
-                    {update.nextUp}
+            {project.updates.map((update) => {
+              const editable = update.mine || project.isLead;
+              return (
+                <li className={styles.card} key={update.id}>
+                  <h3>{update.title}</h3>
+                  <p className={styles.cardMeta}>
+                    {update.author?.name ?? "A former member"} ·{" "}
+                    <time dateTime={update.createdAt.toISOString()}>
+                      {when(update.createdAt)}
+                    </time>{" "}
+                    · at {projectStatusLabel(update.stage)}
+                    {researchPhaseLabel(update.phase)
+                      ? `, ${researchPhaseLabel(update.phase)}`
+                      : ""}{" "}
+                    · {update.isPublic ? "public" : "internal"}
                   </p>
-                ) : null}
-                {update.attachments.length > 0 ? (
-                  <ul className={styles.attachList}>
-                    {update.attachments.map((file) => (
-                      <li key={file.id}>
-                        <a href={`/files/updates/${file.id}`}>{file.title}</a>
-                        <span className={styles.cardMeta}>
-                          {FILE_KINDS[file.kind] ?? file.kind} ·{" "}
-                          {humanSize(file.byteSize)}
-                        </span>
-                        {update.mine || project.isLead ? (
-                          <RemoveAttachment
-                            slug={project.slug}
-                            attachmentId={file.id}
-                          />
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                ) : null}
-                {update.mine || project.isLead ? (
-                  <AttachFile
-                    key={update.attachments.length}
+                  <Prose>{update.body}</Prose>
+                  {update.nextUp ? (
+                    <p className={styles.cardNext}>
+                      <span className={styles.cardNextLabel}>Next</span>
+                      {update.nextUp}
+                    </p>
+                  ) : null}
+                  <FileList
+                    files={update.attachments}
                     slug={project.slug}
-                    updateId={update.id}
+                    editable={editable}
                   />
-                ) : null}
-                {update.mine || project.isLead ? (
-                  <UpdateControls
-                    slug={project.slug}
-                    id={update.id}
-                    isPublic={update.isPublic}
-                    projectIsPublic={isPublic}
-                  />
-                ) : null}
-              </li>
-            ))}
+                  {editable ? (
+                    <AttachFile
+                      key={update.attachments.length}
+                      slug={project.slug}
+                      updateId={update.id}
+                    />
+                  ) : null}
+                  {editable ? (
+                    <UpdateControls
+                      slug={project.slug}
+                      id={update.id}
+                      isPublic={update.isPublic}
+                      projectIsPublic={isPublic}
+                    />
+                  ) : null}
+                </li>
+              );
+            })}
           </ol>
         )}
       </section>

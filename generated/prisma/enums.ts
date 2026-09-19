@@ -64,6 +64,19 @@ export const ProjectStatus = {
 export type ProjectStatus = (typeof ProjectStatus)[keyof typeof ProjectStatus]
 
 
+export const ResearchPhase = {
+  PROPOSAL_ACCEPTED: 'PROPOSAL_ACCEPTED',
+  DESIGN: 'DESIGN',
+  DATA: 'DATA',
+  TRAINING: 'TRAINING',
+  ANALYSIS: 'ANALYSIS',
+  WRITING: 'WRITING',
+  MANUSCRIPT_READY: 'MANUSCRIPT_READY'
+} as const
+
+export type ResearchPhase = (typeof ResearchPhase)[keyof typeof ResearchPhase]
+
+
 export const PublicationType = {
   CONFERENCE: 'CONFERENCE',
   JOURNAL: 'JOURNAL',
@@ -204,6 +217,18 @@ export const Priority = {
 } as const
 
 export type Priority = (typeof Priority)[keyof typeof Priority]
+
+
+export const ProposalStatus = {
+  SUBMITTED: 'SUBMITTED',
+  IN_REVIEW: 'IN_REVIEW',
+  QUEUED: 'QUEUED',
+  APPROVED: 'APPROVED',
+  DECLINED: 'DECLINED',
+  WITHDRAWN: 'WITHDRAWN'
+} as const
+
+export type ProposalStatus = (typeof ProposalStatus)[keyof typeof ProposalStatus]
 
 
 export const ChangeStatus = {

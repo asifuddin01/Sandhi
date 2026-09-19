@@ -156,6 +156,22 @@
   font-size: var(--text-body-lg);
 }
 
+/* One standing part of the project, framed so several in a row read as
+   separate things rather than one long column. */
+.workSection {
+  display: grid;
+  max-width: 46rem;
+  gap: 0.9rem;
+  margin-block-end: clamp(2rem, 4vw, 2.75rem);
+  padding-block-end: clamp(1.5rem, 3vw, 2rem);
+  border-block-end: 1px solid var(--ink-line);
+}
+
+.workHeading {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
 .historyHeading {
   margin: 0 0 1rem;
   font-size: var(--text-h3);
@@ -208,6 +224,12 @@
 
 /* The publish and delete buttons of one update, each its own form so each
    reports its own outcome, laid out as a single row. */
+.inlineLabel {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  font-weight: 550;
+}
+
 .updateControls {
   display: flex;
   flex-wrap: wrap;

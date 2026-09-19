@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { UpdateFiles } from "@/components/entries/UpdateFiles";
+import { AttachedFiles } from "@/components/entries/AttachedFiles";
 import { Prose } from "@/components/Prose";
 import { projectStatusLabel } from "@/lib/project-status";
 import type { ProjectUpdateEntry } from "@/lib/public-research";
@@ -60,7 +60,7 @@ export function ProjectUpdates({ updates }: { updates: ProjectUpdateEntry[] }) {
               </p>
               <h3 className={styles.title}>{update.title}</h3>
               <Prose className={styles.prose}>{update.body}</Prose>
-              <UpdateFiles files={update.attachments} />
+              <AttachedFiles files={update.attachments} />
               {update.nextUp ? (
                 <p className={styles.next}>
                   <span className={styles.nextLabel}>Next</span>

@@ -87,6 +87,53 @@
   color: var(--lamplight);
 }
 
+/* The finer steps inside "under way", set apart from the five stages above
+   them: smaller marks, a tighter row, indented so the nesting is visible
+   without a second heading. */
+.phases {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 0;
+  margin: 0.15rem 0 0;
+  padding: 0 0 0 0.75rem;
+  border-inline-start: 1px solid var(--ink-line);
+  list-style: none;
+}
+
+.phase {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding-inline-end: 0.9rem;
+}
+
+.tick {
+  width: 5px;
+  height: 5px;
+  border: 1px solid var(--ink-line);
+  border-radius: 50%;
+}
+
+.phase[data-state="done"] .tick {
+  border-color: var(--lotus);
+  background: var(--lotus);
+}
+
+.phase[data-state="now"] .tick {
+  border-color: var(--lamplight);
+  background: var(--lamplight);
+}
+
+.phaseLabel {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.phase[data-state="now"] .phaseLabel {
+  color: var(--lamplight);
+}
+
 .aside {
   margin: 0;
   color: var(--mist);

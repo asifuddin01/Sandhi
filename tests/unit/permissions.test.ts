@@ -23,6 +23,10 @@ const expected: Record<Capability, SystemRoleValue[]> = {
   "partners:manage": ["OWNER", "ADMIN"],
   "opportunities:manage": ["OWNER", "ADMIN"],
   "applications:manage": ["OWNER", "ADMIN"],
+  // A reviewer reads the proposal queue and can queue or send back; only an
+  // administrator turns a proposal into a project.
+  "proposals:review": ["OWNER", "ADMIN", "REVIEWER"],
+  "proposals:approve": ["OWNER", "ADMIN"],
   "members:manage": ["OWNER", "ADMIN"],
   "approvals:manage": ["OWNER", "ADMIN"],
   "settings:manage": ["OWNER", "ADMIN"],

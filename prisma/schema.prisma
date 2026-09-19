@@ -49,6 +49,19 @@ enum ProjectStatus {
   ARCHIVED
 }
 
+/// Where the work itself has got to inside a running project. The project
+/// status says "under way"; this says what "under way" means this month, and
+/// it is the team's to set, not an administrator's.
+enum ResearchPhase {
+  PROPOSAL_ACCEPTED
+  DESIGN
+  DATA
+  TRAINING
+  ANALYSIS
+  WRITING
+  MANUSCRIPT_READY
+}
+
 enum PublicationType {
   CONFERENCE
   JOURNAL
@@ -153,6 +166,18 @@ enum Priority {
   MEDIUM
   HIGH
   URGENT
+}
+
+/// Where a research proposal has got to. A queued or approved proposal is
+/// posted for the lab to see; everything else is only visible to its author
+/// and to whoever reviews it.
+enum ProposalStatus {
+  SUBMITTED
+  IN_REVIEW
+  QUEUED
+  APPROVED
+  DECLINED
+  WITHDRAWN
 }
 
 enum ChangeStatus {
@@ -347,6 +372,11 @@ model Member {
   uploadedDocuments      Document[]               @relation("DocumentUploader")
   diagrams               Diagram[]                @relation("DiagramOwner")
   projectUpdates         ProjectUpdate[]          @relation("ProjectUpdateAuthor")
+  proposals              Proposal[]               @relation("ProposalProposer")
+  proposalsReviewed      Proposal[]               @relation("ProposalReviewer")
+  proposalsDecided       Proposal[]               @relation("ProposalDecider")
+  proposalInterests      ProposalInterest[]       @relation("ProposalInterest")
+  projectSections        ProjectSection[]         @relation("ProjectSectionAuthor")
   announcements          Announcement[]           @relation("AnnouncementAuthor")
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt
@@ -387,6 +417,7 @@ model ResearchArea {
   publications PublicationArea[]
   members      MemberArea[]
   resources    ResourceArea[]
+  proposals    Proposal[]
   createdAt    DateTime          @default(now())
   updatedAt    DateTime          @updatedAt
 
@@ -421,6 +452,8 @@ model Project {
   results        String?
   resultsPublic  Boolean                  @default(false)
   status         ProjectStatus            @default(PROPOSED)
+  /// The finer step inside a running project, kept by the team.
+  phase          ResearchPhase?
   state          PublishState             @default(DRAFT)
   featured       Boolean                  @default(false)
   coverKey       String?
@@ -442,8 +475,10 @@ model Project {
   documents      Document[]
   diagrams       Diagram[]
   updates        ProjectUpdate[]
+  sections       ProjectSection[]
   experimentsLog Experiment[]
   newsPosts      NewsPost[]
+  proposal       Proposal?
   createdAt      DateTime                 @default(now())
   updatedAt      DateTime                 @updatedAt
 
@@ -772,6 +807,70 @@ model ApplicationNote {
   @@index([authorId])
 }
 
+/// A research idea anyone may send in: a member, or someone outside the lab.
+/// A reviewer takes it and either queues it or sends it back; an administrator
+/// approves it, and an approved proposal becomes a project with a team.
+model Proposal {
+  id          String         @id @default(cuid())
+  slug        String         @unique
+  title       String
+  /// One paragraph, shown wherever the proposal is listed.
+  summary     String
+  question    String
+  approach    String?
+  outcome     String?
+  status      ProposalStatus @default(SUBMITTED)
+
+  /// Where it fits, when the proposer or a reviewer can say.
+  areaId      String?
+  area        ResearchArea?  @relation(fields: [areaId], references: [id], onDelete: SetNull)
+
+  /// Who sent it. A member has a profile; someone outside the lab does not,
+  /// so their name and address are kept on the proposal itself.
+  proposerId  String?
+  proposer    Member?        @relation("ProposalProposer", fields: [proposerId], references: [id], onDelete: SetNull)
+  proposerName String
+  proposerEmail String
+  proposerAffiliation String?
+
+  /// The reviewer who took it, and the administrator who decided.
+  reviewerId  String?
+  reviewer    Member?        @relation("ProposalReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  decidedById String?
+  decidedBy   Member?        @relation("ProposalDecider", fields: [decidedById], references: [id], onDelete: SetNull)
+  /// Why it was queued, approved or declined. Never shown to the public.
+  decisionNote String?
+  decidedAt   DateTime?
+
+  /// The project it became, once an administrator approved it.
+  projectId   String?        @unique
+  project     Project?       @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  interests   ProposalInterest[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([status, createdAt])
+  @@index([areaId])
+  @@index([proposerId])
+  @@index([reviewerId])
+}
+
+/// A member saying they would work on a proposal. Interest is how a team is
+/// formed: an administrator reads this list when assigning people.
+model ProposalInterest {
+  proposalId String
+  memberId   String
+  /// What they would bring to it, in their own words. Optional.
+  note       String?
+  proposal   Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  member     Member   @relation("ProposalInterest", fields: [memberId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@id([proposalId, memberId])
+  @@index([memberId])
+}
+
 model Partner {
   id           String       @id @default(cuid())
   name         String
@@ -973,6 +1072,7 @@ model Diagram {
   projectId String?
   owner     Member   @relation("DiagramOwner", fields: [ownerId], references: [id], onDelete: Cascade)
   project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  sections  ProjectSection[]
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
@@ -995,12 +1095,14 @@ model ProjectUpdate {
   /// The stage the project was at when this was written, so the public
   /// history reads correctly even after the project moves on.
   stage     ProjectStatus
+  /// And the finer step it was at, when the team had set one.
+  phase     ResearchPhase?
   project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   author    Member?  @relation("ProjectUpdateAuthor", fields: [authorId], references: [id], onDelete: SetNull)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  attachments UpdateAttachment[]
+  attachments Attachment[]
 
   @@index([projectId, isPublic, createdAt])
   @@index([authorId])
@@ -1014,21 +1116,54 @@ enum AttachmentKind {
   DATA
 }
 
-/// A file a team attached to a progress update: an architecture or pipeline
-/// figure, a dataset description, a table. It is only as public as the update
-/// that carries it, so every read goes through that update's visibility.
-model UpdateAttachment {
-  id          String         @id @default(cuid())
-  updateId    String
+/// A file a team attached to a project: an architecture or pipeline figure, a
+/// dataset description, a table. It hangs off exactly one owner — a standing
+/// section of the project, or one dated progress update — and is only as
+/// public as that owner, so every read goes through the owner's visibility.
+model Attachment {
+  id          String          @id @default(cuid())
+  sectionId   String?
+  updateId    String?
   kind        AttachmentKind
   title       String
   /// The object in private storage. Never taken from a request.
-  fileKey     String         @unique
+  fileKey     String          @unique
   contentType String
   byteSize    Int
-  sortOrder   Int            @default(0)
-  update      ProjectUpdate  @relation(fields: [updateId], references: [id], onDelete: Cascade)
-  createdAt   DateTime       @default(now())
+  sortOrder   Int             @default(0)
+  section     ProjectSection? @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  update      ProjectUpdate?  @relation(fields: [updateId], references: [id], onDelete: Cascade)
+  createdAt   DateTime        @default(now())
 
+  @@index([sectionId, sortOrder])
   @@index([updateId, sortOrder])
+}
+
+/// A standing part of a project's account of itself — methodology, datasets,
+/// architecture, evaluation — written and kept up to date by the team from
+/// the website. Unlike a progress update, which is dated and never changes,
+/// a section is the current answer and is edited in place.
+model ProjectSection {
+  id        String   @id @default(cuid())
+  projectId String
+  title     String
+  /// Markdown: prose, tables, code and maths.
+  body      String
+  /// A diagram from the builder, offered beside this section for the team.
+  diagramId String?
+  /// Sections are internal until someone publishes them, like updates.
+  isPublic  Boolean  @default(false)
+  sortOrder Int      @default(0)
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  diagram   Diagram? @relation(fields: [diagramId], references: [id], onDelete: SetNull)
+  authorId  String?
+  author    Member?  @relation("ProjectSectionAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  attachments Attachment[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId, sortOrder])
+  @@index([projectId, isPublic, sortOrder])
+  @@index([diagramId])
+  @@index([authorId])
 }
