@@ -90,7 +90,9 @@ export function ContentIndex({
   page,
   pages,
   total,
+  titleLabel = "Title",
 }: {
+  titleLabel?: string;
   heading: string;
   intro: ReactNode;
   newHref: string;
@@ -188,7 +190,7 @@ export function ContentIndex({
                         label={`Select every ${noun.one} on this page`}
                       />
                     </th>
-                    <th scope="col">Title</th>
+                    <th scope="col">{titleLabel}</th>
                     {columns.map((column) => (
                       <th scope="col" key={column}>
                         {column}

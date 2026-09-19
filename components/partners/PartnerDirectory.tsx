@@ -27,7 +27,10 @@ function PartnerCard({ partner }: { partner: PublicPartner }) {
             unoptimized
           />
         ) : (
-          <span className={styles.wordmark}>{partner.name}</span>
+          // A visual stand-in for a logo; the heading below names the partner.
+          <span className={styles.wordmark} aria-hidden="true">
+            {partner.name}
+          </span>
         )}
       </div>
       <div className={styles.partnerText}>

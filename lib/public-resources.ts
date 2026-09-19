@@ -2,6 +2,8 @@ import "server-only";
 
 import { cache } from "react";
 
+import type { Prisma } from "@/generated/prisma/client";
+
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import {
   publicAreaWhere,
@@ -111,14 +113,14 @@ export async function getPublicResources(): Promise<PublicResourceSummary[]> {
   }));
 }
 
-async function loadPublicResourceBySlug(
-  slug: string,
+async function loadResourceDetail(
+  where: Prisma.ResourceWhereInput,
 ): Promise<PublicResourceDetail | null> {
   if (!isDatabaseConfigured()) return null;
 
   const db = getDb();
   const row = await db.resource.findFirst({
-    where: { AND: [publicResourceWhere, { slug }] },
+    where,
     select: resourceSelect,
   });
   if (!row) return null;
@@ -159,4 +161,14 @@ async function loadPublicResourceBySlug(
   };
 }
 
-export const getPublicResourceBySlug = cache(loadPublicResourceBySlug);
+export const getPublicResourceBySlug = cache(
+  (slug: string): Promise<PublicResourceDetail | null> =>
+    loadResourceDetail({ AND: [publicResourceWhere, { slug }] }),
+);
+
+/** Any resource by id, as its page would show it: admin preview only. */
+export function getResourceForPreview(
+  id: string,
+): Promise<PublicResourceDetail | null> {
+  return loadResourceDetail({ id });
+}

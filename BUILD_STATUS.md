@@ -289,21 +289,25 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - `/admin/opportunities` (administrators): kind, research areas (validated), description, responsibilities and requirements, duration, location, remote flag, deadline, state. Openings close on their own after the deadline ("Closed" in the list). Opportunities with applications cannot be deleted. The preview renders the shared `OpportunityDetail`.
 - Fixed: the Markdown preview faded its text while refreshing, dropping contrast to 3:1; busy is now shown by the border.
 
+### Milestone 5 slice 5 — Resources and Partners (committed)
+
+- `/admin/resources` (staff): name, address, kind, Markdown description, licence, version, https-only download, repository, documentation, and Hugging Face links, BibTeX, Markdown changelog, related project and publication, and research areas (stored as `ResourceArea` links, replaced on each save). The preview renders the shared `ResourceDetail`.
+- `/admin/partners` (administrators): name, kind, description, relationship, https website, display order, state. The preview renders the partner's card through the public `PartnerDirectory`. Existing logos are kept; logo upload arrives with image uploads.
+- Fixed: the partner card's text wordmark (shown when there is no logo) repeated the name to screen readers; it is now hidden from them, since the heading names the partner.
+
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
 
 ## 10a. Portal and admin routes still to build
 
 ### Admin routes (Milestone 5)
 
-Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, and the sign-in, reset, and invitation routes (slices 1–4). Still to build:
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, `/admin/resources`, `/admin/partners`, and the sign-in, reset, and invitation routes (slices 1–5). Still to build:
 
 - `/admin/research`
 - `/admin/projects`
 - `/admin/publications`
 - `/admin/applications`
-- `/admin/resources`
 - `/admin/insights`
-- `/admin/partners`
 - `/admin/approvals`
 
 Every admin mutation must enforce authorization on the server, create an AuditLog record, and revalidate affected cache tags. Hiding an action in the interface is never sufficient authorization.

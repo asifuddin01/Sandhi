@@ -21,6 +21,12 @@ const sections: Array<AdminNavItem & { capability: Capability }> = [
     label: "Opportunities",
     capability: "opportunities:manage",
   },
+  {
+    href: "/admin/resources",
+    label: "Resources",
+    capability: "content:manage",
+  },
+  { href: "/admin/partners", label: "Partners", capability: "partners:manage" },
   { href: "/admin/members", label: "Members", capability: "members:manage" },
   { href: "/admin/settings", label: "Settings", capability: "settings:manage" },
   { href: "/admin/audit", label: "Audit log", capability: "audit:view" },

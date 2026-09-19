@@ -47,7 +47,13 @@ export async function getPublicPartners(): Promise<PublicPartner[]> {
     select: partnerSelect,
   });
 
-  return rows.map((row) => ({
+  return rows.map(toPublicPartner);
+}
+
+type PartnerRow = Prisma.PartnerGetPayload<{ select: typeof partnerSelect }>;
+
+function toPublicPartner(row: PartnerRow): PublicPartner {
+  return {
     id: row.id,
     name: row.name,
     kind: row.kind,
@@ -56,5 +62,17 @@ export async function getPublicPartners(): Promise<PublicPartner[]> {
     url: safePartnerUrl(row.url),
     logoUrl: publicAssetUrl(row.logoKey),
     logoAlt: row.logoAlt,
-  }));
+  };
+}
+
+/** Any partner by id, as the directory would show it: admin preview only. */
+export async function getPartnerForPreview(
+  id: string,
+): Promise<PublicPartner | null> {
+  if (!isDatabaseConfigured()) return null;
+  const row = await getDb().partner.findUnique({
+    where: { id },
+    select: partnerSelect,
+  });
+  return row ? toPublicPartner(row) : null;
 }
