@@ -454,50 +454,66 @@ export async function getPublications(
   };
 }
 
+/**
+ * A publication as its public page shows it. Related projects, resources,
+ * and publications appear only when public, so an admin preview is exact.
+ */
+async function loadPublicationDetail(
+  where: Prisma.PublicationWhereInput,
+): Promise<PublicPublicationDetail | null> {
+  if (!isDatabaseConfigured()) return null;
+
+  const db = getDb();
+  const row = await db.publication.findFirst({
+    where,
+    select: publicationSelect,
+  });
+  if (!row) return null;
+
+  const projectById = await publicProjectMap([row.projectId]);
+  const project = row.projectId
+    ? (projectById.get(row.projectId) ?? null)
+    : null;
+  const [resources, relatedPublications] = await Promise.all([
+    db.resource.findMany({
+      where: {
+        AND: [publicResourceWhere, { publicationId: row.id }],
+      },
+      orderBy: { name: "asc" },
+      select: { slug: true, name: true, kind: true },
+    }),
+    project
+      ? db.publication.findMany({
+          where: {
+            AND: [
+              publicPublicationWhere,
+              { projectId: row.projectId, id: { not: row.id } },
+            ],
+          },
+          orderBy: publicationOrder("newest"),
+          select: { slug: true, title: true, type: true, year: true },
+        })
+      : Promise.resolve([]),
+  ]);
+
+  return {
+    ...mapPublication(row, projectById),
+    resources,
+    relatedPublications,
+  };
+}
+
 export const getPublicPublicationBySlug = cache(
-  async (slug: string): Promise<PublicPublicationDetail | null> => {
-    if (!isDatabaseConfigured()) return null;
-
-    const db = getDb();
-    const row = await db.publication.findFirst({
-      where: { AND: [publicPublicationWhere, { slug }] },
-      select: publicationSelect,
-    });
-    if (!row) return null;
-
-    const projectById = await publicProjectMap([row.projectId]);
-    const project = row.projectId
-      ? (projectById.get(row.projectId) ?? null)
-      : null;
-    const [resources, relatedPublications] = await Promise.all([
-      db.resource.findMany({
-        where: {
-          AND: [publicResourceWhere, { publicationId: row.id }],
-        },
-        orderBy: { name: "asc" },
-        select: { slug: true, name: true, kind: true },
-      }),
-      project
-        ? db.publication.findMany({
-            where: {
-              AND: [
-                publicPublicationWhere,
-                { projectId: row.projectId, id: { not: row.id } },
-              ],
-            },
-            orderBy: publicationOrder("newest"),
-            select: { slug: true, title: true, type: true, year: true },
-          })
-        : Promise.resolve([]),
-    ]);
-
-    return {
-      ...mapPublication(row, projectById),
-      resources,
-      relatedPublications,
-    };
-  },
+  (slug: string): Promise<PublicPublicationDetail | null> =>
+    loadPublicationDetail({ AND: [publicPublicationWhere, { slug }] }),
 );
+
+/** Any publication by id, as its page would show it: admin preview only. */
+export function getPublicationForPreview(
+  id: string,
+): Promise<PublicPublicationDetail | null> {
+  return loadPublicationDetail({ id });
+}
 
 function publicAssetUrl(key: string | null): string | null {
   const base = process.env.R2_PUBLIC_BASE_URL?.trim();
