@@ -1,7 +1,7 @@
 confirmModulesPurge: false
 
 allowBuilds:
-  '@prisma/engines': true
+  "@prisma/engines": true
   esbuild: true
   msgpackr-extract: false
   prisma: true
@@ -16,3 +16,19 @@ overrides:
   deepmerge-ts: ^8.0.0
   lodash: ^4.18.1
   mysql2: ^3.23.4
+
+# Advisories left open deliberately, with the reason. Review each one whenever
+# `pnpm audit` changes, and delete the entry the moment a patched release
+# exists.
+#
+# GHSA-r5fr-rjxr-66jc (high) and GHSA-f23m-r3pf-42rh (moderate): lodash-es,
+# reached only through mermaid > chevrotain. Both are about `_.template`,
+# `_.unset` and `_.omit`. Chevrotain imports 36 lodash-es functions and none of
+# them is any of those three, so the vulnerable code is not in the bundle and
+# nothing in this application calls it. lodash-es has published no patched
+# release (the advisories ask for >= 4.17.24; 4.17.23 is the latest), so there
+# is nothing to pin to yet.
+auditConfig:
+  ignoreGhsas:
+    - GHSA-r5fr-rjxr-66jc
+    - GHSA-f23m-r3pf-42rh

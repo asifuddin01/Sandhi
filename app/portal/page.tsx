@@ -32,7 +32,7 @@ export default async function PortalPage() {
       <section className={styles.panel} aria-label="Account">
         <p>
           The member dashboard, profile, projects, and publications arrive with
-          the member portal.
+          the member portal. Architecture diagrams are ready now.
         </p>
         <div className={styles.actions}>
           {can(viewer.role, "admin:access") ? (
@@ -40,6 +40,9 @@ export default async function PortalPage() {
               Open administration
             </Link>
           ) : null}
+          <Link className={styles.textButton} href="/portal/diagrams">
+            Diagrams
+          </Link>
           <Link className={styles.textButton} href="/portal/security">
             Account security
           </Link>

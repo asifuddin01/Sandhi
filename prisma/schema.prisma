@@ -345,6 +345,7 @@ model Member {
   experiments            Experiment[]
   applicationNotes       ApplicationNote[]        @relation("ApplicationNoteAuthor")
   uploadedDocuments      Document[]               @relation("DocumentUploader")
+  diagrams               Diagram[]                @relation("DiagramOwner")
   announcements          Announcement[]           @relation("AnnouncementAuthor")
   createdAt              DateTime                 @default(now())
   updatedAt              DateTime                 @updatedAt
@@ -438,6 +439,7 @@ model Project {
   tasks          Task[]
   meetings       Meeting[]
   documents      Document[]
+  diagrams       Diagram[]
   experimentsLog Experiment[]
   newsPosts      NewsPost[]
   createdAt      DateTime                 @default(now())
@@ -953,4 +955,22 @@ model AuditLog {
 
   @@index([actorId, createdAt])
   @@index([entity, entityId, createdAt])
+}
+
+/// An architecture diagram, stored as its Mermaid source. Text is what is
+/// kept, not a rendered picture: it stays editable, diffable, and small, and
+/// every export is produced from it on demand.
+model Diagram {
+  id        String   @id @default(cuid())
+  title     String
+  source    String
+  ownerId   String
+  projectId String?
+  owner     Member   @relation("DiagramOwner", fields: [ownerId], references: [id], onDelete: Cascade)
+  project   Project? @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([ownerId, updatedAt])
+  @@index([projectId])
 }

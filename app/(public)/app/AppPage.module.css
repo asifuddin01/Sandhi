@@ -25,7 +25,7 @@
 
 .version {
   color: var(--mist);
-  font-family: var(--font-ui);
+  font-family: var(--font-interface);
   font-size: var(--text-meta);
 }
 
@@ -39,7 +39,7 @@
 }
 
 .facts dt {
-  font-family: var(--font-ui);
+  font-family: var(--font-interface);
 }
 
 .facts dd {
