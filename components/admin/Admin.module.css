@@ -391,6 +391,15 @@
   font-size: var(--text-h3);
 }
 
+/* A group inside a fieldset, where one legend would cover too much. */
+.subheading {
+  margin: 0.5rem 0 0;
+  color: var(--moonstone);
+  font-family: var(--font-ui);
+  font-size: var(--text-meta);
+  font-weight: 600;
+}
+
 .check {
   display: flex;
   align-items: flex-start;

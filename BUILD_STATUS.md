@@ -1,6 +1,6 @@
 # SANDHI Research Lab — build brief and current status
 
-Last updated: 17 September 2026 (Asia/Dhaka)
+Last updated: 19 September 2026 (Asia/Dhaka)
 
 This document is the durable handoff for the complete SANDHI Research Lab website. It records what the product is, the decisions made during the build, what is already implemented, what is currently being finished, and what remains before launch.
 
@@ -13,7 +13,8 @@ The governing detailed specification remains `SANDHI_Codex_Build_Prompt.md`. `PL
 - **Latest user refinements:** implemented and tested — Join path context, optional-link removal, form-step history, proposal/CV rules, removable PDF attachments, exact route scroll restoration, and the layered neural-network research map with signal motion.
 - **Security hardening (first Milestone 8 items):** implemented, tested against a production build, committed, and pushed — see section 11.
 - **Milestone 5 (in progress):** slice 1 — authentication, authorization, protected routes, and the admin shell — is committed; members and invitations, content managers, the applications pipeline, approvals, and data caching follow in that order.
-- **Milestones 6–8:** otherwise not started. These contain authentication/admin, the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
+- **Milestone 9 (mobile app readiness):** complete and committed — the versioned `/api/v1` surface, bearer-token sessions for native clients, the member read model with ownership checks, administration-editable release settings, the public `/app` download page, and verified deep links. See section 10b.
+- **Milestones 6–8:** otherwise not started. These contain the member portal, the private research workspace, security/performance hardening, deployment, and DNS.
 - **Production launch:** not yet complete. The current site is a local development build, not the live finished service.
 
 ## 1. Product being built
@@ -301,6 +302,72 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - `/admin/research` and `/admin/research/areas` (administrators): themes (name, address, short description, Markdown overview, order, state) and areas (name, address, theme, summary, overview, open questions, order, state). Renaming an area's address updates opportunities that name it. Themes with areas, and areas linked to projects, publications, people, or resources, are never deleted. Previews render the shared `ThemeDetail` and `AreaDetail`.
 
 The fixture-backed end-to-end run now also needs `DATABASE_URL` (the invitation and reset tests create and read records): `E2E_FIXTURES_READY=true DATABASE_URL=… pnpm test:e2e`. Fixture accounts use the password `fixture-password-2026` and exist only in test databases.
+
+## 10b. Milestone 9 — mobile app readiness (committed, 19 September 2026)
+
+The SANDHI app for Android and iOS is a **client of this backend**, not a second
+system. There is no separate API, database, account store, or permission model.
+Everything below was built so a future React Native app reads and writes exactly
+what the website does. The contract is `docs/mobile/API.md`; the app's own
+architecture and distribution are in `docs/mobile/APP.md`.
+
+- **`/api/v1` (`app/api/v1/**`, on `lib/api/*`).** One envelope
+  (`{ data, meta }` or `{ error, meta }`) and one wrapper, `apiRoute()`, that
+  applies the client-header rule, the minimum-version gate, rate limits,
+  authorization, and error mapping. Public reads call the same `lib/public-*.ts`
+  read models the pages call, so `lib/visibility.ts` decides what is public in
+  exactly one place. Sections switched off in settings answer 404 here too.
+- **Bearer-token sessions.** Better Auth's `bearer` plugin (`requireSignature`)
+  turns `Authorization: Bearer <token>` back into the session cookie for the
+  request, so `getViewer`, `authorize`, the two-factor requirement, the
+  twelve-hour staff session limit, the suspended-member block and the audit
+  trail are unchanged. `/api/v1/auth/{sign-in,two-factor,sign-out,session,password-reset}`
+  wrap the same in-process calls the portal's server actions use.
+  **Two-factor sign-in returns an opaque challenge**, never a session: Better
+  Auth stamps the discarded password-only session's token onto that response,
+  and `readSignInOutcome` deliberately decides from the session cookie instead.
+- **CSRF without CORS.** The API answers no preflight and sends no CORS headers,
+  so a browser on another origin cannot attach `X-Sandhi-Client`. Requiring that
+  header on every mutation is what stops a cross-site post with a visitor's
+  cookies. Native clients are not subject to CORS, so nothing is lost.
+- **Member reads (`lib/portal-content.ts`).** Profile, projects, announcements
+  and documents, every query keyed on the viewer's own member id rather than on
+  an id from the request. Private documents come back as links that expire in
+  ten minutes (`createPrivateDownloadUrl`); the storage key never leaves the
+  server. **This module is the one the Milestone 6 portal pages will read
+  through, so the website and the app cannot drift apart.**
+- **Release settings (`lib/mobile-app.ts`, `/admin/settings` → SANDHI app).**
+  Version, version code, APK address, size, SHA-256, minimum OS, notes, the iOS
+  distribution and install link, and the minimum supported version. Stored as
+  one `mobile.app` row, validated on write and again on read. A platform is
+  published only with both a version and an https address.
+- **Android distribution without the Play Store.** `/app` states the version,
+  size and checksum and links to `/download/android`, one stable address that
+  redirects to whichever build administration published. The page stays hidden
+  (and `/app` 404s) until a build exists.
+- **iOS distribution.** The settings record which private method the lab uses —
+  TestFlight, Apple Business Manager, enterprise, or the App Store — and `/app`
+  explains the steps for the chosen one.
+- **Update checks.** `GET /api/v1/app/release`, plus a 426 `upgrade_required`
+  refusal carrying the current release when an installed build is below the
+  minimum. Browsers and unidentified clients are never gated.
+- **Deep links.** `/.well-known/assetlinks.json` and
+  `/.well-known/apple-app-site-association`, built from `ANDROID_APP_ID`,
+  `ANDROID_APP_FINGERPRINTS` and `IOS_APP_ID`. `/portal`, `/admin`, `/api` and
+  `/join` are excluded, so account and upload flows stay in the browser.
+- **Also fixed here:** `/api/auth/change-password` is now rate-limited (finding
+  S-4, partial): a bearer token makes that endpoint easier to reach.
+- **Tests.** Unit: `api-contract`, `api-auth-cookies`, `api-handler`,
+  `mobile-auth`, `portal-content`, `mobile-app`, `app-links`. End-to-end:
+  `mobile-api.spec.ts` (envelope, refusals, the full native sign-in and
+  sign-out, the two-factor challenge) and `mobile-app-release.spec.ts`
+  (site-wide: publishing a release, `/app` with axe, the redirect, the version
+  gate, and restoring).
+
+**Not built, deliberately:** writing. Editing a profile, drafting an insight and
+marking an announcement read arrive with Milestone 6 as server-side actions the
+website and the app both call. Building them API-first now would be the one way
+to make the two surfaces diverge.
 
 ## 10a. Portal and admin routes still to build
 

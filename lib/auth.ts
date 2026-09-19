@@ -4,6 +4,7 @@ import { createHash } from "node:crypto";
 
 import { passkey } from "@better-auth/passkey";
 import { betterAuth } from "better-auth";
+import { bearer } from "better-auth/plugins/bearer";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { APIError, createAuthMiddleware } from "better-auth/api";
 import { nextCookies } from "better-auth/next-js";
@@ -49,6 +50,9 @@ const rateLimitedPaths = new Set([
   "/request-password-reset",
   "/reset-password",
   "/send-verification-email",
+  // Reachable with a stolen session or a bearer token, and it checks the
+  // current password, so it is guessable without a limit (S-4).
+  "/change-password",
   "/two-factor/enable",
   "/two-factor/verify-totp",
   "/two-factor/verify-backup-code",
@@ -406,6 +410,12 @@ function createAuth() {
     telemetry: { enabled: false },
     // Must stay last: lets server actions set the session cookie.
     plugins: [
+      // Native clients hold no cookie jar. A signed session token sent as
+      // `Authorization: Bearer …` is turned back into the session cookie for
+      // the rest of the request, so the mobile app, the website, and every
+      // authorization check share one session model. `requireSignature` means
+      // only tokens this server issued are accepted.
+      bearer({ requireSignature: true }),
       // Authenticator-app codes with encrypted secrets and backup codes. A
       // challenge allows five tries; ten failures lock two-factor sign-in
       // for fifteen minutes.

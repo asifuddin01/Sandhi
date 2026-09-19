@@ -4,6 +4,12 @@
  */
 
 import { isEmailAddress } from "@/lib/email-address";
+import {
+  defaultMobileAppSettings,
+  parseMobileAppSettings,
+  readMobileAppForm,
+  type MobileAppSettings,
+} from "@/lib/mobile-app";
 
 export const socialPlatforms = [
   { key: "github", label: "GitHub" },
@@ -36,6 +42,8 @@ export interface SiteSettings {
     showNumbers: boolean;
   };
   maintenanceBanner: string | null;
+  /** How the Android and iOS apps are published (see `lib/mobile-app.ts`). */
+  mobileApp: MobileAppSettings;
 }
 
 export const settingKeys = {
@@ -47,6 +55,7 @@ export const settingKeys = {
   showPartners: "features.showPartners",
   showNumbers: "features.showNumbers",
   maintenanceBanner: "site.maintenanceBanner",
+  mobileApp: "mobile.app",
 } as const;
 
 export const defaultSiteSettings: SiteSettings = {
@@ -61,6 +70,7 @@ export const defaultSiteSettings: SiteSettings = {
   retentionMonths: 24,
   features: { showEvents: true, showPartners: true, showNumbers: false },
   maintenanceBanner: null,
+  mobileApp: defaultMobileAppSettings,
 };
 
 export const MAX_RETENTION_MONTHS = 120;
@@ -132,6 +142,7 @@ export function parseSiteSettings(
       byKey.get(settingKeys.maintenanceBanner),
       MAX_BANNER_LENGTH,
     ),
+    mobileApp: parseMobileAppSettings(byKey.get(settingKeys.mobileApp)),
   };
 }
 
@@ -162,6 +173,7 @@ export function storedSettingValues(
     [settingKeys.showPartners]: settings.features.showPartners,
     [settingKeys.showNumbers]: settings.features.showNumbers,
     [settingKeys.maintenanceBanner]: settings.maintenanceBanner ?? "",
+    [settingKeys.mobileApp]: settings.mobileApp,
   };
 }
 
@@ -170,6 +182,8 @@ export function hiddenSectionPaths(settings: SiteSettings): string[] {
   return [
     ...(settings.features.showEvents ? [] : ["/events"]),
     ...(settings.features.showPartners ? [] : ["/partners"]),
+    // The app page exists only once there is a build to install.
+    ...(settings.mobileApp.enabled ? [] : ["/app"]),
   ];
 }
 
@@ -249,6 +263,13 @@ export function readSettingsForm(
     });
   }
   values[settingKeys.maintenanceBanner] = banner;
+
+  const mobile = readMobileAppForm(
+    (name) => form(name),
+    (name) => flags(name),
+  );
+  problems.push(...mobile.problems);
+  values[settingKeys.mobileApp] = mobile.value;
 
   return { values, problems };
 }

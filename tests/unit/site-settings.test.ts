@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 
+import { defaultMobileAppSettings } from "@/lib/mobile-app";
 import {
   defaultSiteSettings,
   hiddenSectionPaths,
@@ -103,12 +104,13 @@ describe("hidden sections", () => {
       features: { showEvents: false, showPartners: true, showNumbers: false },
     });
 
-    expect(hidden).toEqual(["/events"]);
+    // The app page is hidden too until a build is published.
+    expect(hidden).toEqual(["/events", "/app"]);
     expect(isPathHidden("/events", hidden)).toBe(true);
     expect(isPathHidden("/events/launch-seminar", hidden)).toBe(true);
     expect(isPathHidden("/events-archive", hidden)).toBe(false);
     expect(isPathHidden("/partners", hidden)).toBe(false);
-    expect(hiddenSectionPaths(defaultSiteSettings)).toEqual([]);
+    expect(hiddenSectionPaths(defaultSiteSettings)).toEqual(["/app"]);
   });
 });
 
@@ -140,6 +142,7 @@ describe("readSettingsForm", () => {
       "features.showPartners": false,
       "features.showNumbers": false,
       "site.maintenanceBanner": "Scheduled maintenance tonight.",
+      "mobile.app": defaultMobileAppSettings,
     });
   });
 

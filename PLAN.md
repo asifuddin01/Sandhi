@@ -86,6 +86,17 @@ This checklist follows the supplied build specification. Milestones are complete
 - [ ] Deploy to Vercel and configure `sandhiresearch.org` with `www` redirected to the apex when credentials and DNS authority are available.
 - [ ] Pass the four quality commands, contrast checks, accessibility checks, security checks, and final design review.
 
+## Milestone 9 — Mobile app readiness
+
+- [x] Publish a versioned JSON API (`/api/v1`) that reads through the existing visibility and permission modules, never around them.
+- [x] Let a native client hold the same Better Auth session through a bearer token, including two-factor and every existing refusal.
+- [x] Add a member read model with per-record ownership checks, shared with the Milestone 6 portal.
+- [x] Make the Android release editable in administration and downloadable from the site with a published checksum, without the Play Store.
+- [x] Record an appropriate private iOS distribution method and explain it on the download page.
+- [x] Serve verified deep links for both platforms, excluding the account, administration, API and upload paths.
+- [x] Gate outdated app versions with a clear, actionable refusal.
+- [x] Pass the four quality commands, contrast checks, and accessibility checks on the new page.
+
 ## Dependency notes
 
 - `server-only` is included to make accidental client imports of database and secret-bearing modules fail at build time, following the installed Next.js guidance.
@@ -94,4 +105,5 @@ This checklist follows the supplied build specification. Milestones are complete
 - `better-auth` and its Prisma adapter are installed in Milestone 1 so `seed:owner` writes a credential hash in the exact format the specified authentication system will verify in Milestone 5.
 - `three`, `@react-three/fiber`, and `@react-three/drei` are the specification's Milestone 3 rendering stack. `d3-force` was removed in Milestone 4 when the connections map became a deterministic layered layout at the user's direction (strict layers cannot come from a force simulation); React and React DOM are pinned to 19.2.8 because the stable Fiber release does not yet support React 19.3.
 - Prisma CLI is pinned to `7.10.0` to match the latest stable `@prisma/client`; the registry's current CLI `latest` tag resolves to an 8.0 release candidate rather than a stable release.
+- No dependency was added for the mobile API. Bearer tokens use Better Auth's bundled `bearer` plugin, the presigned download links reuse the hand-written SigV4 signer in `lib/storage.ts`, and the deep-link files are plain route handlers.
 - ESLint remains on the newest v9 release because Next.js 16's bundled React, import, and accessibility plugins do not yet declare compatibility with ESLint 10.

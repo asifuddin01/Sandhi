@@ -209,6 +209,29 @@ export function createPrivateUploadIntent(
   };
 }
 
+/** How long a private download link works: long enough to open, not to share. */
+export const PRIVATE_DOWNLOAD_SECONDS = 600;
+
+/**
+ * A short-lived link to one private object. The key is never taken from a
+ * request: callers pass a key they read from a record the viewer is allowed to
+ * see, so the link is the last step of an authorization decision, not the
+ * decision itself.
+ */
+export function createPrivateDownloadUrl(
+  key: string,
+  options: { env?: NodeJS.ProcessEnv; now?: Date; expiresSeconds?: number } = {},
+): string {
+  const config = r2Config(options.env ?? process.env);
+  return presignedR2Url(
+    "GET",
+    key,
+    config,
+    options.now ?? new Date(),
+    options.expiresSeconds ?? PRIVATE_DOWNLOAD_SECONDS,
+  );
+}
+
 export async function assertPrivateUploadExists(
   input: {
     key: string;

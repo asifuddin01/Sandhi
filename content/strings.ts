@@ -26,6 +26,7 @@ export const moreNavigation = [
   { label: "Insights", href: "/insights" },
   { label: "Open science", href: "/open-science" },
   { label: "Partners", href: "/partners" },
+  { label: "SANDHI app", href: "/app" },
   { label: "Contact", href: "/contact" },
 ] as const;
 

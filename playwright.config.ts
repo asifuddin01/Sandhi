@@ -2,7 +2,7 @@ import { defineConfig, devices } from "@playwright/test";
 
 const baseURL = process.env.PLAYWRIGHT_BASE_URL ?? "http://127.0.0.1:3100";
 const chrome = { ...devices["Desktop Chrome"], channel: "chrome" };
-const siteWideSpecs = /admin-settings\.spec\.ts$/u;
+const siteWideSpecs = /(admin-settings|mobile-app-release)\.spec\.ts$/u;
 
 export default defineConfig({
   testDir: "./tests/e2e",
