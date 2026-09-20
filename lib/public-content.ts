@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -367,7 +370,7 @@ function emptyPublicationIndex(): PublicationIndexData {
   };
 }
 
-export async function getPublications(
+async function read_getPublications(
   filters: PublicationFilters = {},
 ): Promise<PublicationIndexData> {
   if (!isDatabaseConfigured()) return emptyPublicationIndex();
@@ -811,7 +814,7 @@ export async function getPublicFeedItems(): Promise<PublicFeedItem[]> {
     .slice(0, 50);
 }
 
-export async function getLegalSettings(): Promise<{
+async function read_getLegalSettings(): Promise<{
   applicationRetentionMonths: number;
   contactEmail: string;
 }> {
@@ -857,3 +860,23 @@ export function humanizeEnum(value: string): string {
 export function serializeJsonLd(value: unknown): string {
   return JSON.stringify(value).replace(/</gu, "\\u003c");
 }
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getPublications = cachedPublicRead(
+  "public-publications",
+  [cacheTags.publications, cacheTags.members],
+  read_getPublications,
+);
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getLegalSettings = cachedPublicRead(
+  "public-legal-settings",
+  [cacheTags.settings],
+  read_getLegalSettings,
+);

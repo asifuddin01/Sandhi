@@ -2,10 +2,13 @@ import "server-only";
 
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { shouldShowPublicMetrics } from "@/lib/public-metrics";
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
 import {
+  isNewsPublic,
+  NEWS_PUBLISHABLE_STATES,
   publicAreaWhere,
   publicMemberWhere,
-  publicNewsWhere,
   publicProjectWhere,
   publicPublicationWhere,
 } from "@/lib/visibility";
@@ -36,6 +39,14 @@ export type HomeNews = {
   category: string;
   date: Date;
 };
+
+/** A post before the clock has been consulted. Never leaves this module. */
+type HomeNewsCandidate = HomeNews & {
+  state: string;
+  publishAt: Date | null;
+};
+
+type HomeReadData = Omit<HomeData, "news"> & { news: HomeNewsCandidate[] };
 
 export type HomeData = {
   projects: HomeProject[];
@@ -82,8 +93,19 @@ function publicAuthor(author: {
   return author.externalName ? { name: author.externalName, slug: null } : null;
 }
 
-export async function getHomeData(now = new Date()): Promise<HomeData> {
-  if (!isDatabaseConfigured()) return emptyHomeData;
+/**
+ * Everything the home page shows, read without consulting the clock so the
+ * answer can be cached and shared.
+ *
+ * News is the one part that depends on the time: a scheduled post becomes
+ * public when its moment passes, with nothing changing in the database. So
+ * the publishable ones are read here and `getHomeData` decides which are due
+ * — a cached entry would otherwise freeze whatever `now` was when it was
+ * filled, and a scheduled post would stay invisible for as long as the entry
+ * lived.
+ */
+async function readHomeData(): Promise<HomeReadData> {
+  if (!isDatabaseConfigured()) return { ...emptyHomeData, news: [] };
 
   const db = getDb();
   const [projects, publications, news, setting, counts] = await Promise.all([
@@ -148,13 +170,16 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
       },
     }),
     db.newsPost.findMany({
-      where: publicNewsWhere(now),
+      where: { state: { in: [...NEWS_PUBLISHABLE_STATES] } },
       orderBy: [{ publishAt: "desc" }, { createdAt: "desc" }],
-      take: 3,
+      // More than the three shown: the ones not yet due are dropped after
+      // the cache, and a run of scheduled posts must not empty the section.
+      take: 12,
       select: {
         slug: true,
         title: true,
         category: true,
+        state: true,
         publishAt: true,
         createdAt: true,
       },
@@ -227,15 +252,53 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
         links,
       };
     }),
+    // Carried with their state and time so the clock can be applied after
+    // the cache; `getHomeData` trims them to the three that are due.
     news: news.map((post) => ({
       slug: post.slug,
       title: post.title,
       category: post.category,
+      state: post.state,
+      publishAt: post.publishAt,
       date: post.publishAt ?? post.createdAt,
     })),
     metrics: {
       ...metricCounts,
       visible: shouldShowPublicMetrics(setting?.value === true, metricCounts),
     },
+  };
+}
+
+const cachedHomeData = cachedPublicRead(
+  "public-home",
+  [
+    cacheTags.projects,
+    cacheTags.publications,
+    cacheTags.news,
+    cacheTags.members,
+    cacheTags.research,
+    cacheTags.settings,
+  ],
+  readHomeData,
+);
+
+/**
+ * The home page. Everything but the clock comes from a shared cache; which
+ * posts are due is decided here, per request, so a scheduled post appears the
+ * moment it is due rather than whenever the cache next happens to be filled.
+ */
+export async function getHomeData(now = new Date()): Promise<HomeData> {
+  const data = await cachedHomeData();
+  return {
+    ...data,
+    news: data.news
+      .filter((post) => isNewsPublic(post, now))
+      .slice(0, 3)
+      .map((post) => ({
+        slug: post.slug,
+        title: post.title,
+        category: post.category,
+        date: post.date,
+      })),
   };
 }

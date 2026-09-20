@@ -19,6 +19,47 @@ async function expectNoViolations(page: Page) {
   ).toEqual([]);
 }
 
+/**
+ * Public reads are cached and every administrative mutation expires the tags
+ * it touches. This proves the second half actually reaches the first: the
+ * index is read *before* the change, so the entry is warm and a stale one
+ * would still be serving the old list afterwards.
+ */
+test("a published resource appears at once, not when the cache expires", async ({
+  page,
+  request,
+}) => {
+  test.slow();
+  const stamp = Date.now();
+  const slug = `fixture-cached-${stamp}`;
+  const name = `Fixture cached ${stamp}`;
+  const db = createPrismaClient();
+
+  try {
+    // Warm it, with the resource not yet in existence.
+    const before = await (await request.get("/resources")).text();
+    expect(before).not.toContain(name);
+
+    await signIn(page, "fixture-reviewer@sandhi.test", "/admin/resources/new");
+    await page.getByLabel("Name", { exact: true }).fill(name);
+    await page
+      .getByLabel("Description", { exact: true })
+      .fill("Fixture content used only by automated tests.");
+    await page.getByLabel("Kind").selectOption("BENCHMARK");
+    await page.getByLabel("State").selectOption("PUBLISHED");
+    await page.getByRole("button", { name: "Create resource" }).click();
+    await expect(page).toHaveURL(/\/admin\/resources\/[^/]+\?created=1$/u, {
+      timeout: 30_000,
+    });
+
+    const after = await (await request.get("/resources")).text();
+    expect(after).toContain(name);
+  } finally {
+    await db.resource.deleteMany({ where: { slug } });
+    await db.$disconnect();
+  }
+});
+
 test("staff publish resources with safe links and research areas", async ({
   page,
   request,

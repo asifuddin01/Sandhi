@@ -57,6 +57,31 @@ export function publicNewsWhere(now = new Date()) {
   } satisfies Prisma.NewsPostWhereInput;
 }
 
+/**
+ * The same rule as `publicNewsWhere`, for rows already read from the
+ * database — which is what a cached query hands back, since a cache entry
+ * would otherwise freeze whatever `now` was when it was filled.
+ *
+ * It lives beside the where-clause so the two are read and changed together.
+ * Note that it is *not* `isPublishedAndDue`: that one refuses anything not
+ * `PUBLISHED`, and a scheduled post becomes public when its time passes
+ * without its state ever changing.
+ */
+export function isNewsPublic(
+  post: { state: string; publishAt?: Date | string | null },
+  now = new Date(),
+): boolean {
+  const due = post.publishAt
+    ? new Date(post.publishAt).getTime() <= now.getTime()
+    : null;
+  if (post.state === "PUBLISHED") return due === null || due;
+  if (post.state === "SCHEDULED") return due === true;
+  return false;
+}
+
+/** The states a post can be public in, before the clock is consulted. */
+export const NEWS_PUBLISHABLE_STATES = ["PUBLISHED", "SCHEDULED"] as const;
+
 export function publicEventWhere() {
   return {
     state: "PUBLISHED",

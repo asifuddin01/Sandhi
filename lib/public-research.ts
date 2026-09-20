@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -703,7 +706,7 @@ export function getAreaForPreview(id: string): Promise<AreaDetailData | null> {
   return loadAreaDetail({ id });
 }
 
-export async function getProjectsIndex(
+async function read_getProjectsIndex(
   filters: ProjectFilters,
 ): Promise<ProjectsIndexData> {
   return queryPublic(
@@ -884,7 +887,7 @@ export function getProjectForPreview(
   return loadProjectDetail({ id });
 }
 
-export async function getPeopleIndex(area?: string): Promise<PeopleIndexData> {
+async function read_getPeopleIndex(area?: string): Promise<PeopleIndexData> {
   return queryPublic({ people: [], areas: [] }, async () => {
     const [people, areas] = await Promise.all([
       getDb().member.findMany({
@@ -1022,3 +1025,23 @@ export const getAboutData = cache(async (): Promise<AboutData> => {
     };
   });
 });
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getProjectsIndex = cachedPublicRead(
+  "public-projects-index",
+  [cacheTags.projects, cacheTags.research, cacheTags.members],
+  read_getProjectsIndex,
+);
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getPeopleIndex = cachedPublicRead(
+  "public-people-index",
+  [cacheTags.members, cacheTags.research],
+  read_getPeopleIndex,
+);

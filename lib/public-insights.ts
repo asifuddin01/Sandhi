@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -67,7 +70,7 @@ function mapInsight(row: InsightRow): PublicInsightDetail {
   };
 }
 
-export async function getPublicInsights(
+async function read_getPublicInsights(
   requestedKind?: string,
 ): Promise<PublicInsightSummary[]> {
   if (!isDatabaseConfigured()) return [];
@@ -96,4 +99,14 @@ export const getPublicInsightBySlug = cache(
 
     return row ? mapInsight(row) : null;
   },
+);
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getPublicInsights = cachedPublicRead(
+  "public-insights",
+  [cacheTags.insights],
+  read_getPublicInsights,
 );

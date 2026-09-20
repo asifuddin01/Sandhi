@@ -816,7 +816,38 @@ Open performance items for Milestone 8:
   project's research question, short venue names — so the change finds more,
   not less.
 
-- **Server-side caching:** every public page renders per request and queries the database. The specification's nonce-based CSP requires dynamic rendering, which rules out ISR/CDN page caching. The compatible design is data-level caching (`unstable_cache` with tags): cache published records, apply time rules (`publishAt`, deadlines, event end) after the cache so visibility guarantees stay exact, and have Milestone 5 admin mutations revalidate the tags.
+- **Server-side caching (done for the pages that do not watch the clock).**
+  `lib/cache.ts` wraps a read so it is computed once and shared, tagged with
+  the same `cacheTags` every administrative mutation already expired — there
+  were 39 `invalidate()` calls and nothing caching, so the expensive half was
+  built and the cheap half missing. Cached now: home, projects, people,
+  publications, insights, partners, resources and legal settings. A five
+  minute `revalidate` is only a backstop, so a tag somebody forgets to expire
+  costs minutes rather than lasting until the next deploy.
+
+  Both halves are proved rather than assumed. A probe showed three requests
+  producing one database read; and `admin-resources-partners.spec.ts` reads
+  the public index *before* publishing a resource, so the entry is warm and a
+  stale one would still be serving the old list afterwards.
+
+  **`isPublishedAndDue` is not the post-cache filter for news.** It refuses
+  anything not `PUBLISHED`, while `publicNewsWhere` treats a `SCHEDULED` post
+  as public once its time passes — scheduling needs no job to flip the state.
+  Using it would have made every scheduled post vanish from the home page the
+  moment it became due. `isNewsPublic` sits beside `publicNewsWhere` so the
+  two are read and changed together. (`isPublishedAndDue` is used nowhere in
+  production code; the disagreement was latent.)
+
+  The home page caches everything clock-free and decides what is due per
+  request, so a scheduled post appears when it is due rather than when the
+  cache next happens to be filled.
+
+  Still per-request on purpose: `/news`, `/events` and `/opportunities`. They
+  depend on the clock in more tangled ways than home, and they are better
+  left honest and slow than fast and subtly wrong. The cache-then-filter
+  pattern is established for when they are done.
+
+- **Server-side caching (original note):** every public page renders per request and queries the database. The specification's nonce-based CSP requires dynamic rendering, which rules out ISR/CDN page caching. The compatible design is data-level caching (`unstable_cache` with tags): cache published records, apply time rules (`publishAt`, deadlines, event end) after the cache so visibility guarantees stay exact, and have Milestone 5 admin mutations revalidate the tags.
 - Not applicable: a load balancer or CDN (Vercel provides both); minification and compression (Next production builds and Vercel already do this); a route loading skeleton (removed deliberately in Milestone 2).
 
 ## 12. Quality gates

@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -93,7 +96,7 @@ const resourceSelect = {
   },
 } as const;
 
-export async function getPublicResources(): Promise<PublicResourceSummary[]> {
+async function readPublicResources(): Promise<PublicResourceSummary[]> {
   if (!isDatabaseConfigured()) return [];
 
   const rows = await getDb().resource.findMany({
@@ -172,3 +175,13 @@ export function getResourceForPreview(
 ): Promise<PublicResourceDetail | null> {
   return loadResourceDetail({ id });
 }
+
+/**
+ * Cached because a resource list is the same for everybody and changes only
+ * when somebody publishes one, which expires the tag.
+ */
+export const getPublicResources = cachedPublicRead(
+  "public-resources",
+  [cacheTags.resources],
+  readPublicResources,
+);

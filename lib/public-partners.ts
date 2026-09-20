@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import type { Prisma } from "@/generated/prisma/client";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { safePartnerUrl, type PartnerKind } from "@/lib/partner-content";
@@ -39,7 +42,7 @@ function publicAssetUrl(key: string | null): string | null {
   }
 }
 
-export async function getPublicPartners(): Promise<PublicPartner[]> {
+async function read_getPublicPartners(): Promise<PublicPartner[]> {
   if (!isDatabaseConfigured()) return [];
   const rows = await getDb().partner.findMany({
     where: publicPartnerWhere,
@@ -76,3 +79,13 @@ export async function getPartnerForPreview(
   });
   return row ? toPublicPartner(row) : null;
 }
+
+/**
+ * Cached: the same list for everybody, changing only when somebody publishes,
+ * which expires the tag.
+ */
+export const getPublicPartners = cachedPublicRead(
+  "public-partners",
+  [cacheTags.partners],
+  read_getPublicPartners,
+);
