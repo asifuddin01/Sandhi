@@ -425,9 +425,34 @@ team chooses to show.
 - **Routes:** `/portal/projects`, `/portal/projects/[slug]`,
   `/api/portal/attachments`, `/files/attachments/[id]`.
 
-Still to build here: the proposal-to-team pipeline (submit, queue, approve,
-mark interested, assign), and admin control of the stage from the project
-workspace rather than only the Projects manager.
+## 10d. Proposals, and how a team forms (20 September 2026)
+
+An idea can come from anywhere, and the path from idea to team runs on the
+site.
+
+- **Anyone may send one.** `/proposals` is public: a member, a student, a
+  colleague at another institution. It is treated like the other public forms
+  — same origin, rate limited, behind Turnstile — and a signed-in member is
+  credited from their session, never from the fields they filled in.
+- **`Proposal`** moves Submitted → Under review → Queued → Approved, or is
+  sent back. A **reviewer** (`proposals:review`, staff) takes one, queues it or
+  declines it, always with a note kept on the record. Only an
+  **administrator** (`proposals:approve`) approves.
+- **A queued proposal is posted to the lab** at `/portal/proposals`, where
+  members say they would work on it and what they would bring
+  (`ProposalInterest`). An idea still under review is not posted: it is not an
+  invitation.
+- **Approving is the moment it becomes work.** One transaction creates the
+  project from the proposal, puts everyone who volunteered on the team, names
+  the research lead from that same list, links the proposal to what it became,
+  and writes the audit record. The project starts as a draft: approved, not
+  announced.
+- **Routes:** `/proposals`, `/api/proposals`, `/admin/proposals`,
+  `/admin/proposals/[id]`, `/portal/proposals`.
+
+Still to build here: admin control of the project stage from the workspace
+rather than only the Projects manager, and email to the proposer when a
+decision is made.
 
 ## 10a. Portal and admin routes still to build
 

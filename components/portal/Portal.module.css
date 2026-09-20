@@ -291,6 +291,20 @@
   font-weight: 550;
 }
 
+/* Saying you are in: one short field and a button, on one line where there
+   is room for it. */
+.interestForm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 0.75rem 1rem;
+}
+
+.interestForm .field {
+  min-width: min(100%, 22rem);
+  flex: 1 1 18rem;
+}
+
 .updateControls {
   display: flex;
   flex-wrap: wrap;

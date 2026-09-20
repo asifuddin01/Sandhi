@@ -371,6 +371,15 @@
   min-width: 12rem;
 }
 
+/* The second line of a table cell: who sent it, where it fits. A block, so
+   it sits under the title rather than running on from it. */
+.rowSub {
+  display: block;
+  margin-block-start: 0.2rem;
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
 .tableWrap {
   overflow-x: auto;
 }

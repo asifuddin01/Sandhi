@@ -30,6 +30,7 @@ const staticPages: Array<{
   { path: "/partners", changeFrequency: "monthly", priority: 0.6 },
   { path: "/app", changeFrequency: "monthly", priority: 0.5 },
   { path: "/join", changeFrequency: "monthly", priority: 0.8 },
+  { path: "/proposals", changeFrequency: "monthly", priority: 0.7 },
   { path: "/contact", changeFrequency: "yearly", priority: 0.5 },
   { path: "/privacy", changeFrequency: "yearly", priority: 0.3 },
   { path: "/terms", changeFrequency: "yearly", priority: 0.3 },

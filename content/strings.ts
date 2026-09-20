@@ -27,6 +27,7 @@ export const moreNavigation = [
   { label: "Open science", href: "/open-science" },
   { label: "Partners", href: "/partners" },
   { label: "SANDHI app", href: "/app" },
+  { label: "Propose research", href: "/proposals" },
   { label: "Contact", href: "/contact" },
 ] as const;
 
@@ -37,6 +38,7 @@ export const moreNavigation = [
  */
 export const memberNavigation = [
   { label: "My projects", href: "/portal/projects" },
+  { label: "Proposals", href: "/portal/proposals" },
   { label: "Diagram builder", href: "/portal/diagrams" },
 ] as const;
 
