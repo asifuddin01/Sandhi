@@ -44,6 +44,7 @@ export type ProposalMinAggregateOutputType = {
   decidedById: string | null
   decisionNote: string | null
   decidedAt: Date | null
+  decisionSentAt: Date | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +68,7 @@ export type ProposalMaxAggregateOutputType = {
   decidedById: string | null
   decisionNote: string | null
   decidedAt: Date | null
+  decisionSentAt: Date | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -90,6 +92,7 @@ export type ProposalCountAggregateOutputType = {
   decidedById: number
   decisionNote: number
   decidedAt: number
+  decisionSentAt: number
   projectId: number
   createdAt: number
   updatedAt: number
@@ -115,6 +118,7 @@ export type ProposalMinAggregateInputType = {
   decidedById?: true
   decisionNote?: true
   decidedAt?: true
+  decisionSentAt?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -138,6 +142,7 @@ export type ProposalMaxAggregateInputType = {
   decidedById?: true
   decisionNote?: true
   decidedAt?: true
+  decisionSentAt?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -161,6 +166,7 @@ export type ProposalCountAggregateInputType = {
   decidedById?: true
   decisionNote?: true
   decidedAt?: true
+  decisionSentAt?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -257,6 +263,7 @@ export type ProposalGroupByOutputType = {
   decidedById: string | null
   decisionNote: string | null
   decidedAt: Date | null
+  decisionSentAt: Date | null
   projectId: string | null
   createdAt: Date
   updatedAt: Date
@@ -301,6 +308,7 @@ export type ProposalWhereInput = {
   decidedById?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decisionNote?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decidedAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
   projectId?: Prisma.StringNullableFilter<"Proposal"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
@@ -330,6 +338,7 @@ export type ProposalOrderByWithRelationInput = {
   decidedById?: Prisma.SortOrderInput | Prisma.SortOrder
   decisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   decidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -363,6 +372,7 @@ export type ProposalWhereUniqueInput = Prisma.AtLeast<{
   decidedById?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decisionNote?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decidedAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   area?: Prisma.XOR<Prisma.ResearchAreaNullableScalarRelationFilter, Prisma.ResearchAreaWhereInput> | null
@@ -391,6 +401,7 @@ export type ProposalOrderByWithAggregationInput = {
   decidedById?: Prisma.SortOrderInput | Prisma.SortOrder
   decisionNote?: Prisma.SortOrderInput | Prisma.SortOrder
   decidedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -420,6 +431,7 @@ export type ProposalScalarWhereWithAggregatesInput = {
   decidedById?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
   decisionNote?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
   decidedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Proposal"> | Date | string | null
+  decisionSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Proposal"> | Date | string | null
   projectId?: Prisma.StringNullableWithAggregatesFilter<"Proposal"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Proposal"> | Date | string
@@ -439,6 +451,7 @@ export type ProposalCreateInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -467,6 +480,7 @@ export type ProposalUncheckedCreateInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -487,6 +501,7 @@ export type ProposalUpdateInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -515,6 +530,7 @@ export type ProposalUncheckedUpdateInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -539,6 +555,7 @@ export type ProposalCreateManyInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -558,6 +575,7 @@ export type ProposalUpdateManyMutationInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -580,6 +598,7 @@ export type ProposalUncheckedUpdateManyInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -618,6 +637,7 @@ export type ProposalCountOrderByAggregateInput = {
   decidedById?: Prisma.SortOrder
   decisionNote?: Prisma.SortOrder
   decidedAt?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -641,6 +661,7 @@ export type ProposalMaxOrderByAggregateInput = {
   decidedById?: Prisma.SortOrder
   decisionNote?: Prisma.SortOrder
   decidedAt?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -664,6 +685,7 @@ export type ProposalMinOrderByAggregateInput = {
   decidedById?: Prisma.SortOrder
   decisionNote?: Prisma.SortOrder
   decidedAt?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -906,6 +928,7 @@ export type ProposalCreateWithoutProposerInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -932,6 +955,7 @@ export type ProposalUncheckedCreateWithoutProposerInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -962,6 +986,7 @@ export type ProposalCreateWithoutReviewerInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -988,6 +1013,7 @@ export type ProposalUncheckedCreateWithoutReviewerInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1018,6 +1044,7 @@ export type ProposalCreateWithoutDecidedByInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -1044,6 +1071,7 @@ export type ProposalUncheckedCreateWithoutDecidedByInput = {
   reviewerId?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1097,6 +1125,7 @@ export type ProposalScalarWhereInput = {
   decidedById?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decisionNote?: Prisma.StringNullableFilter<"Proposal"> | string | null
   decidedAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Proposal"> | Date | string | null
   projectId?: Prisma.StringNullableFilter<"Proposal"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Proposal"> | Date | string
@@ -1148,6 +1177,7 @@ export type ProposalCreateWithoutAreaInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   proposer?: Prisma.MemberCreateNestedOneWithoutProposalsInput
@@ -1174,6 +1204,7 @@ export type ProposalUncheckedCreateWithoutAreaInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1220,6 +1251,7 @@ export type ProposalCreateWithoutProjectInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -1247,6 +1279,7 @@ export type ProposalUncheckedCreateWithoutProjectInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   interests?: Prisma.ProposalInterestUncheckedCreateNestedManyWithoutProposalInput
@@ -1282,6 +1315,7 @@ export type ProposalUpdateWithoutProjectInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -1309,6 +1343,7 @@ export type ProposalUncheckedUpdateWithoutProjectInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   interests?: Prisma.ProposalInterestUncheckedUpdateManyWithoutProposalNestedInput
@@ -1328,6 +1363,7 @@ export type ProposalCreateWithoutInterestsInput = {
   proposerAffiliation?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   area?: Prisma.ResearchAreaCreateNestedOneWithoutProposalsInput
@@ -1355,6 +1391,7 @@ export type ProposalUncheckedCreateWithoutInterestsInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1390,6 +1427,7 @@ export type ProposalUpdateWithoutInterestsInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -1417,6 +1455,7 @@ export type ProposalUncheckedUpdateWithoutInterestsInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1439,6 +1478,7 @@ export type ProposalCreateManyProposerInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1461,6 +1501,7 @@ export type ProposalCreateManyReviewerInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1483,6 +1524,7 @@ export type ProposalCreateManyDecidedByInput = {
   reviewerId?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1502,6 +1544,7 @@ export type ProposalUpdateWithoutProposerInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -1528,6 +1571,7 @@ export type ProposalUncheckedUpdateWithoutProposerInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1551,6 +1595,7 @@ export type ProposalUncheckedUpdateManyWithoutProposerInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1570,6 +1615,7 @@ export type ProposalUpdateWithoutReviewerInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -1596,6 +1642,7 @@ export type ProposalUncheckedUpdateWithoutReviewerInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1619,6 +1666,7 @@ export type ProposalUncheckedUpdateManyWithoutReviewerInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1638,6 +1686,7 @@ export type ProposalUpdateWithoutDecidedByInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   area?: Prisma.ResearchAreaUpdateOneWithoutProposalsNestedInput
@@ -1664,6 +1713,7 @@ export type ProposalUncheckedUpdateWithoutDecidedByInput = {
   reviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1687,6 +1737,7 @@ export type ProposalUncheckedUpdateManyWithoutDecidedByInput = {
   reviewerId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1709,6 +1760,7 @@ export type ProposalCreateManyAreaInput = {
   decidedById?: string | null
   decisionNote?: string | null
   decidedAt?: Date | string | null
+  decisionSentAt?: Date | string | null
   projectId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1728,6 +1780,7 @@ export type ProposalUpdateWithoutAreaInput = {
   proposerAffiliation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   proposer?: Prisma.MemberUpdateOneWithoutProposalsNestedInput
@@ -1754,6 +1807,7 @@ export type ProposalUncheckedUpdateWithoutAreaInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1777,6 +1831,7 @@ export type ProposalUncheckedUpdateManyWithoutAreaInput = {
   decidedById?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decisionNote?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   decidedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   projectId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1831,6 +1886,7 @@ export type ProposalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   decidedById?: boolean
   decisionNote?: boolean
   decidedAt?: boolean
+  decisionSentAt?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1861,6 +1917,7 @@ export type ProposalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   decidedById?: boolean
   decisionNote?: boolean
   decidedAt?: boolean
+  decisionSentAt?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1889,6 +1946,7 @@ export type ProposalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   decidedById?: boolean
   decisionNote?: boolean
   decidedAt?: boolean
+  decisionSentAt?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1917,12 +1975,13 @@ export type ProposalSelectScalar = {
   decidedById?: boolean
   decisionNote?: boolean
   decidedAt?: boolean
+  decisionSentAt?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "summary" | "question" | "approach" | "outcome" | "status" | "areaId" | "proposerId" | "proposerName" | "proposerEmail" | "proposerAffiliation" | "reviewerId" | "decidedById" | "decisionNote" | "decidedAt" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["proposal"]>
+export type ProposalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "slug" | "title" | "summary" | "question" | "approach" | "outcome" | "status" | "areaId" | "proposerId" | "proposerName" | "proposerEmail" | "proposerAffiliation" | "reviewerId" | "decidedById" | "decisionNote" | "decidedAt" | "decisionSentAt" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["proposal"]>
 export type ProposalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   area?: boolean | Prisma.Proposal$areaArgs<ExtArgs>
   proposer?: boolean | Prisma.Proposal$proposerArgs<ExtArgs>
@@ -1991,6 +2050,11 @@ export type $ProposalPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
      */
     decisionNote: string | null
     decidedAt: Date | null
+    /**
+     * When the proposer was told. Cleared whenever the decision changes, so a
+     * second decision is told as well as the first.
+     */
+    decisionSentAt: Date | null
     /**
      * The project it became, once an administrator approved it.
      */
@@ -2443,6 +2507,7 @@ export interface ProposalFieldRefs {
   readonly decidedById: Prisma.FieldRef<"Proposal", 'String'>
   readonly decisionNote: Prisma.FieldRef<"Proposal", 'String'>
   readonly decidedAt: Prisma.FieldRef<"Proposal", 'DateTime'>
+  readonly decisionSentAt: Prisma.FieldRef<"Proposal", 'DateTime'>
   readonly projectId: Prisma.FieldRef<"Proposal", 'String'>
   readonly createdAt: Prisma.FieldRef<"Proposal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Proposal", 'DateTime'>

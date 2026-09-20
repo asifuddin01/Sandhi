@@ -14,11 +14,13 @@ import {
   isApplicationStatus,
   isRating,
   MAX_APPLICATION_NOTE,
+  MAX_DECISION_MESSAGE,
+  tellsApplicant,
   type ApplicationStatusValue,
 } from "@/lib/applications";
 import { logUndeliveredLink } from "@/lib/auth";
 import { getDb } from "@/lib/db";
-import { sendInvitationEmail } from "@/lib/email";
+import { sendApplicationDecisionEmail, sendInvitationEmail } from "@/lib/email";
 import {
   createInvitationToken,
   INVITATION_LIFETIME_MS,
@@ -34,10 +36,69 @@ function field(formData: FormData, name: string): string {
 async function application(id: string) {
   const record = await getDb().application.findUnique({
     where: { id },
-    select: { id: true, name: true, email: true, status: true, rating: true },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      status: true,
+      rating: true,
+      decisionSentAt: true,
+    },
   });
   if (!record) throw new AdminActionError("That application no longer exists.");
   return record;
+}
+
+/**
+ * Tells the applicant, and records that they were told. The decision itself
+ * is already saved by the time this runs: an email that fails must not undo
+ * a decision the lab has made, so the failure is reported and the page keeps
+ * offering to send it again.
+ */
+async function tell(
+  id: string,
+  applicant: { name: string; email: string; status: string },
+  message: string | null,
+  actorId: string,
+): Promise<boolean> {
+  try {
+    await sendApplicationDecisionEmail({
+      to: applicant.email,
+      name: applicant.name,
+      accepted: applicant.status === "ACCEPTED",
+      message,
+    });
+  } catch (error) {
+    console.error("[admin] application decision email failed:", error);
+    return false;
+  }
+
+  await getDb().$transaction(async (transaction) => {
+    await transaction.application.update({
+      where: { id },
+      data: { decisionSentAt: new Date() },
+    });
+    await recordAudit(transaction, {
+      actorId,
+      action: "application.told",
+      entity: "Application",
+      entityId: id,
+      // Whether a message was added, never the message: it was written for
+      // one person, and the audit log is read by more.
+      diff: { status: applicant.status, withMessage: message !== null },
+    });
+  });
+  return true;
+}
+
+function decisionMessage(formData: FormData): string | null {
+  const value = field(formData, "message").trim();
+  if (value.length > MAX_DECISION_MESSAGE) {
+    throw new AdminActionError(
+      `Keep the message to the applicant within ${MAX_DECISION_MESSAGE} characters.`,
+    );
+  }
+  return value || null;
 }
 
 function refresh(id: string): void {
@@ -68,11 +129,14 @@ export async function setApplicationStatusAction(
     if (record.status === next) {
       return { status: "success", message: "Nothing changed." };
     }
+    const message = decisionMessage(formData);
 
     await getDb().$transaction(async (transaction) => {
       await transaction.application.update({
         where: { id: record.id },
-        data: { status: next },
+        // A new decision has not been told yet, whatever was told about the
+        // last one.
+        data: { status: next, decisionSentAt: null },
       });
       await recordAudit(transaction, {
         actorId: viewer.userId,
@@ -83,9 +147,24 @@ export async function setApplicationStatusAction(
       });
     });
 
+    if (!tellsApplicant(next)) {
+      return {
+        status: "success",
+        message: `Moved to ${APPLICATION_STATUS_LABELS[next]}.`,
+      };
+    }
+
+    const told = await tell(
+      record.id,
+      { ...record, status: next },
+      message,
+      viewer.userId,
+    );
     return {
-      status: "success",
-      message: `Moved to ${APPLICATION_STATUS_LABELS[next]}.`,
+      status: told ? "success" : "error",
+      message: told
+        ? `Moved to ${APPLICATION_STATUS_LABELS[next]}, and ${record.name} has been told.`
+        : `Moved to ${APPLICATION_STATUS_LABELS[next]}, but the email to ${record.email} did not go. Send it again below.`,
     };
   });
   refresh(id);
@@ -169,6 +248,42 @@ export async function addApplicationNoteAction(
     });
 
     return { status: "success", message: "Note added." };
+  });
+  refresh(id);
+  return result;
+}
+
+/**
+ * Sends a decision that was made but never reached the person — because the
+ * email failed at the time. Without this, an administrator can see that
+ * nobody was told and have no way to put it right.
+ */
+export async function sendDecisionAgainAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const id = field(formData, "id");
+  const result = await runAdminAction("applications:manage", async (viewer) => {
+    const record = await application(id);
+    if (!tellsApplicant(record.status)) {
+      throw new AdminActionError("There is no decision to tell them about.");
+    }
+    if (record.decisionSentAt) {
+      return { status: "success", message: "They have already been told." };
+    }
+
+    const told = await tell(
+      record.id,
+      record,
+      decisionMessage(formData),
+      viewer.userId,
+    );
+    if (!told) {
+      throw new AdminActionError(
+        `The email to ${record.email} did not go. Check the email settings.`,
+      );
+    }
+    return { status: "success", message: `${record.name} has been told.` };
   });
   refresh(id);
   return result;

@@ -25,6 +25,7 @@ export interface ApplicationsIndex {
     type: string;
     status: string;
     rating: number | null;
+    decisionSentAt: Date | null;
     createdAt: Date;
     opportunity: { title: string } | null;
     notes: number;
@@ -101,6 +102,7 @@ export async function getApplicationsIndex({
         type: true,
         status: true,
         rating: true,
+        decisionSentAt: true,
         createdAt: true,
         opportunity: { select: { title: true } },
         _count: { select: { notes: true } },
@@ -158,6 +160,7 @@ export async function getApplication(id: string) {
       hoursPerWeek: true,
       rating: true,
       consent: true,
+      decisionSentAt: true,
       createdAt: true,
       updatedAt: true,
       // The keys themselves never reach the page: a file is reached through

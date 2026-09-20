@@ -13,10 +13,11 @@ import {
   canMove,
   PROPOSAL_STATUS_LABELS,
   PROPOSAL_STATUS_MEANING,
+  tellsProposer,
   type ProposalStatusValue,
 } from "@/lib/proposals";
 
-import { ApproveProposal, ReviewMoves } from "./ReviewForms";
+import { ApproveProposal, ReviewMoves, TellProposerAgain } from "./ReviewForms";
 
 export const metadata: Metadata = { title: "Proposal" };
 
@@ -180,6 +181,23 @@ export default async function ProposalPage({
         <section className={styles.section} aria-labelledby="proposal-note">
           <h2 id="proposal-note">On the record</h2>
           <Prose>{proposal.decisionNote}</Prose>
+        </section>
+      ) : null}
+
+      {tellsProposer(status) ? (
+        <section className={styles.section} aria-labelledby="proposal-told">
+          <h2 id="proposal-told">The proposer</h2>
+          {proposal.decisionSentAt ? (
+            <p className={styles.hint}>
+              {proposal.proposerName} was told on{" "}
+              <time dateTime={proposal.decisionSentAt.toISOString()}>
+                {formatAdminTime(proposal.decisionSentAt)}
+              </time>
+              .
+            </p>
+          ) : (
+            <TellProposerAgain id={proposal.id} name={proposal.proposerName} />
+          )}
         </section>
       ) : null}
 

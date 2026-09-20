@@ -53,6 +53,16 @@ export function canInvite(status: string): boolean {
   return status === "ACCEPTED";
 }
 
+/**
+ * The two decisions an applicant is entitled to hear. Everything else is the
+ * lab talking to itself: being read, or shortlisted, is not an answer.
+ */
+export function tellsApplicant(status: string): boolean {
+  return status === "ACCEPTED" || status === "REJECTED";
+}
+
+export const MAX_DECISION_MESSAGE = 2000;
+
 export function isApplicationStatus(
   value: string,
 ): value is ApplicationStatusValue {

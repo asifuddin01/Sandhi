@@ -4523,6 +4523,7 @@ export const ApplicationScalarFieldEnum = {
   proposalKey: 'proposalKey',
   hoursPerWeek: 'hoursPerWeek',
   consent: 'consent',
+  decisionSentAt: 'decisionSentAt',
   opportunityId: 'opportunityId',
   rating: 'rating',
   createdAt: 'createdAt',
@@ -4561,6 +4562,7 @@ export const ProposalScalarFieldEnum = {
   decidedById: 'decidedById',
   decisionNote: 'decisionNote',
   decidedAt: 'decidedAt',
+  decisionSentAt: 'decisionSentAt',
   projectId: 'projectId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

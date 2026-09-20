@@ -9,6 +9,7 @@ import {
   APPLICATION_STATUS_LABELS,
   canInvite,
   RATING_LABELS,
+  tellsApplicant,
   typeLabel,
   type ApplicationStatusValue,
 } from "@/lib/applications";
@@ -19,6 +20,7 @@ import {
   NoteForm,
   RatingForm,
   StatusForm,
+  TellAgain,
 } from "./ReviewForms";
 
 export const metadata: Metadata = { title: "Application" };
@@ -206,6 +208,19 @@ export default async function ApplicationPage({
 
       <section className={styles.section} aria-labelledby="decide">
         <h2 id="decide">Where this has got to</h2>
+        {tellsApplicant(status) ? (
+          application.decisionSentAt ? (
+            <p className={styles.hint}>
+              {application.name} was told on{" "}
+              <time dateTime={application.decisionSentAt.toISOString()}>
+                {formatAdminTime(application.decisionSentAt)}
+              </time>
+              .
+            </p>
+          ) : (
+            <TellAgain id={application.id} name={application.name} />
+          )
+        ) : null}
         <StatusForm id={application.id} status={status} />
         <RatingForm id={application.id} rating={application.rating} />
         {mayInvite && alreadyHasAccount ? (

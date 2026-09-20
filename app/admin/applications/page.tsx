@@ -8,6 +8,7 @@ import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUSES,
   joinTypeOptions,
+  tellsApplicant,
   typeLabel,
 } from "@/lib/applications";
 import { requireCapability } from "@/lib/authz";
@@ -166,6 +167,13 @@ export default async function ApplicationsAdminPage({
                     {APPLICATION_STATUS_LABELS[
                       application.status as keyof typeof APPLICATION_STATUS_LABELS
                     ] ?? application.status}
+                    {/* A decision nobody heard is the thing this screen
+                        exists to prevent, so it shows here rather than only
+                        on the application itself. */}
+                    {tellsApplicant(application.status) &&
+                    !application.decisionSentAt ? (
+                      <span className={styles.rowSub}>Not told yet</span>
+                    ) : null}
                   </td>
                   <td>{application.rating ?? "—"}</td>
                   <td>

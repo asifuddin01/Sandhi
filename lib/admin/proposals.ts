@@ -128,6 +128,7 @@ export async function getProposal(id: string) {
       status: true,
       decisionNote: true,
       decidedAt: true,
+      decisionSentAt: true,
       createdAt: true,
       proposerName: true,
       proposerEmail: true,

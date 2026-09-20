@@ -6,6 +6,7 @@ import {
   APPLICATION_STATUS_LABELS,
   APPLICATION_STATUSES,
   MAX_APPLICATION_NOTE,
+  MAX_DECISION_MESSAGE,
   RATING_LABELS,
   RATINGS,
 } from "@/lib/applications";
@@ -15,6 +16,7 @@ import {
   addApplicationNoteAction,
   inviteApplicantAction,
   rateApplicationAction,
+  sendDecisionAgainAction,
   setApplicationStatusAction,
 } from "../actions";
 
@@ -44,9 +46,51 @@ export function StatusForm({ id, status }: { id: string; status: string }) {
           ))}
         </select>
       </div>
+      <div className={styles.field}>
+        <label htmlFor="application-message">What to tell them</label>
+        <textarea
+          id="application-message"
+          maxLength={MAX_DECISION_MESSAGE}
+          name="message"
+          rows={3}
+        />
+        <p className={styles.hint}>
+          Optional, and sent to the applicant when the state becomes Accepted or
+          Not this time. This is not a note: they read it.
+        </p>
+      </div>
       <SubmitButton tone="quiet" pending="Saving…">
         Set state
       </SubmitButton>
+    </ActionForm>
+  );
+}
+
+/**
+ * Shown when a decision was made but the email never went. A decision the
+ * person never hears is the thing this whole screen exists to prevent, so it
+ * is stated plainly rather than left to somebody noticing.
+ */
+export function TellAgain({ id, name }: { id: string; name: string }) {
+  return (
+    <ActionForm action={sendDecisionAgainAction} className={styles.actionForm}>
+      <input type="hidden" name="id" value={id} />
+      <p className={styles.notice} role="status">
+        {name} has <strong>not</strong> been told this decision — the email did
+        not go.
+      </p>
+      <div className={styles.field}>
+        <label htmlFor="application-retry-message">
+          Message to send with it
+        </label>
+        <textarea
+          id="application-retry-message"
+          maxLength={MAX_DECISION_MESSAGE}
+          name="message"
+          rows={3}
+        />
+      </div>
+      <SubmitButton pending="Sending…">Send it now</SubmitButton>
     </ActionForm>
   );
 }

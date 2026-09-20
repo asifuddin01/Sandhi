@@ -40,6 +40,17 @@ export const PROPOSAL_STATUS_MEANING: Record<ProposalStatusValue, string> = {
  */
 export const POSTED_STATUSES = ["QUEUED", "APPROVED"] as const;
 
+/**
+ * The two outcomes whoever sent an idea is entitled to hear. A proposal can
+ * come from somebody with no account, so an untold decision is a decision
+ * they will never learn.
+ */
+export const MAX_PROPOSER_MESSAGE = 2000;
+
+export function tellsProposer(status: string): boolean {
+  return status === "APPROVED" || status === "DECLINED";
+}
+
 export function isPosted(status: string): boolean {
   return (POSTED_STATUSES as readonly string[]).includes(status);
 }

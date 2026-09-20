@@ -2,9 +2,58 @@
 
 import { ActionForm, SubmitButton } from "@/components/admin/AdminForms";
 import styles from "@/components/admin/Admin.module.css";
-import { MAX_DECISION_NOTE } from "@/lib/proposals";
+import { MAX_DECISION_NOTE, MAX_PROPOSER_MESSAGE } from "@/lib/proposals";
 
-import { approveProposalAction, reviewProposalAction } from "../actions";
+import {
+  approveProposalAction,
+  reviewProposalAction,
+  tellProposerAgainAction,
+} from "../actions";
+
+/**
+ * What the person who sent the idea is told. Kept apart from the decision
+ * note on purpose: the note is for whoever picks this up next and is never
+ * shown outside the lab, and mixing the two is how an internal remark ends
+ * up in a stranger's inbox.
+ */
+function ProposerMessage({
+  id,
+  label = "What to tell them",
+}: {
+  id: string;
+  label?: string;
+}) {
+  return (
+    <div className={styles.field}>
+      <label htmlFor={`proposer-message-${id}`}>{label}</label>
+      <textarea
+        id={`proposer-message-${id}`}
+        maxLength={MAX_PROPOSER_MESSAGE}
+        name="proposerMessage"
+        rows={3}
+      />
+      <p className={styles.hint}>
+        Optional, and sent to the proposer when a proposal is approved or sent
+        back. They read this; the note above they never see.
+      </p>
+    </div>
+  );
+}
+
+/** Shown when a decision was made but its email never went. */
+export function TellProposerAgain({ id, name }: { id: string; name: string }) {
+  return (
+    <ActionForm action={tellProposerAgainAction} className={styles.actionForm}>
+      <input type="hidden" name="id" value={id} />
+      <p className={styles.notice} role="status">
+        {name} has <strong>not</strong> been told this decision — the email did
+        not go.
+      </p>
+      <ProposerMessage id={`${id}-retry`} label="Message to send with it" />
+      <SubmitButton pending="Sending…">Send it now</SubmitButton>
+    </ActionForm>
+  );
+}
 
 /**
  * A reviewer's move on one proposal. The note travels with it, because the
@@ -35,6 +84,7 @@ export function ReviewMoves({
           Never shown publicly. Written for whoever picks this up next.
         </p>
       </div>
+      <ProposerMessage id={id} />
       <div className={styles.fieldRow}>
         {moves.map((move) => (
           <SubmitButton
@@ -92,6 +142,7 @@ export function ApproveProposal({
           maxLength={MAX_DECISION_NOTE}
         />
       </div>
+      <ProposerMessage id={`${id}-approve`} />
       <SubmitButton pending="Approving…">
         Approve and make it a project
       </SubmitButton>

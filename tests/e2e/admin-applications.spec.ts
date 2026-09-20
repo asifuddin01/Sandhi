@@ -41,11 +41,11 @@ async function restore() {
     await db.invitation.deleteMany({ where: { email: ACCEPTED } });
     await db.application.updateMany({
       where: { email: ACCEPTED },
-      data: { status: "ACCEPTED", rating: null },
+      data: { status: "ACCEPTED", rating: null, decisionSentAt: null },
     });
     await db.application.updateMany({
       where: { email: NEW_ONE },
-      data: { status: "NEW", rating: null },
+      data: { status: "NEW", rating: null, decisionSentAt: null },
     });
     await db.auditLog.deleteMany({
       where: { action: { startsWith: "application." } },
@@ -175,6 +175,70 @@ test("accepting is what offers an invitation, and sending it says so", async ({
     await expect(
       page.getByText(/An invitation has been sent to Fixture Accepted/u),
     ).toBeVisible();
+  } finally {
+    await restore();
+  }
+});
+
+test("a decision reaches the applicant, and says so on the record", async ({
+  page,
+}) => {
+  test.slow();
+  try {
+    const id = await idOf(NEW_ONE);
+    await signIn(
+      page,
+      "fixture-admin@sandhi.test",
+      `/admin/applications/${id}`,
+    );
+
+    // Moving through the queue tells nobody: being read is not an answer.
+    await page.getByLabel("State").selectOption("IN_REVIEW");
+    await page.getByRole("button", { name: "Set state" }).click();
+    await expect(page.getByText("Moved to Being read.")).toBeVisible();
+    await expect(page.getByText(/has been told/u)).toHaveCount(0);
+
+    // The decision does, with the words the administrator chose.
+    await page.getByLabel("State").selectOption("REJECTED");
+    await page
+      .getByLabel("What to tell them", { exact: true })
+      .fill("Do write again after your thesis.");
+    await page.getByRole("button", { name: "Set state" }).click();
+    await expect(
+      page.getByText(/Fixture Applicant has been told/u),
+    ).toBeVisible({ timeout: 30_000 });
+
+    await page.reload();
+    await page.waitForLoadState("networkidle");
+    await expect(page.getByText(/was told on/u)).toBeVisible();
+    await expect(page.getByRole("button", { name: "Send it now" })).toHaveCount(
+      0,
+    );
+
+    const db = createPrismaClient();
+    try {
+      const application = await db.application.findFirstOrThrow({
+        where: { email: NEW_ONE },
+        select: { decisionSentAt: true },
+      });
+      expect(application.decisionSentAt).not.toBeNull();
+      // Telling them is audited, and the audit does not carry what was said.
+      const audit = await db.auditLog.findFirstOrThrow({
+        where: { action: "application.told" },
+        select: { diff: true },
+      });
+      expect(JSON.stringify(audit.diff)).not.toContain("thesis");
+      expect(audit.diff).toMatchObject({ withMessage: true });
+    } finally {
+      await db.$disconnect();
+    }
+
+    // Changing the decision means they have not been told the new one.
+    await page.getByLabel("State").selectOption("SHORTLISTED");
+    await page.getByRole("button", { name: "Set state" }).click();
+    await expect(page.getByText("Moved to Shortlisted.")).toBeVisible();
+    await page.goto("/admin/applications?status=SHORTLISTED");
+    await expect(page.getByText("Not told yet")).toHaveCount(0);
   } finally {
     await restore();
   }

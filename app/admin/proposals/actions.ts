@@ -13,11 +13,14 @@ import { cacheTags } from "@/lib/cache-tags";
 import { slugify } from "@/lib/content-state";
 import { getDb } from "@/lib/db";
 import { workspaceMemberId } from "@/lib/portal-content";
+import { sendProposalDecisionEmail } from "@/lib/email";
 import {
   canApprove,
   canMove,
   MAX_DECISION_NOTE,
+  MAX_PROPOSER_MESSAGE,
   REVIEW_TRANSITIONS,
+  tellsProposer,
   type ReviewMove,
 } from "@/lib/proposals";
 
@@ -32,6 +35,68 @@ function note(formData: FormData): string | null {
     throw new AdminActionError("That note is too long to save.");
   }
   return value || null;
+}
+
+/**
+ * What the proposer is told, which is not the decision note. The note is
+ * written for whoever picks the proposal up next and the schema says it is
+ * never shown publicly; this is written for the person who sent the idea in.
+ */
+function proposerMessage(formData: FormData): string | null {
+  const value = field(formData, "proposerMessage").trim();
+  if (value.length > MAX_PROPOSER_MESSAGE) {
+    throw new AdminActionError("That message to the proposer is too long.");
+  }
+  return value || null;
+}
+
+/**
+ * Tells whoever sent the idea, and records that they were told. The decision
+ * is already saved: a failed email must not undo it, so the failure is
+ * reported and the proposal keeps showing that nobody was told.
+ */
+async function tellProposer(
+  proposal: {
+    id: string;
+    title: string;
+    proposerName: string;
+    proposerEmail: string;
+  },
+  approved: boolean,
+  message: string | null,
+  actorId: string,
+): Promise<boolean> {
+  try {
+    await sendProposalDecisionEmail({
+      to: proposal.proposerEmail,
+      name: proposal.proposerName,
+      title: proposal.title,
+      approved,
+      message,
+      // An approved proposal becomes a DRAFT project, so there is nothing
+      // for the proposer to open yet. A link to a page they cannot see
+      // would be worse than no link.
+      url: null,
+    });
+  } catch (error) {
+    console.error("[admin] proposal decision email failed:", error);
+    return false;
+  }
+
+  await getDb().$transaction(async (tx) => {
+    await tx.proposal.update({
+      where: { id: proposal.id },
+      data: { decisionSentAt: new Date() },
+    });
+    await recordAudit(tx, {
+      actorId,
+      action: "proposal.told",
+      entity: "Proposal",
+      entityId: proposal.id,
+      diff: { approved, withMessage: message !== null },
+    });
+  });
+  return true;
 }
 
 /**
@@ -53,7 +118,12 @@ export async function reviewProposalAction(
     const db = getDb();
     const proposal = await db.proposal.findUnique({
       where: { id },
-      select: { status: true, title: true },
+      select: {
+        status: true,
+        title: true,
+        proposerName: true,
+        proposerEmail: true,
+      },
     });
     if (!proposal) throw new AdminActionError("That proposal is gone.");
     if (!canMove(proposal.status, move)) {
@@ -65,6 +135,8 @@ export async function reviewProposalAction(
     const reviewerId = workspaceMemberId(viewer);
     const next = REVIEW_TRANSITIONS[move].to;
 
+    const message = proposerMessage(formData);
+
     await db.$transaction(async (tx) => {
       await tx.proposal.update({
         where: { id },
@@ -72,6 +144,8 @@ export async function reviewProposalAction(
           status: next,
           reviewerId,
           decisionNote: note(formData),
+          // A new decision has not been told yet, whatever was told before.
+          decisionSentAt: null,
           ...(move === "decline" ? { decidedAt: new Date() } : {}),
         },
       });
@@ -85,20 +159,84 @@ export async function reviewProposalAction(
     });
 
     invalidate(cacheTags.proposals);
-    return {
-      status: "success",
-      message:
-        move === "queue"
-          ? "Queued. The lab can see it and say who is in."
-          : move === "decline"
-            ? "Sent back. The reason is on the record."
+
+    if (!tellsProposer(next)) {
+      return {
+        status: "success",
+        message:
+          move === "queue"
+            ? "Queued. The lab can see it and say who is in."
             : "Taken. It is yours to read.",
+      };
+    }
+
+    const told = await tellProposer(
+      { id, ...proposal },
+      false,
+      message,
+      viewer.userId,
+    );
+    return {
+      status: told ? "success" : "error",
+      message: told
+        ? `Sent back, and ${proposal.proposerName} has been told.`
+        : `Sent back, but the email to ${proposal.proposerEmail} did not go. Send it again below.`,
     };
   });
 
   revalidatePath("/admin/proposals");
   revalidatePath(`/admin/proposals/${id}`);
   revalidatePath("/portal/proposals");
+  return result;
+}
+
+/**
+ * Sends a decision that was made but never reached the proposer, because the
+ * email failed at the time. Without it, a reviewer can see that nobody was
+ * told and have no way to put it right.
+ */
+export async function tellProposerAgainAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const id = field(formData, "id");
+  const result = await runAdminAction("proposals:review", async (viewer) => {
+    const proposal = await getDb().proposal.findUnique({
+      where: { id },
+      select: {
+        status: true,
+        title: true,
+        proposerName: true,
+        proposerEmail: true,
+        decisionSentAt: true,
+      },
+    });
+    if (!proposal) throw new AdminActionError("That proposal is gone.");
+    if (!tellsProposer(proposal.status)) {
+      throw new AdminActionError("There is no decision to tell them about.");
+    }
+    if (proposal.decisionSentAt) {
+      return { status: "success", message: "They have already been told." };
+    }
+
+    const told = await tellProposer(
+      { id, ...proposal },
+      proposal.status === "APPROVED",
+      proposerMessage(formData),
+      viewer.userId,
+    );
+    if (!told) {
+      throw new AdminActionError(
+        `The email to ${proposal.proposerEmail} did not go. Check the email settings.`,
+      );
+    }
+    return {
+      status: "success",
+      message: `${proposal.proposerName} has been told.`,
+    };
+  });
+  revalidatePath(`/admin/proposals/${id}`);
+  revalidatePath("/admin/proposals");
   return result;
 }
 
@@ -129,6 +267,8 @@ export async function approveProposalAction(
         outcome: true,
         areaId: true,
         projectId: true,
+        proposerName: true,
+        proposerEmail: true,
         interests: { select: { memberId: true } },
       },
     });
@@ -189,6 +329,7 @@ export async function approveProposalAction(
           decidedById: workspaceMemberId(viewer),
           decidedAt: new Date(),
           decisionNote,
+          decisionSentAt: null,
         },
       });
 
@@ -204,9 +345,19 @@ export async function approveProposalAction(
     });
 
     invalidate(cacheTags.proposals, cacheTags.projects);
+
+    const became = `Approved. It is now the project /projects/${project.slug}, with ${interested.length} ${interested.length === 1 ? "person" : "people"} on it.`;
+    const told = await tellProposer(
+      { id, ...proposal },
+      true,
+      proposerMessage(formData),
+      viewer.userId,
+    );
     return {
-      status: "success",
-      message: `Approved. It is now the project /projects/${project.slug}, with ${interested.length} ${interested.length === 1 ? "person" : "people"} on it.`,
+      status: told ? "success" : "error",
+      message: told
+        ? `${became} ${proposal.proposerName} has been told.`
+        : `${became} The email to ${proposal.proposerEmail} did not go — send it again below.`,
     };
   });
 

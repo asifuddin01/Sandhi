@@ -521,6 +521,48 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### Telling people what was decided
+
+Both inbound paths recorded a decision and told nobody. Somebody sent in an
+idea, or applied to join, and the answer existed only inside the lab. The
+confirmation email an applicant already receives says we "read every
+application and will reply by email", so this was a broken promise rather
+than a missing nicety.
+
+A decision now emails the person: `ACCEPTED` or `REJECTED` for an
+application, `APPROVED` or `DECLINED` for a proposal. Nothing else does —
+being read, or shortlisted, or queued, is the lab talking to itself and not
+an answer.
+
+**What they are told is not the internal note.** `Proposal.decisionNote` is
+documented as never shown publicly and is written for whoever picks the
+proposal up next; application notes are the same. Both screens now carry a
+separate "What to tell them" field, and the audit entry records only
+*whether* a message was included, never its text — an audit log is read by
+more people and kept longer than the thing it describes.
+
+`decisionSentAt` on both models records that the person was actually told,
+and is cleared whenever the decision changes, so a second decision is told as
+well as the first. The queue shows **"Not told yet"** against any decided
+application nobody has heard about, because a decision that quietly never
+reached anyone is the exact failure this work exists to prevent.
+
+An email that fails does not undo a decision the lab has made. The decision
+is saved first; if the send fails the administrator is told so in the form's
+own message, the record keeps saying nobody was told, and a **Send it now**
+button stays on the page. Without that, a failure would be both invisible and
+unrecoverable.
+
+An approved proposal becomes a **draft** project, so the email carries no
+link — there is nothing the proposer could open yet, and a link to a page
+they cannot see is worse than none.
+
+Two test faults this exposed, both pre-existing in shape: `proposals.spec.ts`
+creates proposals under one title prefix and deletes by that prefix, so in
+parallel its tests deleted each other's rows; it takes turns now. And the
+decision labels appear on both the review and approve forms, so the decline
+test is scoped to the Review section rather than guessing with `.first()`.
+
 ### Reading what arrives from Join SANDHI
 
 Applications were being collected and emailed to an address, and that was
@@ -559,10 +601,6 @@ Two things worth keeping:
 - **The dashboard's "New applications" count links only for a reader who can
   open it.** A count with nowhere to go is a count nobody acts on; a link to a
   404 is worse.
-
-Still to build here: telling an applicant their decision. A rejection is
-recorded and nobody is told, which is the same hole the proposals pipeline
-has.
 
 ### Writing your profile, on the way in
 
@@ -627,8 +665,7 @@ is set. Files under `public/media` are a stopgap for exactly that window;
 member photos belong in the bucket once the upload manager exists.
 
 Still to build here: admin control of the project stage from the workspace
-rather than only the Projects manager, and email to the proposer when a
-decision is made.
+rather than only the Projects manager.
 
 ## 10a. Portal and admin routes still to build
 

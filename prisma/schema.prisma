@@ -789,6 +789,9 @@ model Application {
   proposalKey     String?
   hoursPerWeek    Int?
   consent         Boolean
+  /// When the applicant was told the decision. Null means they have not been,
+  /// which the queue shows, so a decision cannot quietly go untold.
+  decisionSentAt  DateTime?
   opportunityId   String?
   opportunity     Opportunity?      @relation(fields: [opportunityId], references: [id], onDelete: SetNull)
   notes           ApplicationNote[]
@@ -848,6 +851,9 @@ model Proposal {
   /// Why it was queued, approved or declined. Never shown to the public.
   decisionNote String?
   decidedAt   DateTime?
+  /// When the proposer was told. Cleared whenever the decision changes, so a
+  /// second decision is told as well as the first.
+  decisionSentAt DateTime?
 
   /// The project it became, once an administrator approved it.
   projectId   String?        @unique

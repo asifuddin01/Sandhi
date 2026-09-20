@@ -296,3 +296,94 @@ export async function sendSecurityNotice(
     dependencies,
   );
 }
+
+/**
+ * Tells an applicant what the lab decided. The site promises, on the
+ * confirmation they already have, that we "read every application and will
+ * reply by email" — so not sending this is a broken promise, not a missing
+ * nicety.
+ *
+ * `message` is written by an administrator for this person. Private notes on
+ * the application are a different thing and never travel here.
+ */
+export async function sendApplicationDecisionEmail(
+  {
+    to,
+    name,
+    accepted,
+    message,
+  }: { to: string; name: string; accepted: boolean; message: string | null },
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  const opening = accepted
+    ? "We would like you to join SANDHI. An invitation to the member portal follows separately; it carries a link to set up your account."
+    : "After reading your application carefully, we are not able to take it further this time.";
+  const closing = accepted
+    ? "We are glad you wrote to us."
+    : "Thank you for the time you put into applying. We hope you will consider us again.";
+
+  const body = [opening, message, closing].filter(Boolean) as string[];
+
+  return sendEmail(
+    {
+      to,
+      // The same subject either way. A refusal does not need to announce
+      // itself in a notification on somebody's phone.
+      subject: "Your SANDHI application",
+      text: `Hello ${name},\n\n${body.join("\n\n")}\n\nSANDHI Research Lab`,
+      html: `<p>Hello ${escapeHtml(name)},</p>${body
+        .map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`)
+        .join("")}<p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}
+
+/**
+ * Tells whoever sent in a research idea what became of it. A proposal can
+ * come from someone with no account at all, so this is the only way they
+ * ever hear.
+ */
+export async function sendProposalDecisionEmail(
+  {
+    to,
+    name,
+    title,
+    approved,
+    message,
+    url,
+  }: {
+    to: string;
+    name: string;
+    title: string;
+    approved: boolean;
+    message: string | null;
+    url: string | null;
+  },
+  dependencies: EmailDependencies = {},
+): Promise<EmailDelivery> {
+  const opening = approved
+    ? `Your proposal, “${title}”, has been taken up by the lab and is now a project.`
+    : `Thank you for sending us “${title}”. We are not taking it up.`;
+  const closing = approved
+    ? "Someone will be in touch about the work itself."
+    : "We read every idea that reaches us, and we are glad you sent this one.";
+
+  const body = [opening, message, url, closing].filter(Boolean) as string[];
+
+  return sendEmail(
+    {
+      to,
+      subject: `Your proposal: ${title}`,
+      text: `Hello ${name},\n\n${body.join("\n\n")}\n\nSANDHI Research Lab`,
+      html: `<p>Hello ${escapeHtml(name)},</p>${body
+        .map((paragraph) =>
+          paragraph === url && url
+            ? `<p><a href="${escapeHtml(url)}">${escapeHtml(url)}</a></p>`
+            : `<p>${escapeHtml(paragraph)}</p>`,
+        )
+        .join("")}<p>SANDHI Research Lab</p>`,
+    },
+    dependencies,
+  );
+}

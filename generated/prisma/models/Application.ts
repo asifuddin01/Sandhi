@@ -58,6 +58,7 @@ export type ApplicationMinAggregateOutputType = {
   proposalKey: string | null
   hoursPerWeek: number | null
   consent: boolean | null
+  decisionSentAt: Date | null
   opportunityId: string | null
   rating: number | null
   createdAt: Date | null
@@ -86,6 +87,7 @@ export type ApplicationMaxAggregateOutputType = {
   proposalKey: string | null
   hoursPerWeek: number | null
   consent: boolean | null
+  decisionSentAt: Date | null
   opportunityId: string | null
   rating: number | null
   createdAt: Date | null
@@ -115,6 +117,7 @@ export type ApplicationCountAggregateOutputType = {
   proposalKey: number
   hoursPerWeek: number
   consent: number
+  decisionSentAt: number
   opportunityId: number
   rating: number
   createdAt: number
@@ -155,6 +158,7 @@ export type ApplicationMinAggregateInputType = {
   proposalKey?: true
   hoursPerWeek?: true
   consent?: true
+  decisionSentAt?: true
   opportunityId?: true
   rating?: true
   createdAt?: true
@@ -183,6 +187,7 @@ export type ApplicationMaxAggregateInputType = {
   proposalKey?: true
   hoursPerWeek?: true
   consent?: true
+  decisionSentAt?: true
   opportunityId?: true
   rating?: true
   createdAt?: true
@@ -212,6 +217,7 @@ export type ApplicationCountAggregateInputType = {
   proposalKey?: true
   hoursPerWeek?: true
   consent?: true
+  decisionSentAt?: true
   opportunityId?: true
   rating?: true
   createdAt?: true
@@ -328,6 +334,7 @@ export type ApplicationGroupByOutputType = {
   proposalKey: string | null
   hoursPerWeek: number | null
   consent: boolean
+  decisionSentAt: Date | null
   opportunityId: string | null
   rating: number | null
   createdAt: Date
@@ -380,6 +387,7 @@ export type ApplicationWhereInput = {
   proposalKey?: Prisma.StringNullableFilter<"Application"> | string | null
   hoursPerWeek?: Prisma.IntNullableFilter<"Application"> | number | null
   consent?: Prisma.BoolFilter<"Application"> | boolean
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Application"> | Date | string | null
   opportunityId?: Prisma.StringNullableFilter<"Application"> | string | null
   rating?: Prisma.IntNullableFilter<"Application"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Application"> | Date | string
@@ -411,6 +419,7 @@ export type ApplicationOrderByWithRelationInput = {
   proposalKey?: Prisma.SortOrderInput | Prisma.SortOrder
   hoursPerWeek?: Prisma.SortOrderInput | Prisma.SortOrder
   consent?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   opportunityId?: Prisma.SortOrderInput | Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -445,6 +454,7 @@ export type ApplicationWhereUniqueInput = Prisma.AtLeast<{
   proposalKey?: Prisma.StringNullableFilter<"Application"> | string | null
   hoursPerWeek?: Prisma.IntNullableFilter<"Application"> | number | null
   consent?: Prisma.BoolFilter<"Application"> | boolean
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Application"> | Date | string | null
   opportunityId?: Prisma.StringNullableFilter<"Application"> | string | null
   rating?: Prisma.IntNullableFilter<"Application"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Application"> | Date | string
@@ -476,6 +486,7 @@ export type ApplicationOrderByWithAggregationInput = {
   proposalKey?: Prisma.SortOrderInput | Prisma.SortOrder
   hoursPerWeek?: Prisma.SortOrderInput | Prisma.SortOrder
   consent?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrderInput | Prisma.SortOrder
   opportunityId?: Prisma.SortOrderInput | Prisma.SortOrder
   rating?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -513,6 +524,7 @@ export type ApplicationScalarWhereWithAggregatesInput = {
   proposalKey?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   hoursPerWeek?: Prisma.IntNullableWithAggregatesFilter<"Application"> | number | null
   consent?: Prisma.BoolWithAggregatesFilter<"Application"> | boolean
+  decisionSentAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Application"> | Date | string | null
   opportunityId?: Prisma.StringNullableWithAggregatesFilter<"Application"> | string | null
   rating?: Prisma.IntNullableWithAggregatesFilter<"Application"> | number | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Application"> | Date | string
@@ -542,6 +554,7 @@ export type ApplicationCreateInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   rating?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -572,6 +585,7 @@ export type ApplicationUncheckedCreateInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   opportunityId?: string | null
   rating?: number | null
   createdAt?: Date | string
@@ -602,6 +616,7 @@ export type ApplicationUpdateInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -632,6 +647,7 @@ export type ApplicationUncheckedUpdateInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -662,6 +678,7 @@ export type ApplicationCreateManyInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   opportunityId?: string | null
   rating?: number | null
   createdAt?: Date | string
@@ -691,6 +708,7 @@ export type ApplicationUpdateManyMutationInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -719,6 +737,7 @@ export type ApplicationUncheckedUpdateManyInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -758,6 +777,7 @@ export type ApplicationCountOrderByAggregateInput = {
   proposalKey?: Prisma.SortOrder
   hoursPerWeek?: Prisma.SortOrder
   consent?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -791,6 +811,7 @@ export type ApplicationMaxOrderByAggregateInput = {
   proposalKey?: Prisma.SortOrder
   hoursPerWeek?: Prisma.SortOrder
   consent?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -819,6 +840,7 @@ export type ApplicationMinOrderByAggregateInput = {
   proposalKey?: Prisma.SortOrder
   hoursPerWeek?: Prisma.SortOrder
   consent?: Prisma.SortOrder
+  decisionSentAt?: Prisma.SortOrder
   opportunityId?: Prisma.SortOrder
   rating?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -931,6 +953,7 @@ export type ApplicationCreateWithoutOpportunityInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   rating?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -960,6 +983,7 @@ export type ApplicationUncheckedCreateWithoutOpportunityInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   rating?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1018,6 +1042,7 @@ export type ApplicationScalarWhereInput = {
   proposalKey?: Prisma.StringNullableFilter<"Application"> | string | null
   hoursPerWeek?: Prisma.IntNullableFilter<"Application"> | number | null
   consent?: Prisma.BoolFilter<"Application"> | boolean
+  decisionSentAt?: Prisma.DateTimeNullableFilter<"Application"> | Date | string | null
   opportunityId?: Prisma.StringNullableFilter<"Application"> | string | null
   rating?: Prisma.IntNullableFilter<"Application"> | number | null
   createdAt?: Prisma.DateTimeFilter<"Application"> | Date | string
@@ -1047,6 +1072,7 @@ export type ApplicationCreateWithoutNotesInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   rating?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1076,6 +1102,7 @@ export type ApplicationUncheckedCreateWithoutNotesInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   opportunityId?: string | null
   rating?: number | null
   createdAt?: Date | string
@@ -1121,6 +1148,7 @@ export type ApplicationUpdateWithoutNotesInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1150,6 +1178,7 @@ export type ApplicationUncheckedUpdateWithoutNotesInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   opportunityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1179,6 +1208,7 @@ export type ApplicationCreateManyOpportunityInput = {
   proposalKey?: string | null
   hoursPerWeek?: number | null
   consent: boolean
+  decisionSentAt?: Date | string | null
   rating?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1207,6 +1237,7 @@ export type ApplicationUpdateWithoutOpportunityInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1236,6 +1267,7 @@ export type ApplicationUncheckedUpdateWithoutOpportunityInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1265,6 +1297,7 @@ export type ApplicationUncheckedUpdateManyWithoutOpportunityInput = {
   proposalKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   hoursPerWeek?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   consent?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  decisionSentAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   rating?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1324,6 +1357,7 @@ export type ApplicationSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   proposalKey?: boolean
   hoursPerWeek?: boolean
   consent?: boolean
+  decisionSentAt?: boolean
   opportunityId?: boolean
   rating?: boolean
   createdAt?: boolean
@@ -1356,6 +1390,7 @@ export type ApplicationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.E
   proposalKey?: boolean
   hoursPerWeek?: boolean
   consent?: boolean
+  decisionSentAt?: boolean
   opportunityId?: boolean
   rating?: boolean
   createdAt?: boolean
@@ -1386,6 +1421,7 @@ export type ApplicationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.E
   proposalKey?: boolean
   hoursPerWeek?: boolean
   consent?: boolean
+  decisionSentAt?: boolean
   opportunityId?: boolean
   rating?: boolean
   createdAt?: boolean
@@ -1416,13 +1452,14 @@ export type ApplicationSelectScalar = {
   proposalKey?: boolean
   hoursPerWeek?: boolean
   consent?: boolean
+  decisionSentAt?: boolean
   opportunityId?: boolean
   rating?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "status" | "name" | "email" | "phone" | "institution" | "currentRole" | "interests" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "cvKey" | "motivation" | "experience" | "proposalTitle" | "proposalSummary" | "proposalKey" | "hoursPerWeek" | "consent" | "opportunityId" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["application"]>
+export type ApplicationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "status" | "name" | "email" | "phone" | "institution" | "currentRole" | "interests" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "cvKey" | "motivation" | "experience" | "proposalTitle" | "proposalSummary" | "proposalKey" | "hoursPerWeek" | "consent" | "decisionSentAt" | "opportunityId" | "rating" | "createdAt" | "updatedAt", ExtArgs["result"]["application"]>
 export type ApplicationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   opportunity?: boolean | Prisma.Application$opportunityArgs<ExtArgs>
   notes?: boolean | Prisma.Application$notesArgs<ExtArgs>
@@ -1464,6 +1501,11 @@ export type $ApplicationPayload<ExtArgs extends runtime.Types.Extensions.Interna
     proposalKey: string | null
     hoursPerWeek: number | null
     consent: boolean
+    /**
+     * When the applicant was told the decision. Null means they have not been,
+     * which the queue shows, so a decision cannot quietly go untold.
+     */
+    decisionSentAt: Date | null
     opportunityId: string | null
     rating: number | null
     createdAt: Date
@@ -1915,6 +1957,7 @@ export interface ApplicationFieldRefs {
   readonly proposalKey: Prisma.FieldRef<"Application", 'String'>
   readonly hoursPerWeek: Prisma.FieldRef<"Application", 'Int'>
   readonly consent: Prisma.FieldRef<"Application", 'Boolean'>
+  readonly decisionSentAt: Prisma.FieldRef<"Application", 'DateTime'>
   readonly opportunityId: Prisma.FieldRef<"Application", 'String'>
   readonly rating: Prisma.FieldRef<"Application", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Application", 'DateTime'>
