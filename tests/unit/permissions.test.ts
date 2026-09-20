@@ -5,6 +5,7 @@ import {
   canManageMember,
   capabilityRoles,
   parseSystemRole,
+  requiresFreshStaffSession,
   requiresTwoFactor,
   safeAuthenticatedPath,
   systemRoles,
@@ -104,9 +105,20 @@ describe("post-sign-in redirects", () => {
 });
 
 describe("requiresTwoFactor", () => {
-  it("guards every capability beyond the member portal", () => {
+  it("guards everything, the member portal included", () => {
+    // A member's account reaches unpublished work, colleagues' addresses and
+    // the lab's files. A password alone is one phishing email from being
+    // somebody else's, so there is no capability left that it does not cover.
+    expect(requiresTwoFactor()).toBe(true);
+  });
+});
+
+describe("requiresFreshStaffSession", () => {
+  it("expires administration early, and leaves the member portal alone", () => {
+    // These two rules were once the same condition. Keeping them apart is
+    // what stops a member being signed out twice a day on their own laptop.
     for (const capability of Object.keys(capabilityRoles) as Capability[]) {
-      expect(requiresTwoFactor(capability), capability).toBe(
+      expect(requiresFreshStaffSession(capability), capability).toBe(
         capability !== "portal:access",
       );
     }

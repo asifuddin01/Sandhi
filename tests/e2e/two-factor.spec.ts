@@ -47,7 +47,11 @@ async function invitedAccount(
   await page.getByLabel("New password").fill(PASSWORD);
   await page.getByLabel("Confirm password").fill(PASSWORD);
   await page.getByRole("button", { name: "Create account" }).click();
-  await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
+  // A brand-new account has no authenticator, so the portal does not open
+  // yet: accepting an invitation lands on two-factor setup.
+  await expect(page).toHaveURL(/\/portal(\/security)?(\?|$)/u, {
+    timeout: 30_000,
+  });
 
   return {
     email,
@@ -147,7 +151,7 @@ test("administration needs two-factor authentication, and codes work once", asyn
     await page.goto("/admin");
     await expect(page).toHaveURL(/\/portal\/security\?setup=two-factor$/u);
     await expect(
-      page.getByText(/Your role needs two-factor authentication/u),
+      page.getByText(/Set up two-factor authentication to open the portal/u),
     ).toBeVisible();
 
     // ...and posting a genuine admin action directly changes nothing.
@@ -305,7 +309,7 @@ test("administration needs two-factor authentication, and codes work once", asyn
   }
 });
 
-test("two-factor cannot be turned off over HTTP, or at all by staff", async ({
+test("two-factor cannot be turned off over HTTP, or from the portal", async ({
   page,
   request,
 }) => {
@@ -322,36 +326,98 @@ test("two-factor cannot be turned off over HTTP, or at all by staff", async ({
 
   await signIn(page, "fixture-reviewer@sandhi.test", "/portal/security");
   await expect(
-    page.getByText(/Your role requires two-factor authentication/u),
+    page.getByText(/Every SANDHI account needs two-factor authentication/u),
   ).toBeVisible();
   await expect(
     page.getByRole("button", { name: "Turn off two-factor authentication" }),
   ).toHaveCount(0);
 });
 
-test("members may turn two-factor authentication on and off", async ({
+test("nobody can turn two-factor authentication off, members included", async ({
   page,
 }) => {
   test.slow();
   const account = await invitedAccount(page, "MEMBER");
   try {
     await setUpTwoFactor(page);
-    await page
-      .getByRole("region", { name: "Two-factor authentication" })
-      .getByLabel("Your password")
-      .last()
-      .fill(PASSWORD);
-    await page
-      .getByRole("button", { name: "Turn off two-factor authentication" })
-      .click();
-    await expect(
-      page.getByRole("button", { name: "Set up two-factor authentication" }),
-    ).toBeVisible({ timeout: 30_000 });
 
-    // Signing in again needs only the password.
-    await signOut(page);
-    await signIn(page, account.email, "/portal");
+    // The control is not offered...
+    await expect(
+      page.getByRole("button", { name: "Turn off two-factor authentication" }),
+    ).toHaveCount(0);
+    await expect(
+      page.getByRole("region", { name: "Two-factor authentication" }),
+    ).toContainText("so it stays on");
+
+    // ...and posting the action anyway is refused, not obeyed.
+    const refused = await page.evaluate(async () => {
+      const response = await fetch(window.location.pathname, {
+        method: "POST",
+        headers: { "Next-Action": "disableTwoFactorAction" },
+        body: new FormData(),
+      });
+      return response.status;
+    });
+    expect(refused).toBeLessThan(500);
+
+    const db = createPrismaClient();
+    try {
+      const user = await db.user.findUnique({
+        where: { email: account.email },
+        select: { twoFactorEnabled: true },
+      });
+      expect(user?.twoFactorEnabled).toBe(true);
+    } finally {
+      await db.$disconnect();
+    }
   } finally {
     await account.cleanup();
+  }
+});
+
+test("a member is sent to set up two-factor before the portal opens", async ({
+  page,
+}) => {
+  // A full sign-in and four navigations; the default budget is not enough
+  // when the machine is also running the rest of the suite.
+  test.slow();
+  const db = createPrismaClient();
+  const email = "fixture-fresh@sandhi.test";
+  try {
+    // Start from no authenticator, whatever an earlier test left behind.
+    const user = await db.user.findUnique({
+      where: { email },
+      select: { id: true },
+    });
+    if (!user) throw new Error("No fresh fixture account.");
+    await db.twoFactor.deleteMany({ where: { userId: user.id } });
+    await db.user.update({
+      where: { id: user.id },
+      data: { twoFactorEnabled: false },
+    });
+
+    await page.goto("/portal/sign-in");
+    await page.waitForLoadState("networkidle");
+    await page.getByLabel("Email").fill(email);
+    await page.getByLabel("Password").fill(PASSWORD);
+    await page.getByRole("button", { name: "Sign in", exact: true }).click();
+
+    // No authenticator, so the portal does not open: the setup page does.
+    await page.waitForURL(/\/portal\/security/u, { timeout: 30_000 });
+
+    // And from anywhere else inside the portal, not only its home.
+    for (const path of ["/portal", "/portal/projects", "/portal/diagrams"]) {
+      await page.goto(path);
+      await expect(page, path).toHaveURL(/\/portal\/security/u);
+    }
+
+    // Held there, but not trapped: someone who cannot finish — wrong
+    // account, lost phone — can still leave.
+    // "Sign out" also names a button per signed-in session further down.
+    await expect(
+      page.getByRole("button", { name: "Sign out", exact: true }),
+    ).toBeVisible();
+  } finally {
+    await db.$disconnect();
   }
 });

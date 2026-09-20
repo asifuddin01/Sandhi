@@ -473,6 +473,35 @@ Two switches, both off by default:
 Research lead stays a per-project and per-area fact (`ProjectMember.isLead`,
 `MemberArea.isLead`), never an entry in the permission matrix.
 
+### Two-factor authentication, for everyone
+
+Every account needs an authenticator, members included: the lab's unpublished
+work, its people's addresses and its files sit behind a password otherwise.
+
+- The gate lives in `app/portal/layout.tsx`, not in each page, because a gate
+  that has to be remembered is one that will be forgotten the next time
+  someone adds a page. It reads `x-pathname`, set by `proxy.ts`, and lets
+  through only the ways in and `/portal/security`, where the authenticator is
+  enrolled — gating that would be a locked door with the key behind it.
+- Nobody can turn it off. The control is gone and the action refuses; a lost
+  device is reset by an administrator, which replaces the authenticator
+  rather than leaving the account without one.
+- `requiresFreshStaffSession()` is now separate from `requiresTwoFactor()`.
+  They were one condition, and making two-factor universal would have
+  silently given every member administration's twelve-hour session expiry.
+- **A passkey counts.** It is already two factors — the device, and the
+  fingerprint, face or PIN the device insists on, which
+  `lib/passkey-policy.ts` refuses to do without. `Viewer.secondFactor` is
+  true for either, and the passkey count is only asked for when an
+  authenticator has not already answered the question.
+- **The setup page offers a way out.** It is where someone without a second
+  factor is held, so it carries its own sign-out: otherwise a person who
+  cannot finish — wrong account, lost phone — is trapped on it.
+- Signing in and out revalidate the root layout. The header, mobile menu and
+  footer change with the session, a client navigation reuses the layout it
+  already has, and without this the header went on offering "Sign in" to
+  someone who had just signed in.
+
 ### Stored images without a bucket
 
 `mediaUrl()` serves from `R2_PUBLIC_BASE_URL` when it is set, and otherwise

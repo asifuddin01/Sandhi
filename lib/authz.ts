@@ -9,6 +9,7 @@ import { getDb, isDatabaseConfigured } from "@/lib/db";
 import {
   can,
   parseSystemRole,
+  requiresFreshStaffSession,
   requiresTwoFactor,
   type Capability,
   type SystemRoleValue,
@@ -39,6 +40,8 @@ export interface Viewer {
   name: string;
   role: SystemRoleValue;
   twoFactorEnabled: boolean;
+  /** Whether anything beyond the password stands between them and the account. */
+  secondFactor: boolean;
   member: {
     id: string;
     slug: string;
@@ -63,10 +66,18 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   });
   if (!session) return null;
 
-  const member = await getDb().member.findUnique({
-    where: { userId: session.user.id },
-    select: { id: true, slug: true, name: true, rank: true, status: true },
-  });
+  const twoFactorEnabled = session.user.twoFactorEnabled === true;
+  const [member, passkeys] = await Promise.all([
+    getDb().member.findUnique({
+      where: { userId: session.user.id },
+      select: { id: true, slug: true, name: true, rank: true, status: true },
+    }),
+    // Only asked when it can change the answer: an account with an
+    // authenticator already satisfies the requirement.
+    twoFactorEnabled
+      ? Promise.resolve(0)
+      : getDb().passkey.count({ where: { userId: session.user.id } }),
+  ]);
   if (member?.status === "SUSPENDED") return null;
 
   return {
@@ -76,7 +87,12 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     email: session.user.email,
     name: session.user.name,
     role: parseSystemRole(session.user.role),
-    twoFactorEnabled: session.user.twoFactorEnabled === true,
+    twoFactorEnabled,
+    // A passkey is already two factors — the device, and the fingerprint,
+    // face or PIN the device insists on (`lib/passkey-policy.ts` refuses an
+    // unverified one). Asking for a code on top of that is ceremony, not
+    // security.
+    secondFactor: twoFactorEnabled || passkeys > 0,
     member,
   };
 });
@@ -97,10 +113,10 @@ export async function requireCapability(
 ): Promise<Viewer> {
   const viewer = await requireViewer(nextPath);
   if (!can(viewer.role, capability)) notFound();
-  if (requiresTwoFactor(capability) && !viewer.twoFactorEnabled) {
+  if (requiresTwoFactor() && !viewer.secondFactor) {
     redirect(TWO_FACTOR_SETUP_PATH);
   }
-  if (requiresTwoFactor(capability) && staffSessionExpired(viewer)) {
+  if (requiresFreshStaffSession(capability) && staffSessionExpired(viewer)) {
     redirect(
       `/portal/sign-in?next=${encodeURIComponent(nextPath)}&reason=expired`,
     );
@@ -114,12 +130,12 @@ export async function authorize(capability: Capability): Promise<Viewer> {
   if (!viewer || !can(viewer.role, capability)) {
     throw new AuthorizationError();
   }
-  if (requiresTwoFactor(capability) && !viewer.twoFactorEnabled) {
+  if (requiresTwoFactor() && !viewer.secondFactor) {
     throw new AuthorizationError(
       "Set up two-factor authentication in Account security first.",
     );
   }
-  if (requiresTwoFactor(capability) && staffSessionExpired(viewer)) {
+  if (requiresFreshStaffSession(capability) && staffSessionExpired(viewer)) {
     throw new AuthorizationError(STAFF_SESSION_EXPIRED_MESSAGE);
   }
   return viewer;

@@ -37,6 +37,13 @@ const fixtureAccounts = [
     name: "Fixture Reset",
     role: "MEMBER",
   },
+  // Never enrolled in two-factor, and signed in by one test only: proves the
+  // portal sends someone without an authenticator to set one up.
+  {
+    email: "fixture-fresh@sandhi.test",
+    name: "Fixture Fresh",
+    role: "MEMBER",
+  },
   {
     email: "fixture-suspended@sandhi.test",
     name: "Fixture Suspended",

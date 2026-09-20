@@ -6,7 +6,6 @@ import { useFormStatus } from "react-dom";
 import {
   changePasswordAction,
   confirmTwoFactorSetupAction,
-  disableTwoFactorAction,
   manageSessionsAction,
   regenerateBackupCodesAction,
   startTwoFactorSetupAction,
@@ -292,20 +291,18 @@ function TwoFactorSetupSteps() {
   );
 }
 
-function TwoFactorOn({ required }: { required: boolean }) {
+function TwoFactorOn() {
   const regenerate = useFormAction<TwoFactorState>(
     regenerateBackupCodesAction,
     idle,
   );
-  const disable = useFormAction(disableTwoFactorAction, idle);
 
   return (
     <>
       <p className={styles.statusLine}>
         <span className={styles.badge}>On</span>
-        {required
-          ? "Your role requires two-factor authentication, so it stays on."
-          : "You sign in with your password and a code from your app."}
+        Every SANDHI account needs two-factor authentication, so it stays on.
+        Lost your device? An administrator can reset it for you.
       </p>
 
       <form
@@ -324,34 +321,10 @@ function TwoFactorOn({ required }: { required: boolean }) {
         ) : null}
         <Submit pending="Creating…">Create new backup codes</Submit>
       </form>
-
-      {required ? null : (
-        <form
-          className={styles.form}
-          action={disable.formAction}
-          onSubmit={disable.onSubmit}
-        >
-          <PasswordField id="disablePassword" />
-          <Message state={disable.state} />
-          <Submit pending="Turning off…">
-            Turn off two-factor authentication
-          </Submit>
-        </form>
-      )}
     </>
   );
 }
 
-export function TwoFactorSection({
-  enabled,
-  required,
-}: {
-  enabled: boolean;
-  required: boolean;
-}) {
-  return enabled ? (
-    <TwoFactorOn required={required} />
-  ) : (
-    <TwoFactorSetupSteps />
-  );
+export function TwoFactorSection({ enabled }: { enabled: boolean }) {
+  return enabled ? <TwoFactorOn /> : <TwoFactorSetupSteps />;
 }

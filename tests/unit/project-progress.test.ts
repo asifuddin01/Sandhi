@@ -45,6 +45,7 @@ function viewer(
     name: "A Member",
     role: "MEMBER",
     twoFactorEnabled: false,
+    secondFactor: true,
     member: overrides
       ? {
           id: "member-1",

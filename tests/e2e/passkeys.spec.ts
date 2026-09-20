@@ -99,7 +99,11 @@ test("a passkey signs in only with the person verified, and can be removed", asy
     await page.getByLabel("New password").fill(PASSWORD);
     await page.getByLabel("Confirm password").fill(PASSWORD);
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
+    // A new account has no second factor yet, so the portal waits behind
+    // setting one up. A passkey is one, which is what this test then adds.
+    await expect(page).toHaveURL(/\/portal(\/security)?(\?|$)/u, {
+      timeout: 30_000,
+    });
 
     const authenticator = await addAuthenticator(page);
 

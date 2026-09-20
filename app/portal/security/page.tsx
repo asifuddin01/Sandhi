@@ -12,8 +12,8 @@ import {
   type SessionRow,
 } from "@/components/portal/SecurityForms";
 import styles from "@/components/portal/Portal.module.css";
+import { signOutAction } from "@/app/portal/actions";
 import { requireViewer } from "@/lib/authz";
-import { can } from "@/lib/permissions";
 import { getDb } from "@/lib/db";
 import { coarseNetwork, describeDevice } from "@/lib/security-signals";
 
@@ -63,7 +63,6 @@ export default async function AccountSecurityPage({
 }) {
   const viewer = await requireViewer("/portal/security");
   const { setup } = await searchParams;
-  const twoFactorRequired = can(viewer.role, "admin:access");
   const db = getDb();
   const [sessions, events, passkeys] = await Promise.all([
     db.session.findMany({
@@ -120,6 +119,14 @@ export default async function AccountSecurityPage({
           Your password, where you are signed in, and recent activity on your
           account.
         </p>
+        {/* This page is where someone without a second factor is held, so it
+            has to offer the way out. Without it, a person who cannot finish
+            setting one up — wrong account, lost phone — is stuck here. */}
+        <form action={signOutAction}>
+          <button className={styles.textButton} type="submit">
+            Sign out
+          </button>
+        </form>
       </header>
 
       <section className={styles.section} aria-labelledby="password-heading">
@@ -131,22 +138,19 @@ export default async function AccountSecurityPage({
         <h2 id="two-factor-heading">Two-factor authentication</h2>
         {setup === "two-factor" && !viewer.twoFactorEnabled ? (
           <p className={styles.notice} role="status">
-            Your role needs two-factor authentication before administration
-            opens. Set it up below; it takes about a minute.
+            Set up two-factor authentication to open the portal. Every SANDHI
+            account needs it, and it takes about a minute.
           </p>
         ) : null}
         {viewer.twoFactorEnabled ? null : (
           <p className={styles.hint}>
             A code from an authenticator app (such as 1Password, Google
             Authenticator, or Microsoft Authenticator) is needed after your
-            password, so a stolen password alone cannot open your account.
-            {twoFactorRequired ? " Your role requires it." : ""}
+            password, so a stolen password alone cannot open your account. Every
+            SANDHI account needs it.
           </p>
         )}
-        <TwoFactorSection
-          enabled={viewer.twoFactorEnabled}
-          required={twoFactorRequired}
-        />
+        <TwoFactorSection enabled={viewer.twoFactorEnabled} />
       </section>
 
       <section className={styles.section} aria-labelledby="passkeys-heading">

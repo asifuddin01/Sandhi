@@ -4,6 +4,8 @@ import { hashPassword } from "better-auth/crypto";
 
 import { createPrismaClient } from "../../lib/db-runtime";
 
+import { completeTwoFactor, twoFactorSecret } from "./support/auth";
+
 const PASSWORD = "fixture-password-2026";
 const FIREFOX =
   "Mozilla/5.0 (X11; Linux x86_64; rv:130.0) Gecko/20100101 Firefox/130.0";
@@ -45,6 +47,12 @@ async function signedIn(
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(password);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  // Every account holds an authenticator now, so the form is only step one.
+  const secret = twoFactorSecret(email);
+  if (!secret) throw new Error(`No two-factor secret saved for ${email}.`);
+  await page.waitForURL(/\/portal\/two-factor/u, { timeout: 30_000 });
+  await page.waitForLoadState("networkidle");
+  await completeTwoFactor(page, secret);
   await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
   return page;
 }

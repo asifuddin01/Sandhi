@@ -35,8 +35,24 @@ export const capabilityRoles = {
 
 export type Capability = keyof typeof capabilityRoles;
 
-/** Everything beyond the member portal needs two-factor authentication. */
-export function requiresTwoFactor(capability: Capability): boolean {
+/**
+ * Every account needs two-factor authentication, members included. The lab's
+ * unpublished work, its people's addresses and its files all sit behind a
+ * password otherwise, and a password is one phishing email from being
+ * someone else's.
+ */
+export function requiresTwoFactor(): boolean {
+  return true;
+}
+
+/**
+ * Administration also expires its own sessions early, which two-factor
+ * authentication does not: a member who is signed in on their own laptop has
+ * no reason to be thrown out twice a day. The two rules were once the same
+ * condition, and separating them is what keeps the short session on the
+ * screens that warrant it.
+ */
+export function requiresFreshStaffSession(capability: Capability): boolean {
   return capability !== "portal:access";
 }
 

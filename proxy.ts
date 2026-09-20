@@ -52,6 +52,9 @@ export function proxy(request: NextRequest) {
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set("x-nonce", nonce);
+  // The portal layout gates on where the request is going, and a layout is
+  // not told its own path.
+  requestHeaders.set("x-pathname", pathname);
   requestHeaders.set("Content-Security-Policy", policy);
 
   const response = NextResponse.next({ request: { headers: requestHeaders } });

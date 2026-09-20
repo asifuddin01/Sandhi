@@ -15,7 +15,6 @@ import {
   passwordProblem,
   type AuthFormState,
 } from "@/lib/portal-forms";
-import { can } from "@/lib/permissions";
 import { confirmPassword, ReauthenticationError } from "@/lib/reauth";
 import {
   recordPasswordChanged,
@@ -340,47 +339,20 @@ export async function regenerateBackupCodesAction(
   }
 }
 
-/** Members may turn it off; staff roles cannot. */
-export async function disableTwoFactorAction(
-  _previous: AuthFormState,
-  formData: FormData,
-): Promise<AuthFormState> {
+/**
+ * Nobody turns it off. Every account needs an authenticator now, so the only
+ * honest answer is to say so and point at the way through: an administrator
+ * can reset a lost device, which replaces the authenticator rather than
+ * leaving the account with none.
+ */
+export async function disableTwoFactorAction(): Promise<AuthFormState> {
   const viewer = await getViewer();
   if (!viewer) return signedOut;
-  if (can(viewer.role, "admin:access")) {
-    return {
-      status: "error",
-      message: "Your role requires two-factor authentication.",
-    };
-  }
-  if (!viewer.twoFactorEnabled) {
-    return { status: "success", message: "Two-factor authentication is off." };
-  }
-
-  try {
-    await confirmPassword(viewer, field(formData, "password"));
-  } catch (error) {
-    if (error instanceof ReauthenticationError) {
-      return { status: "error", message: error.message };
-    }
-    throw error;
-  }
-
-  const requestHeaders = await headers();
-  await getDb().$transaction([
-    getDb().twoFactor.deleteMany({ where: { userId: viewer.userId } }),
-    getDb().user.update({
-      where: { id: viewer.userId },
-      data: { twoFactorEnabled: false },
-    }),
-  ]);
-  await recordSignInMethodChange(
-    "auth.two_factor_disabled",
-    { id: viewer.userId, email: viewer.email, name: viewer.name },
-    requestHeaders,
-  );
-  revalidatePath("/portal/security");
-  return { status: "success", message: "Two-factor authentication is off." };
+  return {
+    status: "error",
+    message:
+      "Every SANDHI account needs two-factor authentication. Lost your device? An administrator can reset it for you.",
+  };
 }
 
 export type PasskeyStart =

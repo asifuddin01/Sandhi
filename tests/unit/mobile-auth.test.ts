@@ -132,6 +132,7 @@ describe("viewerPayload", () => {
     name: "A Person",
     role,
     twoFactorEnabled: role !== "MEMBER",
+    secondFactor: role !== "MEMBER",
     member: {
       id: "member-1",
       slug: "a-person",

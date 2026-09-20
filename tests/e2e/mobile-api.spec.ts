@@ -1,6 +1,7 @@
 import { expect, test, type APIRequestContext } from "@playwright/test";
 
-import { PASSWORD } from "./support/auth";
+import { PASSWORD, twoFactorSecret } from "./support/auth";
+import { totp } from "./support/totp";
 
 test.skip(
   process.env.E2E_FIXTURES_READY !== "true" || !process.env.DATABASE_URL,
@@ -159,9 +160,32 @@ test.describe("signing in from a native client", () => {
   test("a member signs in, reads their own workspace, and signs out", async ({
     request,
   }) => {
-    const signedIn = await body(
-      await signIn(request, "fixture-member@sandhi.test"),
+    const email = "fixture-member@sandhi.test";
+    // Every account needs an authenticator, so a native client is asked for a
+    // code too — a member's password alone opens nothing here either.
+    const asked = await body(await signIn(request, email));
+    expect(asked.data).toMatchObject({ status: "two-factor" });
+    expect(asked.data).not.toHaveProperty("token");
+
+    const secret = twoFactorSecret(email);
+    if (!secret) throw new Error(`No two-factor secret saved for ${email}.`);
+    const challenge = (asked.data as { challenge: string }).challenge;
+
+    let signedIn = await body(
+      await request.post("/api/v1/auth/two-factor", {
+        headers: { "x-sandhi-client": CLIENT },
+        data: { challenge, code: totp(secret) },
+      }),
     );
+    // A code works once, so a neighbouring window covers a just-used one.
+    if (!signedIn.data) {
+      signedIn = await body(
+        await request.post("/api/v1/auth/two-factor", {
+          headers: { "x-sandhi-client": CLIENT },
+          data: { challenge, code: totp(secret, 1) },
+        }),
+      );
+    }
     expect(signedIn.data).toMatchObject({ status: "signed-in" });
     const token = (signedIn.data as { token: string }).token;
     const auth = { Authorization: `Bearer ${token}` };

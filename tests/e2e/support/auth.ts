@@ -14,6 +14,24 @@ export const STAFF_EMAILS = [
   "fixture-reviewer@sandhi.test",
 ] as const;
 
+/**
+ * Every account the tests sign in as and expect to get through. Two-factor
+ * authentication is required of everyone now, members included, so each of
+ * these is enrolled by the setup project and signs in from the session it
+ * saved — a TOTP code works once, and these accounts sign in many times.
+ *
+ * `fixture-fresh` is deliberately absent: one test needs somebody who has
+ * never set up an authenticator.
+ */
+export const ENROLLED_EMAILS = [
+  ...STAFF_EMAILS,
+  "fixture-member@sandhi.test",
+  "fixture-sessions@sandhi.test",
+  "fixture-password@sandhi.test",
+  "fixture-reset@sandhi.test",
+  "fixture-staff@sandhi.test",
+] as const;
+
 /** Written by the setup project, which enrolls each staff account. */
 export const TWO_FACTOR_FILE = path.join(
   process.cwd(),
@@ -108,9 +126,17 @@ export async function signInThroughForm(
 }
 
 /**
- * Signs in for a test that is not about signing in. Staff accounts reuse the
- * session saved when they were enrolled, since each authenticator code works
- * only once and many tests sign in as the same administrator.
+ * Accounts whose saved session must not be reused: their own tests sign every
+ * other session out, so the state saved at enrolment is dead by the time
+ * another test would pick it up. They sign in through the form instead, which
+ * costs an authenticator code but always works.
+ */
+const NO_REUSE = ["fixture-sessions@sandhi.test"] as const;
+
+/**
+ * Signs in for a test that is not about signing in. Enrolled accounts reuse
+ * the session saved when they were enrolled, since each authenticator code
+ * works only once and many tests sign in as the same person.
  */
 export async function signIn(
   page: Page,
@@ -118,8 +144,10 @@ export async function signIn(
   next = "/portal",
   password = PASSWORD,
 ) {
-  const staff = (STAFF_EMAILS as readonly string[]).includes(email);
-  if (!staff || password !== PASSWORD) {
+  const reusable =
+    (ENROLLED_EMAILS as readonly string[]).includes(email) &&
+    !(NO_REUSE as readonly string[]).includes(email);
+  if (!reusable || password !== PASSWORD) {
     await signInThroughForm(page, email, next, password);
     return;
   }

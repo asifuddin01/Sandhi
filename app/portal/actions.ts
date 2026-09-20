@@ -2,6 +2,7 @@
 
 import type { AuthenticationResponseJSON } from "@simplewebauthn/browser";
 import { APIError } from "better-auth/api";
+import { revalidatePath } from "next/cache";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -20,6 +21,17 @@ import {
 } from "@/lib/portal-forms";
 
 export type { AuthFormState } from "@/lib/portal-forms";
+
+/**
+ * The site header, the mobile menu and the footer all say something different
+ * once somebody is signed in, and they live in the root layout. A client
+ * navigation reuses the layout it already has, so signing in or out has to
+ * mark it stale — otherwise the header keeps offering "Sign in" to someone
+ * who has just signed in.
+ */
+function refreshChrome(): void {
+  revalidatePath("/", "layout");
+}
 
 export async function signInAction(
   _previous: AuthFormState,
@@ -88,8 +100,10 @@ export async function signInAction(
     "twoFactorRedirect" in result &&
     result.twoFactorRedirect
   ) {
+    refreshChrome();
     redirect(`/portal/two-factor?next=${encodeURIComponent(next)}`);
   }
+  refreshChrome();
   redirect(next);
 }
 
@@ -160,11 +174,13 @@ export async function verifyTwoFactorAction(
     return unavailable;
   }
 
+  refreshChrome();
   redirect(next);
 }
 
 export async function signOutAction(): Promise<void> {
   await getAuth().api.signOut({ headers: await headers() });
+  refreshChrome();
   redirect("/portal/sign-in");
 }
 
@@ -286,6 +302,7 @@ export async function acceptInvitationAction(
     redirect("/portal/sign-in");
   }
 
+  refreshChrome();
   redirect("/portal");
 }
 
@@ -348,5 +365,6 @@ export async function finishPasskeySignInAction(input: {
     return unavailable;
   }
 
+  refreshChrome();
   redirect(next);
 }

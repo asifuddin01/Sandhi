@@ -11,6 +11,19 @@ import {
   twoFactorSecret,
 } from "./support/auth";
 
+/**
+ * Finishes the second step for an account that holds an authenticator. Every
+ * account needs one now, so a form submission alone no longer reaches the
+ * portal.
+ */
+async function passTwoFactor(page: Page, email: string) {
+  const secret = twoFactorSecret(email);
+  if (!secret) throw new Error(`No two-factor secret saved for ${email}.`);
+  await page.waitForURL(/\/portal\/two-factor/u, { timeout: 30_000 });
+  await page.waitForLoadState("networkidle");
+  await completeTwoFactor(page, secret);
+}
+
 /** Submits the form only; tests check whether sign-in succeeded. */
 async function signIn(page: Page, email: string, next?: string) {
   await page.goto(
@@ -86,6 +99,7 @@ test.describe("sign-in and administration access", () => {
     page,
   }) => {
     await signIn(page, "fixture-member@sandhi.test");
+    await passTwoFactor(page, "fixture-member@sandhi.test");
     await expect(page).toHaveURL(/\/portal$/u);
     await expect(
       page.getByRole("heading", { name: "Welcome, Fixture Member" }),
@@ -130,6 +144,7 @@ test.describe("sign-in and administration access", () => {
     page,
   }) => {
     await signIn(page, "fixture-member@sandhi.test", "https://evil.example/");
+    await passTwoFactor(page, "fixture-member@sandhi.test");
     await expect(page).toHaveURL(
       /127\.0\.0\.1:\d+\/portal$|localhost:\d+\/portal$/u,
     );
@@ -137,6 +152,7 @@ test.describe("sign-in and administration access", () => {
 
   test("signing out ends the session", async ({ page }) => {
     await signIn(page, "fixture-member@sandhi.test");
+    await passTwoFactor(page, "fixture-member@sandhi.test");
     await expect(page).toHaveURL(/\/portal$/u);
     await page.getByRole("button", { name: "Sign out" }).click();
     await expect(page).toHaveURL(/\/portal\/sign-in$/u);
@@ -314,6 +330,7 @@ test.describe("password reset", () => {
       ).toBeVisible();
 
       await signIn(page, user.email, "/portal");
+      await passTwoFactor(page, user.email);
       await expect(page).toHaveURL(/\/portal$/u);
 
       // A used link cannot be replayed.
@@ -367,9 +384,22 @@ test.describe("invitations", () => {
       await page.getByLabel("Confirm password").fill(PASSWORD);
       await page.getByRole("button", { name: "Create account" }).click();
 
-      await expect(page).toHaveURL(/\/portal$/u);
+      // A brand-new account holds no authenticator, and every account needs
+      // one: the portal waits behind setting it up.
+      await expect(page).toHaveURL(/\/portal\/security\?setup=two-factor$/u, {
+        timeout: 30_000,
+      });
+      // The client transition that carries the redirect can leave the old
+      // (empty) view on screen in development; the server renders this page
+      // in about 200ms, so load it directly rather than test the overlay.
+      await page.reload({ waitUntil: "networkidle" });
+      // What matters is that the setup screen is what they got, not which
+      // sentence introduces it.
       await expect(
-        page.getByRole("heading", { name: "Welcome, Invited Researcher" }),
+        page.getByRole("heading", { name: "Two-factor authentication" }),
+      ).toBeVisible();
+      await expect(
+        page.getByRole("button", { name: "Set up two-factor authentication" }),
       ).toBeVisible();
 
       const member = await db.member.findFirstOrThrow({

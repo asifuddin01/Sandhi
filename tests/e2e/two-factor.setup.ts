@@ -6,9 +6,9 @@ import { expect, test as setup } from "@playwright/test";
 import { createPrismaClient } from "../../lib/db-runtime";
 
 import {
+  ENROLLED_EMAILS,
   PASSWORD,
   sessionStateFile,
-  STAFF_EMAILS,
   TWO_FACTOR_FILE,
 } from "./support/auth";
 import { totp } from "./support/totp";
@@ -19,19 +19,21 @@ setup.skip(
 );
 
 /**
- * Staff roles need two-factor authentication, so each staff fixture account
- * is enrolled afresh through the real setup screen, and its secret saved for
- * the tests' sign-in helper.
+ * Two-factor authentication is required of every account, so each fixture
+ * account that signs in is enrolled afresh through the real setup screen,
+ * and its secret and session saved for the tests' sign-in helper.
  */
 setup(
-  "enroll staff fixture accounts in two-factor authentication",
+  "enroll fixture accounts in two-factor authentication",
   async ({ browser }) => {
-    setup.slow();
+    // Six accounts, each enrolled through the real screen: this is the
+    // slowest thing in the suite and `slow()` alone no longer covers it.
+    setup.setTimeout(420_000);
     const db = createPrismaClient();
     const secrets: Record<string, string> = {};
 
     try {
-      for (const email of STAFF_EMAILS) {
+      for (const email of ENROLLED_EMAILS) {
         const user = await db.user.findUniqueOrThrow({ where: { email } });
         await db.$transaction([
           db.twoFactor.deleteMany({ where: { userId: user.id } }),
@@ -51,7 +53,9 @@ setup(
         await page
           .getByRole("button", { name: "Sign in", exact: true })
           .click();
-        await expect(page).toHaveURL(/\/portal\/security$/u, {
+        // Without an authenticator the portal sends them here itself, with
+        // `?setup=two-factor` on the end, so the query is not asserted away.
+        await expect(page).toHaveURL(/\/portal\/security(\?|$)/u, {
           timeout: 30_000,
         });
         await page.waitForLoadState("networkidle");
@@ -68,13 +72,28 @@ setup(
           "",
         );
         expect(key).toMatch(/^[A-Z2-7]{16,}$/u);
-        await page.getByLabel("Code from the app").fill(totp(key));
-        await page
-          .getByRole("button", { name: "Turn on two-factor authentication" })
-          .click();
-        await expect(page.getByText("On", { exact: true })).toBeVisible({
-          timeout: 30_000,
-        });
+
+        // A code is good for thirty seconds, and enrolling six accounts is
+        // slow enough that the window can roll over between filling the box
+        // and the server reading it. Try the neighbouring windows too.
+        const badge = page.getByText("On", { exact: true });
+        let turnedOn = false;
+        for (const offset of [0, 1, -1]) {
+          await page.getByLabel("Code from the app").fill(totp(key, offset));
+          await page
+            .getByRole("button", { name: "Turn on two-factor authentication" })
+            .click();
+          try {
+            await expect(badge).toBeVisible({ timeout: 15_000 });
+            turnedOn = true;
+            break;
+          } catch {
+            // Wrong window: the form is still there, so fill it again.
+          }
+        }
+        if (!turnedOn) {
+          throw new Error(`Could not enroll ${email} in two-factor.`);
+        }
 
         secrets[email] = key;
         // Setting it up leaves a fully signed-in session; tests reuse it.

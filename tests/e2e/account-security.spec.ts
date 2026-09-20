@@ -4,6 +4,8 @@ import { expect, test, type Browser } from "@playwright/test";
 
 import { createPrismaClient } from "../../lib/db-runtime";
 
+import { completeTwoFactor, twoFactorSecret } from "./support/auth";
+
 const PASSWORD = "fixture-password-2026";
 // Appears tens of thousands of times in the Have I Been Pwned corpus.
 const BREACHED_PASSWORD = "password123456";
@@ -62,6 +64,12 @@ async function signInWith(browser: Browser, email: string, userAgent?: string) {
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password").fill(PASSWORD);
   await page.getByRole("button", { name: "Sign in", exact: true }).click();
+  // Every account holds an authenticator now, so the form is only step one.
+  const secret = twoFactorSecret(email);
+  if (!secret) throw new Error(`No two-factor secret saved for ${email}.`);
+  await page.waitForURL(/\/portal\/two-factor/u, { timeout: 30_000 });
+  await page.waitForLoadState("networkidle");
+  await completeTwoFactor(page, secret);
   await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
   await context.close();
 }
@@ -132,6 +140,9 @@ test("failed sign-ins are recorded, and repeated ones alert the account holder o
 test("sign-ins are recorded, and one from a new device alerts the account holder", async ({
   browser,
 }) => {
+  // Three full sign-ins, each needing an authenticator code of its own —
+  // a code works once, so this waits for fresh windows.
+  test.slow();
   const email = "fixture-member@sandhi.test";
   const id = await userId(email);
   const since = new Date();
@@ -168,6 +179,8 @@ test("a password found in a data breach cannot be chosen", async ({ page }) => {
     !(await breachServiceReachable()),
     "The breach service is not reachable from this machine.",
   );
+  // A two-factor sign-in and a call to an outside service.
+  test.slow();
   const db = createPrismaClient();
   const token = randomBytes(32).toString("base64url");
   const email = `breach-${Date.now()}@sandhi.test`;
@@ -205,7 +218,10 @@ test("a password found in a data breach cannot be chosen", async ({ page }) => {
     await page.getByLabel("New password").fill(PASSWORD);
     await page.getByLabel("Confirm password").fill(PASSWORD);
     await page.getByRole("button", { name: "Create account" }).click();
-    await expect(page).toHaveURL(/\/portal$/u, { timeout: 30_000 });
+    // A new account holds no second factor, so it lands on setting one up.
+    await expect(page).toHaveURL(/\/portal(\/security)?(\?|$)/u, {
+      timeout: 30_000,
+    });
 
     // The same check guards password resets.
     const user = await db.user.findUniqueOrThrow({ where: { email } });
