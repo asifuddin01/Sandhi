@@ -450,6 +450,25 @@ site.
 - **Routes:** `/proposals`, `/api/proposals`, `/admin/proposals`,
   `/admin/proposals/[id]`, `/portal/proposals`.
 
+### The owner's own account
+
+`pnpm seed:owner` creates it, and reads the password from
+`SEED_OWNER_PASSWORD` at the moment it runs: the password is never in the
+repository, never in a file, and only its scrypt hash is stored. The profile
+itself — title, bio, interests, GitHub, LinkedIn, site — is the owner's own
+published information, written into `OWNER_PROFILE` in `prisma/seed.ts`.
+
+Two switches, both off by default:
+
+- `SEED_OWNER_PUBLIC=true` publishes the profile on `/people`. A profile is
+  not published just because it exists.
+- `SEED_OWNER_LEAD_ALL=true` puts the owner on every project as its research
+  lead and on every research area as area lead, so the portal has something
+  to open. A development convenience: never set it in production.
+
+Research lead stays a per-project and per-area fact (`ProjectMember.isLead`,
+`MemberArea.isLead`), never an entry in the permission matrix.
+
 Still to build here: admin control of the project stage from the workspace
 rather than only the Projects manager, and email to the proposer when a
 decision is made.

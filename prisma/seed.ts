@@ -119,10 +119,49 @@ function slugifyName(name: string): string {
   );
 }
 
+/**
+ * The owner's profile. Everything here is the lab owner's own published
+ * information; the account's password is never in this file and never in the
+ * repository — it comes from `SEED_OWNER_PASSWORD` at the moment the seed is
+ * run, and only its scrypt hash is stored.
+ */
+const OWNER_PROFILE = {
+  title: "Director",
+  bio: [
+    "Deep learning researcher. I build systems that train, run and can be",
+    "checked — each measured against the baseline that might have beaten it,",
+    "and each saying plainly where it did.",
+    "",
+    "Current work runs in two directions at once: causal biomarker discovery",
+    "in Alzheimer's microglia, and measured-first clinical reporting, with two",
+    "scoping reviews working out what the literature already settled.",
+  ]
+    .join(" ")
+    .replace(/ {2,}/gu, " ")
+    .trim(),
+  interests: [
+    "Medical imaging",
+    "Causal inference",
+    "Computational biology",
+    "Evidence-grounded retrieval",
+    "Perturbation biology",
+  ],
+  githubUrl: "https://github.com/asifuddin01",
+  linkedinUrl: "https://linkedin.com/in/md-asif-uddin01",
+  websiteUrl: "https://asifuddin.com",
+} as const;
+
 async function seedOwner(required: boolean): Promise<void> {
   const email = process.env.SEED_OWNER_EMAIL?.trim().toLowerCase();
   const password = process.env.SEED_OWNER_PASSWORD;
-  const name = process.env.SEED_OWNER_NAME?.trim() || "Asif Uddin";
+  const name = process.env.SEED_OWNER_NAME?.trim() || "Md. Asif Uddin";
+  const orgEmail = process.env.SEED_OWNER_ORG_EMAIL?.trim() || null;
+  // A profile is not published just because it exists. Publishing yourself on
+  // the public site is the owner's decision, made deliberately.
+  const isPublic = process.env.SEED_OWNER_PUBLIC === "true";
+  // A development convenience: put the owner on every project as its research
+  // lead, so the portal has something to open. Never set this in production.
+  const leadEverything = process.env.SEED_OWNER_LEAD_ALL === "true";
 
   if (!email || !password) {
     if (required) {
@@ -142,7 +181,7 @@ async function seedOwner(required: boolean): Promise<void> {
   const passwordHash = await hashPassword(password);
 
   try {
-    await db.$transaction(async (transaction) => {
+    const memberId = await db.$transaction(async (transaction) => {
       const user = await transaction.user.upsert({
         where: { email },
         update: { name, role: "OWNER", emailVerified: true },
@@ -165,25 +204,68 @@ async function seedOwner(required: boolean): Promise<void> {
         },
       });
 
-      await transaction.member.upsert({
+      const profile = {
+        name,
+        rank: "DIRECTOR" as const,
+        status: "ACTIVE" as const,
+        isPublic,
+        title: OWNER_PROFILE.title,
+        bio: OWNER_PROFILE.bio,
+        interests: [...OWNER_PROFILE.interests],
+        orgEmail,
+        showOrgEmail: Boolean(orgEmail) && isPublic,
+        githubUrl: OWNER_PROFILE.githubUrl,
+        linkedinUrl: OWNER_PROFILE.linkedinUrl,
+        websiteUrl: OWNER_PROFILE.websiteUrl,
+      };
+
+      const member = await transaction.member.upsert({
         where: { userId: user.id },
-        update: {
-          name,
-          rank: "DIRECTOR",
-          status: "ACTIVE",
-          isPublic: false,
-        },
+        update: profile,
         create: {
           userId: user.id,
           slug: slugifyName(name),
-          name,
-          rank: "DIRECTOR",
-          status: "ACTIVE",
-          isPublic: false,
+          ...profile,
           joinedAt: new Date("2026-01-01T00:00:00.000Z"),
         },
       });
+
+      return member.id;
     });
+
+    if (!leadEverything) return;
+
+    // Research lead is a per-project fact, not a system role: it is set here
+    // on the membership rows, never in the permission matrix.
+    const projects = await db.project.findMany({ select: { id: true } });
+    for (const project of projects) {
+      await db.projectMember.upsert({
+        where: {
+          projectId_memberId: { projectId: project.id, memberId },
+        },
+        update: { isLead: true, role: "Research lead" },
+        create: {
+          projectId: project.id,
+          memberId,
+          role: "Research lead",
+          isLead: true,
+        },
+      });
+    }
+
+    // And lead of every research area, for the same reason.
+    const areas = await db.researchArea.findMany({ select: { id: true } });
+    for (const area of areas) {
+      await db.memberArea.upsert({
+        where: { memberId_areaId: { memberId, areaId: area.id } },
+        update: { isLead: true },
+        create: { memberId, areaId: area.id, isLead: true },
+      });
+    }
+
+    console.info(
+      `Owner leads ${projects.length} project(s) and ${areas.length} research area(s).`,
+    );
   } finally {
     await db.$disconnect();
   }
