@@ -1,16 +1,8 @@
 import Link from "next/link";
 
 import styles from "@/components/public/ResearchPages.module.css";
+import { rankLabel } from "@/lib/member-rank";
 import type { PersonSummary } from "@/lib/public-research";
-
-export const rankLabels: Record<string, string> = {
-  DIRECTOR: "Director",
-  RESEARCH_LEAD: "Research lead",
-  RESEARCHER: "Researcher",
-  RESEARCH_ASSISTANT: "Research assistant",
-  INTERN: "Intern",
-  COLLABORATOR: "Collaborator",
-};
 
 export function initials(name: string): string {
   return name
@@ -47,7 +39,7 @@ export function PersonEntry({ person }: { person: PersonSummary }) {
       <h3>
         <Link href={`/people/${person.slug}`}>{person.name}</Link>
       </h3>
-      <p className={styles.rank}>{rankLabels[person.rank] ?? person.rank}</p>
+      <p className={styles.rank}>{rankLabel(person.rank)}</p>
       {person.interests.length > 0 ? (
         <ul className={styles.interestList} aria-label="Research interests">
           {person.interests.slice(0, 3).map((interest) => (

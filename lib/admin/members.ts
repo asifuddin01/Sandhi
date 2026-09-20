@@ -2,41 +2,17 @@ import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
 import { getDb } from "@/lib/db";
+import type { MemberStatusValue } from "@/lib/member-rank";
 
-export const memberRanks = [
-  "DIRECTOR",
-  "RESEARCH_LEAD",
-  "RESEARCHER",
-  "RESEARCH_ASSISTANT",
-  "INTERN",
-  "COLLABORATOR",
-] as const;
-
-export const memberStatuses = [
-  "INVITED",
-  "ACTIVE",
-  "ALUMNI",
-  "SUSPENDED",
-] as const;
-
-export type MemberRankValue = (typeof memberRanks)[number];
-export type MemberStatusValue = (typeof memberStatuses)[number];
-
-export const rankLabels: Record<MemberRankValue, string> = {
-  DIRECTOR: "Director",
-  RESEARCH_LEAD: "Research lead",
-  RESEARCHER: "Researcher",
-  RESEARCH_ASSISTANT: "Research assistant",
-  INTERN: "Intern",
-  COLLABORATOR: "Collaborator",
-};
-
-export const statusLabels: Record<MemberStatusValue, string> = {
-  INVITED: "Invited",
-  ACTIVE: "Active",
-  ALUMNI: "Alumni",
-  SUSPENDED: "Suspended",
-};
+export {
+  memberRanks,
+  memberStatuses,
+  rankLabel,
+  rankLabels,
+  statusLabels,
+  type MemberRankValue,
+  type MemberStatusValue,
+} from "@/lib/member-rank";
 
 export const roleLabels = {
   OWNER: "Owner",

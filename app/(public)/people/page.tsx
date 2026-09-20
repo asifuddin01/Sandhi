@@ -6,6 +6,7 @@ import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
 import { emptyStateCopy } from "@/content/strings";
+import { PEOPLE_GROUPS } from "@/lib/member-rank";
 import { getPeopleIndex, type PersonSummary } from "@/lib/public-research";
 
 export const dynamic = "force-dynamic";
@@ -20,38 +21,22 @@ interface PeoplePageProps {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }
 
+/**
+ * One heading per standing, plus alumni, who are grouped by having left
+ * rather than by what they were called while they were here.
+ */
 const groups: Array<{
   title: string;
   matches: (person: PersonSummary) => boolean;
 }> = [
-  {
-    title: "Leadership",
-    matches: (person) =>
-      person.status !== "ALUMNI" &&
-      ["DIRECTOR", "RESEARCH_LEAD"].includes(person.rank),
-  },
-  {
-    title: "Researchers",
-    matches: (person) =>
-      person.status !== "ALUMNI" && person.rank === "RESEARCHER",
-  },
-  {
-    title: "Research assistants",
-    matches: (person) =>
-      person.status !== "ALUMNI" && person.rank === "RESEARCH_ASSISTANT",
-  },
-  {
-    title: "Interns",
-    matches: (person) => person.status !== "ALUMNI" && person.rank === "INTERN",
-  },
-  {
-    title: "Collaborators",
-    matches: (person) =>
-      person.status !== "ALUMNI" && person.rank === "COLLABORATOR",
-  },
+  ...PEOPLE_GROUPS.map((group) => ({
+    title: group.title,
+    matches: (person: PersonSummary) =>
+      person.status !== "ALUMNI" && person.rank === group.rank,
+  })),
   {
     title: "Alumni",
-    matches: (person) => person.status === "ALUMNI",
+    matches: (person: PersonSummary) => person.status === "ALUMNI",
   },
 ];
 

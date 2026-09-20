@@ -2,7 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
-import { PersonPortrait, rankLabels } from "@/components/entries/PersonEntry";
+import { PersonPortrait } from "@/components/entries/PersonEntry";
+import { rankLabel } from "@/lib/member-rank";
 import { ProjectEntry } from "@/components/entries/ProjectEntry";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
 import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
@@ -28,8 +29,7 @@ export async function generateMetadata({
   return {
     title: person.name,
     description:
-      person.bio ??
-      `${rankLabels[person.rank] ?? person.rank} at SANDHI Research Lab.`,
+      person.bio ?? `${rankLabel(person.rank)} at SANDHI Research Lab.`,
     alternates: { canonical: `/people/${person.slug}` },
   };
 }
@@ -50,7 +50,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
     ...(person.photoUrl ? { image: person.photoUrl } : {}),
     ...(person.title
       ? { jobTitle: person.title }
-      : { jobTitle: rankLabels[person.rank] ?? person.rank }),
+      : { jobTitle: rankLabel(person.rank) }),
     ...(person.orgEmail ? { email: person.orgEmail } : {}),
     ...(person.links.length > 0
       ? { sameAs: person.links.map((link) => link.href) }
@@ -76,7 +76,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
         <div className={styles.profileHeading}>
           <h1>{person.name}</h1>
           <p className={styles.rank}>
-            {person.title ?? rankLabels[person.rank] ?? person.rank}
+            {person.title ?? rankLabel(person.rank)}
           </p>
           {person.bio ? (
             <Prose className={styles.prose}>{person.bio}</Prose>
