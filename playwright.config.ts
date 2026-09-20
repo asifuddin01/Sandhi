@@ -17,6 +17,14 @@ export default defineConfig({
   // Every worker shares one development server that compiles routes on first
   // use and hashes passwords deliberately slowly.
   expect: { timeout: 10_000 },
+  /**
+   * Every account needs two-factor authentication, so any test that signs in
+   * spends an authenticator code — and a code works once. When a neighbouring
+   * test has just spent the current window's, the sign-in helper waits for a
+   * fresh one, which alone can cost thirty seconds. The default budget of
+   * thirty was written when members signed in with a password.
+   */
+  timeout: 90_000,
   use: {
     baseURL,
     trace: "on-first-retry",

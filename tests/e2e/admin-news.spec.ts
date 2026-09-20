@@ -75,6 +75,7 @@ test("staff write, preview, schedule, publish, and archive news", async ({
     // A draft stays private, but the preview shows the real page.
     expect((await request.get(`/news/${prefix}`)).status()).toBe(404);
     await page.getByRole("link", { name: "Preview" }).click();
+    await page.waitForLoadState("networkidle");
     await expect(page.getByText(/not public yet/u)).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
     await page.getByRole("link", { name: "Back to editing" }).click();
