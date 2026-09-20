@@ -68,7 +68,7 @@ export function ApproveProposal({
     <ActionForm action={approveProposalAction} className={styles.actionForm}>
       <input type="hidden" name="id" value={id} />
       <div className={styles.field}>
-        <label htmlFor="leadMemberId">Research lead</label>
+        <label htmlFor="leadMemberId">Research Lead</label>
         <select id="leadMemberId" name="leadMemberId" defaultValue="">
           <option value="">Name one later</option>
           {interested.map((person) => (

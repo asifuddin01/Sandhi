@@ -257,11 +257,11 @@ async function seedOwner(required: boolean): Promise<void> {
         where: {
           projectId_memberId: { projectId: project.id, memberId },
         },
-        update: { isLead: true, role: "Research lead" },
+        update: { isLead: true, role: "Research Lead" },
         create: {
           projectId: project.id,
           memberId,
-          role: "Research lead",
+          role: "Research Lead",
           isLead: true,
         },
       });

@@ -172,7 +172,7 @@ export async function approveProposalAction(
           members: {
             create: interested.map((memberId, index) => ({
               memberId,
-              role: memberId === leadMemberId ? "Research lead" : "Researcher",
+              role: memberId === leadMemberId ? "Research Lead" : "Researcher",
               isLead: memberId === leadMemberId,
               sortOrder: index,
             })),

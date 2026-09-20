@@ -26,6 +26,25 @@ import {
 
 export const metadata: Metadata = { title: "Project workspace" };
 
+/**
+ * What to call someone on this project. The role is free text an
+ * administrator typed, so a lead whose role already says so is not told
+ * twice — "Research Lead · Research Lead" is nobody's idea of a team list.
+ */
+function standing(person: {
+  role: string;
+  isLead: boolean;
+  isAssistantLead: boolean;
+}): string {
+  const said = /lead/iu.test(person.role);
+  if (person.isLead)
+    return said ? person.role : `${person.role} · Research Lead`;
+  if (person.isAssistantLead) {
+    return said ? person.role : `${person.role} · Assistant Lead`;
+  }
+  return person.role;
+}
+
 const FILE_KINDS: Record<string, string> = {
   FIGURE: "Figure",
   DOCUMENT: "Document",
@@ -137,9 +156,7 @@ export default async function ProjectWorkspacePage({
             <li key={person.memberId}>
               <Link href={`/people/${person.slug}`}>{person.name}</Link>
               <span className={styles.cardMeta}>
-                {person.role}
-                {person.isLead ? " · research lead" : ""}
-                {person.isAssistantLead ? " · assistant lead" : ""}
+                {standing(person)}
                 {person.isMe ? " · you" : ""}
               </span>
               {project.leads && !person.isLead && !person.isMe ? (

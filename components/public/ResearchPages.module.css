@@ -425,7 +425,9 @@
 .portrait {
   position: relative;
   display: grid;
-  aspect-ratio: 4 / 3;
+  /* A headshot is portrait. A landscape box cropped the top of every head
+     off, so the box takes the shape the photographs actually have. */
+  aspect-ratio: 4 / 5;
   place-items: center;
   margin-block-end: 1.25rem;
   overflow: hidden;
@@ -437,10 +439,12 @@
   letter-spacing: 0.08em;
 }
 
+/* Contained, not covered: whatever shape a person sends, the whole of it is
+   shown and the panel fills what is left over. Nobody is cropped. */
 .portrait img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 .personEntry h3,
@@ -471,7 +475,6 @@
 }
 
 .profileHero .portrait {
-  aspect-ratio: 4 / 5;
   margin: 0;
 }
 

@@ -128,7 +128,7 @@ test("an idea from outside the lab becomes a project with the people who volunte
     await expect(
       theirs.getByRole("region", { name: "Who is in" }),
     ).toContainText("Prosody");
-    await theirs.getByLabel("Research lead").selectOption({
+    await theirs.getByLabel("Research Lead").selectOption({
       label: "Fixture Member",
     });
     await submit(theirs, "Approve and make it a project", proposalPath);
@@ -146,7 +146,7 @@ test("an idea from outside the lab becomes a project with the people who volunte
     await page.goto("/portal/projects");
     await expect(page.getByRole("link", { name: title })).toBeVisible();
     await page.getByRole("link", { name: title }).click();
-    await expect(page.getByText("Research lead")).toBeVisible();
+    await expect(page.getByText("Research Lead")).toBeVisible();
   } finally {
     await forgetProposals();
   }
