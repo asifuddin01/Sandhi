@@ -364,9 +364,22 @@ async function queryPublic<T>(
   return query();
 }
 
+/**
+ * Where a stored image is served from. With a public bucket configured, from
+ * there. Without one, from the site itself under `/media`, which is the same
+ * origin the CSP already allows and works on whatever port this is — so a
+ * lab that has not set up object storage yet still has pictures.
+ */
 function mediaUrl(key: string | null): string | null {
+  if (!key) return null;
   const base = process.env.R2_PUBLIC_BASE_URL?.trim();
-  if (!key || !base) return null;
+  if (!base) {
+    const encoded = key
+      .split("/")
+      .map((part) => encodeURIComponent(part))
+      .join("/");
+    return `/media/${encoded}`;
+  }
 
   try {
     const normalizedBase = new URL(base);

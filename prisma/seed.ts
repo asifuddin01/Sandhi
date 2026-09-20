@@ -1,6 +1,15 @@
 import { hashPassword } from "better-auth/crypto";
 
 import { createPrismaClient } from "../lib/db-runtime";
+import {
+  memberRanks,
+  rankLabels,
+  type MemberRankValue,
+} from "../lib/member-rank";
+
+function isMemberRank(value: string | undefined): value is MemberRankValue {
+  return Boolean(value) && (memberRanks as readonly string[]).includes(value!);
+}
 
 const themes = [
   {
@@ -126,7 +135,6 @@ function slugifyName(name: string): string {
  * run, and only its scrypt hash is stored.
  */
 const OWNER_PROFILE = {
-  title: "Director",
   bio: [
     "Deep learning researcher. I build systems that train, run and can be",
     "checked — each measured against the baseline that might have beaten it,",
@@ -156,6 +164,12 @@ async function seedOwner(required: boolean): Promise<void> {
   const password = process.env.SEED_OWNER_PASSWORD;
   const name = process.env.SEED_OWNER_NAME?.trim() || "Md. Asif Uddin";
   const orgEmail = process.env.SEED_OWNER_ORG_EMAIL?.trim() || null;
+  // Owning the site and directing the lab are different things: a lab can
+  // run with a research lead and no director at all.
+  const rank = isMemberRank(process.env.SEED_OWNER_RANK?.trim())
+    ? (process.env.SEED_OWNER_RANK!.trim() as MemberRankValue)
+    : "RESEARCH_LEAD";
+  const title = process.env.SEED_OWNER_TITLE?.trim() || rankLabels[rank];
   // A profile is not published just because it exists. Publishing yourself on
   // the public site is the owner's decision, made deliberately.
   const isPublic = process.env.SEED_OWNER_PUBLIC === "true";
@@ -206,10 +220,10 @@ async function seedOwner(required: boolean): Promise<void> {
 
       const profile = {
         name,
-        rank: "DIRECTOR" as const,
+        rank,
         status: "ACTIVE" as const,
         isPublic,
-        title: OWNER_PROFILE.title,
+        title,
         bio: OWNER_PROFILE.bio,
         interests: [...OWNER_PROFILE.interests],
         orgEmail,

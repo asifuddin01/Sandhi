@@ -458,6 +458,10 @@ repository, never in a file, and only its scrypt hash is stored. The profile
 itself — title, bio, interests, GitHub, LinkedIn, site — is the owner's own
 published information, written into `OWNER_PROFILE` in `prisma/seed.ts`.
 
+The rank defaults to **research lead** (`SEED_OWNER_RANK` overrides it, and
+`SEED_OWNER_TITLE` the title): owning the site and directing the lab are
+different things, and a lab can run with a research lead and no director.
+
 Two switches, both off by default:
 
 - `SEED_OWNER_PUBLIC=true` publishes the profile on `/people`. A profile is
@@ -468,6 +472,15 @@ Two switches, both off by default:
 
 Research lead stays a per-project and per-area fact (`ProjectMember.isLead`,
 `MemberArea.isLead`), never an entry in the permission matrix.
+
+### Stored images without a bucket
+
+`mediaUrl()` serves from `R2_PUBLIC_BASE_URL` when it is set, and otherwise
+from the site itself under `/media` — the same origin the CSP already allows,
+on whatever port is running. A lab that has not set up object storage yet
+still has pictures, and production behaviour is unchanged once the variable
+is set. Files under `public/media` are a stopgap for exactly that window;
+member photos belong in the bucket once the upload manager exists.
 
 Still to build here: admin control of the project stage from the workspace
 rather than only the Projects manager, and email to the proposer when a
