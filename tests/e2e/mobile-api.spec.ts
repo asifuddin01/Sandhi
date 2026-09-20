@@ -94,10 +94,26 @@ test.describe("the public API mirrors the public site", () => {
       ).results,
     ).toEqual([]);
 
+    // Full-text search matches whole words, so a search box has to work
+    // while somebody is still typing: "publi" must find "Public project".
+    const typing = await body(await request.get("/api/v1/search?q=publi"));
+    const titles = (
+      typing.data as { results: Array<{ title: string }> }
+    ).results.map((result) => result.title);
+    expect(titles).toContain("[Fixture] Public project");
+
+    /**
+     * The point of the whole thing: the index knows about every row, and
+     * what comes back is only what `lib/visibility.ts` allows. A draft
+     * project, a draft news post and an unpublished person all match the
+     * word "fixture" and none of them may appear.
+     */
     const found = await body(await request.get("/api/v1/search?q=fixture"));
-    expect(Array.isArray((found.data as { results: unknown[] }).results)).toBe(
-      true,
-    );
+    const all = JSON.stringify((found.data as { results: unknown[] }).results);
+    expect(all).toContain("[Fixture] Public project");
+    expect(all).not.toContain("[Fixture] Private project");
+    expect(all).not.toContain("[Fixture] Private news");
+    expect(all).not.toContain("fixture-private-researcher");
   });
 });
 

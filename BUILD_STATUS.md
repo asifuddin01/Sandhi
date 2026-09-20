@@ -797,6 +797,25 @@ Open performance items for Milestone 8:
 
 - **Home TBT:** the deferred three.js hero initialises right after load. Budget passes, but measure with real Lighthouse and consider idle-time initialisation without breaking the opening sequence.
 - **`/join` bundle:** one ~90 KiB chunk, most likely the shared Zod schemas; investigate before changing validation.
+- **Search (done).** `lib/search.ts` reads the `tsvector` columns the database
+  maintains by trigger and indexes with GIN, instead of `ILIKE '%term%'` across
+  five tables. It runs in two steps on purpose: the index says what matches and
+  how well, and Prisma then reads those rows through the same `publicXWhere`
+  clauses as every other public query, so the visibility rules stay in one
+  place. Expressing them in SQL would be faster again and would put a second
+  copy of them somewhere they could drift.
+
+  Two things the change had to keep. A search box is used while somebody is
+  still typing, so the last word carries `:*` — full-text search matches whole
+  lexemes, and without the prefix "neur" would find nothing. And every token is
+  reduced to letters, digits and **marks**: in Bengali the virama and vowel
+  signs are combining marks, so without `\p{M}` the lab's own name, সন্ধি, was
+  torn into fragments.
+
+  The vectors already cover more than the old query did — news bodies, a
+  project's research question, short venue names — so the change finds more,
+  not less.
+
 - **Server-side caching:** every public page renders per request and queries the database. The specification's nonce-based CSP requires dynamic rendering, which rules out ISR/CDN page caching. The compatible design is data-level caching (`unstable_cache` with tags): cache published records, apply time rules (`publishAt`, deadlines, event end) after the cache so visibility guarantees stay exact, and have Milestone 5 admin mutations revalidate the tags.
 - Not applicable: a load balancer or CDN (Vercel provides both); minification and compression (Next production builds and Vercel already do this); a route loading skeleton (removed deliberately in Milestone 2).
 
