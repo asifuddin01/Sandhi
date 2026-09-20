@@ -56,6 +56,7 @@ export type MemberMinAggregateOutputType = {
   isPublic: boolean | null
   joinedAt: Date | null
   leftAt: Date | null
+  profileCompletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -82,6 +83,7 @@ export type MemberMaxAggregateOutputType = {
   isPublic: boolean | null
   joinedAt: Date | null
   leftAt: Date | null
+  profileCompletedAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -109,6 +111,7 @@ export type MemberCountAggregateOutputType = {
   isPublic: number
   joinedAt: number
   leftAt: number
+  profileCompletedAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -145,6 +148,7 @@ export type MemberMinAggregateInputType = {
   isPublic?: true
   joinedAt?: true
   leftAt?: true
+  profileCompletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -171,6 +175,7 @@ export type MemberMaxAggregateInputType = {
   isPublic?: true
   joinedAt?: true
   leftAt?: true
+  profileCompletedAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -198,6 +203,7 @@ export type MemberCountAggregateInputType = {
   isPublic?: true
   joinedAt?: true
   leftAt?: true
+  profileCompletedAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -312,6 +318,7 @@ export type MemberGroupByOutputType = {
   isPublic: boolean
   joinedAt: Date | null
   leftAt: Date | null
+  profileCompletedAt: Date | null
   createdAt: Date
   updatedAt: Date
   _count: MemberCountAggregateOutputType | null
@@ -362,6 +369,7 @@ export type MemberWhereInput = {
   isPublic?: Prisma.BoolFilter<"Member"> | boolean
   joinedAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
   leftAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
+  profileCompletedAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -412,6 +420,7 @@ export type MemberOrderByWithRelationInput = {
   isPublic?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   leftAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -465,6 +474,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   isPublic?: Prisma.BoolFilter<"Member"> | boolean
   joinedAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
   leftAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
+  profileCompletedAt?: Prisma.DateTimeNullableFilter<"Member"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Member"> | Date | string
   user?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
@@ -515,6 +525,7 @@ export type MemberOrderByWithAggregationInput = {
   isPublic?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   leftAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  profileCompletedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.MemberCountOrderByAggregateInput
@@ -550,6 +561,7 @@ export type MemberScalarWhereWithAggregatesInput = {
   isPublic?: Prisma.BoolWithAggregatesFilter<"Member"> | boolean
   joinedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Member"> | Date | string | null
   leftAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Member"> | Date | string | null
+  profileCompletedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Member"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Member"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Member"> | Date | string
 }
@@ -576,6 +588,7 @@ export type MemberCreateInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -626,6 +639,7 @@ export type MemberUncheckedCreateInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -674,6 +688,7 @@ export type MemberUpdateInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -724,6 +739,7 @@ export type MemberUncheckedUpdateInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -773,6 +789,7 @@ export type MemberCreateManyInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -799,6 +816,7 @@ export type MemberUpdateManyMutationInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -826,6 +844,7 @@ export type MemberUncheckedUpdateManyInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -866,6 +885,7 @@ export type MemberCountOrderByAggregateInput = {
   isPublic?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   leftAt?: Prisma.SortOrder
+  profileCompletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -896,6 +916,7 @@ export type MemberMaxOrderByAggregateInput = {
   isPublic?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   leftAt?: Prisma.SortOrder
+  profileCompletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -922,6 +943,7 @@ export type MemberMinOrderByAggregateInput = {
   isPublic?: Prisma.SortOrder
   joinedAt?: Prisma.SortOrder
   leftAt?: Prisma.SortOrder
+  profileCompletedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -1338,6 +1360,7 @@ export type MemberCreateWithoutUserInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationCreateNestedOneWithoutMemberInput
@@ -1386,6 +1409,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -1450,6 +1474,7 @@ export type MemberUpdateWithoutUserInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUpdateOneWithoutMemberNestedInput
@@ -1498,6 +1523,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -1546,6 +1572,7 @@ export type MemberCreateWithoutInvitationInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -1595,6 +1622,7 @@ export type MemberUncheckedCreateWithoutInvitationInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   areas?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutMemberInput
@@ -1658,6 +1686,7 @@ export type MemberUpdateWithoutInvitationInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -1707,6 +1736,7 @@ export type MemberUncheckedUpdateWithoutInvitationInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   areas?: Prisma.MemberAreaUncheckedUpdateManyWithoutMemberNestedInput
@@ -1754,6 +1784,7 @@ export type MemberCreateWithoutAreasInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -1803,6 +1834,7 @@ export type MemberUncheckedCreateWithoutAreasInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -1866,6 +1898,7 @@ export type MemberUpdateWithoutAreasInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -1915,6 +1948,7 @@ export type MemberUncheckedUpdateWithoutAreasInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -1962,6 +1996,7 @@ export type MemberCreateWithoutProjectsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -2011,6 +2046,7 @@ export type MemberUncheckedCreateWithoutProjectsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -2074,6 +2110,7 @@ export type MemberUpdateWithoutProjectsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -2123,6 +2160,7 @@ export type MemberUncheckedUpdateWithoutProjectsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -2170,6 +2208,7 @@ export type MemberCreateWithoutAuthorshipsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -2219,6 +2258,7 @@ export type MemberUncheckedCreateWithoutAuthorshipsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -2282,6 +2322,7 @@ export type MemberUpdateWithoutAuthorshipsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -2331,6 +2372,7 @@ export type MemberUncheckedUpdateWithoutAuthorshipsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -2378,6 +2420,7 @@ export type MemberCreateWithoutPublicationReviewsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -2427,6 +2470,7 @@ export type MemberUncheckedCreateWithoutPublicationReviewsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -2490,6 +2534,7 @@ export type MemberUpdateWithoutPublicationReviewsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -2539,6 +2584,7 @@ export type MemberUncheckedUpdateWithoutPublicationReviewsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -2586,6 +2632,7 @@ export type MemberCreateWithoutNewsPostsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -2635,6 +2682,7 @@ export type MemberUncheckedCreateWithoutNewsPostsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -2698,6 +2746,7 @@ export type MemberUpdateWithoutNewsPostsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -2747,6 +2796,7 @@ export type MemberUncheckedUpdateWithoutNewsPostsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -2794,6 +2844,7 @@ export type MemberCreateWithoutInsightsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -2843,6 +2894,7 @@ export type MemberUncheckedCreateWithoutInsightsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -2906,6 +2958,7 @@ export type MemberUpdateWithoutInsightsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -2955,6 +3008,7 @@ export type MemberUncheckedUpdateWithoutInsightsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -3002,6 +3056,7 @@ export type MemberCreateWithoutApplicationNotesInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -3051,6 +3106,7 @@ export type MemberUncheckedCreateWithoutApplicationNotesInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -3114,6 +3170,7 @@ export type MemberUpdateWithoutApplicationNotesInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -3163,6 +3220,7 @@ export type MemberUncheckedUpdateWithoutApplicationNotesInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -3210,6 +3268,7 @@ export type MemberCreateWithoutProposalsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -3259,6 +3318,7 @@ export type MemberUncheckedCreateWithoutProposalsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -3311,6 +3371,7 @@ export type MemberCreateWithoutProposalsReviewedInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -3360,6 +3421,7 @@ export type MemberUncheckedCreateWithoutProposalsReviewedInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -3412,6 +3474,7 @@ export type MemberCreateWithoutProposalsDecidedInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -3461,6 +3524,7 @@ export type MemberUncheckedCreateWithoutProposalsDecidedInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -3524,6 +3588,7 @@ export type MemberUpdateWithoutProposalsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -3573,6 +3638,7 @@ export type MemberUncheckedUpdateWithoutProposalsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -3631,6 +3697,7 @@ export type MemberUpdateWithoutProposalsReviewedInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -3680,6 +3747,7 @@ export type MemberUncheckedUpdateWithoutProposalsReviewedInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -3738,6 +3806,7 @@ export type MemberUpdateWithoutProposalsDecidedInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -3787,6 +3856,7 @@ export type MemberUncheckedUpdateWithoutProposalsDecidedInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -3834,6 +3904,7 @@ export type MemberCreateWithoutProposalInterestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -3883,6 +3954,7 @@ export type MemberUncheckedCreateWithoutProposalInterestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -3946,6 +4018,7 @@ export type MemberUpdateWithoutProposalInterestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -3995,6 +4068,7 @@ export type MemberUncheckedUpdateWithoutProposalInterestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -4042,6 +4116,7 @@ export type MemberCreateWithoutCreatedTasksInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -4091,6 +4166,7 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -4154,6 +4230,7 @@ export type MemberUpdateWithoutCreatedTasksInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -4203,6 +4280,7 @@ export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -4250,6 +4328,7 @@ export type MemberCreateWithoutTaskAssignmentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -4299,6 +4378,7 @@ export type MemberUncheckedCreateWithoutTaskAssignmentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -4362,6 +4442,7 @@ export type MemberUpdateWithoutTaskAssignmentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -4411,6 +4492,7 @@ export type MemberUncheckedUpdateWithoutTaskAssignmentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -4458,6 +4540,7 @@ export type MemberCreateWithoutAnnouncementsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -4507,6 +4590,7 @@ export type MemberUncheckedCreateWithoutAnnouncementsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -4570,6 +4654,7 @@ export type MemberUpdateWithoutAnnouncementsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -4619,6 +4704,7 @@ export type MemberUncheckedUpdateWithoutAnnouncementsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -4666,6 +4752,7 @@ export type MemberCreateWithoutExperimentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -4715,6 +4802,7 @@ export type MemberUncheckedCreateWithoutExperimentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -4778,6 +4866,7 @@ export type MemberUpdateWithoutExperimentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -4827,6 +4916,7 @@ export type MemberUncheckedUpdateWithoutExperimentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -4874,6 +4964,7 @@ export type MemberCreateWithoutUploadedDocumentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -4923,6 +5014,7 @@ export type MemberUncheckedCreateWithoutUploadedDocumentsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -4986,6 +5078,7 @@ export type MemberUpdateWithoutUploadedDocumentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -5035,6 +5128,7 @@ export type MemberUncheckedUpdateWithoutUploadedDocumentsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -5082,6 +5176,7 @@ export type MemberCreateWithoutChangeRequestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -5131,6 +5226,7 @@ export type MemberUncheckedCreateWithoutChangeRequestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -5183,6 +5279,7 @@ export type MemberCreateWithoutReviewedChangeRequestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -5232,6 +5329,7 @@ export type MemberUncheckedCreateWithoutReviewedChangeRequestsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -5295,6 +5393,7 @@ export type MemberUpdateWithoutChangeRequestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -5344,6 +5443,7 @@ export type MemberUncheckedUpdateWithoutChangeRequestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -5402,6 +5502,7 @@ export type MemberUpdateWithoutReviewedChangeRequestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -5451,6 +5552,7 @@ export type MemberUncheckedUpdateWithoutReviewedChangeRequestsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -5498,6 +5600,7 @@ export type MemberCreateWithoutDiagramsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -5547,6 +5650,7 @@ export type MemberUncheckedCreateWithoutDiagramsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -5610,6 +5714,7 @@ export type MemberUpdateWithoutDiagramsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -5659,6 +5764,7 @@ export type MemberUncheckedUpdateWithoutDiagramsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -5706,6 +5812,7 @@ export type MemberCreateWithoutProjectUpdatesInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -5755,6 +5862,7 @@ export type MemberUncheckedCreateWithoutProjectUpdatesInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -5818,6 +5926,7 @@ export type MemberUpdateWithoutProjectUpdatesInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -5867,6 +5976,7 @@ export type MemberUncheckedUpdateWithoutProjectUpdatesInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -5914,6 +6024,7 @@ export type MemberCreateWithoutProjectSectionsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user?: Prisma.UserCreateNestedOneWithoutMemberInput
@@ -5963,6 +6074,7 @@ export type MemberUncheckedCreateWithoutProjectSectionsInput = {
   isPublic?: boolean
   joinedAt?: Date | string | null
   leftAt?: Date | string | null
+  profileCompletedAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
@@ -6026,6 +6138,7 @@ export type MemberUpdateWithoutProjectSectionsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneWithoutMemberNestedInput
@@ -6075,6 +6188,7 @@ export type MemberUncheckedUpdateWithoutProjectSectionsInput = {
   isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
   joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profileCompletedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
@@ -6334,6 +6448,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   isPublic?: boolean
   joinedAt?: boolean
   leftAt?: boolean
+  profileCompletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Member$userArgs<ExtArgs>
@@ -6385,6 +6500,7 @@ export type MemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
   isPublic?: boolean
   joinedAt?: boolean
   leftAt?: boolean
+  profileCompletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Member$userArgs<ExtArgs>
@@ -6413,6 +6529,7 @@ export type MemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
   isPublic?: boolean
   joinedAt?: boolean
   leftAt?: boolean
+  profileCompletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.Member$userArgs<ExtArgs>
@@ -6441,11 +6558,12 @@ export type MemberSelectScalar = {
   isPublic?: boolean
   joinedAt?: boolean
   leftAt?: boolean
+  profileCompletedAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "name" | "rank" | "status" | "title" | "bio" | "photoKey" | "photoAlt" | "interests" | "orgEmail" | "showOrgEmail" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "sortOrder" | "isPublic" | "joinedAt" | "leftAt" | "createdAt" | "updatedAt", ExtArgs["result"]["member"]>
+export type MemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "slug" | "name" | "rank" | "status" | "title" | "bio" | "photoKey" | "photoAlt" | "interests" | "orgEmail" | "showOrgEmail" | "scholarUrl" | "orcid" | "githubUrl" | "linkedinUrl" | "websiteUrl" | "sortOrder" | "isPublic" | "joinedAt" | "leftAt" | "profileCompletedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["member"]>
 export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.Member$userArgs<ExtArgs>
   invitation?: boolean | Prisma.Member$invitationArgs<ExtArgs>
@@ -6529,6 +6647,11 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     isPublic: boolean
     joinedAt: Date | null
     leftAt: Date | null
+    /**
+     * When this person finished their own profile. Null means the portal still
+     * asks them to, so the check costs nothing beyond the row already read.
+     */
+    profileCompletedAt: Date | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["member"]>
@@ -6999,6 +7122,7 @@ export interface MemberFieldRefs {
   readonly isPublic: Prisma.FieldRef<"Member", 'Boolean'>
   readonly joinedAt: Prisma.FieldRef<"Member", 'DateTime'>
   readonly leftAt: Prisma.FieldRef<"Member", 'DateTime'>
+  readonly profileCompletedAt: Prisma.FieldRef<"Member", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Member", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Member", 'DateTime'>
 }

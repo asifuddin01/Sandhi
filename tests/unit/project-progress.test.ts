@@ -53,6 +53,7 @@ function viewer(
           name: "A Member",
           rank: "RESEARCHER",
           status: "ACTIVE",
+          profileComplete: true,
           ...overrides,
         }
       : null,

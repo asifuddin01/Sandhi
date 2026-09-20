@@ -1,9 +1,17 @@
 import AxeBuilder from "@axe-core/playwright";
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type Locator, type Page } from "@playwright/test";
 
 import { createPrismaClient } from "../../lib/db-runtime";
 
 import { signIn } from "./support/auth";
+
+/**
+ * Every test here writes to the same fixture project — its updates, its
+ * sections, its work board. Run in parallel they read each other's rows, and
+ * a button like "Make internal" stops naming one thing. They share a project
+ * on purpose, so they take turns.
+ */
+test.describe.configure({ mode: "serial" });
 
 test.skip(
   process.env.E2E_FIXTURES_READY !== "true" || !process.env.DATABASE_URL,
@@ -55,7 +63,7 @@ async function forgetUpdates(prefix: string) {
  * Server actions answer the POST that carried them, so waiting for that
  * response is what makes "the save finished" true rather than hopeful.
  */
-async function submit(page: Page, name: string) {
+async function submit(page: Page, name: string, within?: Locator) {
   const [response] = await Promise.all([
     page.waitForResponse(
       (candidate) =>
@@ -63,7 +71,7 @@ async function submit(page: Page, name: string) {
         new URL(candidate.url()).pathname === `/portal/projects/${PROJECT}`,
       { timeout: 30_000 },
     ),
-    page.getByRole("button", { name, exact: true }).click(),
+    (within ?? page).getByRole("button", { name, exact: true }).click(),
   ]);
   expect(response.status()).toBeLessThan(400);
 }
@@ -204,7 +212,9 @@ test("the team says which step the work is at, and writes the project's own acco
     ).toBeVisible();
 
     await page.goto(`/portal/projects/${PROJECT}`);
-    await submit(page, "Delete");
+    // Scoped to this section's own row: these tests share a project, so an
+    // unscoped "Delete" can be another test's.
+    await submit(page, "Delete", page.getByRole("region", { name: heading }));
     await expect(page.getByText(heading)).toHaveCount(0);
   } finally {
     await forgetSections("Fixture section ");
@@ -264,7 +274,7 @@ test("a research lead hands work out, and can appoint an assistant lead", async 
         .filter({ hasText: "Fixture Researcher A" }),
     ).toContainText("assistant lead");
 
-    await submit(page, "Delete");
+    await submit(page, "Delete", task);
     await expect(page.getByText(title)).toHaveCount(0);
   } finally {
     await forgetTasks("Fixture task ");

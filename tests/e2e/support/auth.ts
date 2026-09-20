@@ -30,6 +30,9 @@ export const ENROLLED_EMAILS = [
   "fixture-password@sandhi.test",
   "fixture-reset@sandhi.test",
   "fixture-staff@sandhi.test",
+  // Enrolled so it clears the two-factor rung and lands on the next one:
+  // its profile is deliberately empty.
+  "fixture-blank@sandhi.test",
 ] as const;
 
 /** Written by the setup project, which enrolls each staff account. */

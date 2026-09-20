@@ -53,6 +53,19 @@ async function invitedAccount(
     timeout: 30_000,
   });
 
+  // The portal asks a new member for a profile as well. That rung has its own
+  // test (portal-profile.spec.ts); these tests are about the first one, so
+  // the profile is written directly and stays out of the way.
+  const user = await db.user.findUniqueOrThrow({ where: { email } });
+  await db.member.update({
+    where: { userId: user.id },
+    data: {
+      bio: "Fixture content used only by automated tests. This paragraph exists so the portal counts the profile as written.",
+      interests: ["Fixture interest"],
+      profileCompletedAt: new Date(),
+    },
+  });
+
   return {
     email,
     name,

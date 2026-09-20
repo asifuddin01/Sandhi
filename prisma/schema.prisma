@@ -354,6 +354,9 @@ model Member {
   isPublic               Boolean                  @default(false)
   joinedAt               DateTime?
   leftAt                 DateTime?
+  /// When this person finished their own profile. Null means the portal still
+  /// asks them to, so the check costs nothing beyond the row already read.
+  profileCompletedAt     DateTime?
   searchVector           Unsupported("tsvector")? @map("search_vector")
   user                   User?                    @relation(fields: [userId], references: [id], onDelete: SetNull)
   invitation             Invitation?

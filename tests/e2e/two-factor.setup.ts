@@ -32,9 +32,9 @@ setup.skip(
 setup(
   "enroll fixture accounts in two-factor authentication",
   async ({ browser }) => {
-    // Six accounts, each enrolled through the real screen: this is the
-    // slowest thing in the suite and `slow()` alone no longer covers it.
-    setup.setTimeout(420_000);
+    // Every account that signs in, enrolled through the real screen: this is
+    // the slowest thing in the suite and `slow()` alone no longer covers it.
+    setup.setTimeout(480_000);
     const db = createPrismaClient();
     const secrets: Record<string, string> = {};
 

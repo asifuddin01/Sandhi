@@ -14,6 +14,10 @@ import {
   attachmentExtension,
   type AttachmentUploadKind,
 } from "@/lib/portal/attachment-input";
+import {
+  PORTRAIT_RULES,
+  portraitExtension,
+} from "@/lib/portal/profile-fields";
 
 type Fetcher = typeof fetch;
 
@@ -29,7 +33,13 @@ type R2Config = {
  * media types and the size ceiling, and it is signed into the receipt so a
  * caller cannot present a small figure's token for a large dataset.
  */
-export type UploadKind = "cv" | "proposal" | "figure" | "document" | "data";
+export type UploadKind =
+  | "cv"
+  | "proposal"
+  | "figure"
+  | "document"
+  | "data"
+  | "portrait";
 
 type UploadReceipt = {
   version: 1;
@@ -46,20 +56,49 @@ export type PrivateUploadIntent = {
   expiresAt: string;
 };
 
-function r2Config(env: NodeJS.ProcessEnv): R2Config {
+function r2Config(
+  env: NodeJS.ProcessEnv,
+  bucketVariable: "R2_BUCKET_PRIVATE" | "R2_BUCKET_PUBLIC" = "R2_BUCKET_PRIVATE",
+): R2Config {
   const accountId = env.R2_ACCOUNT_ID?.trim();
   const accessKeyId = env.R2_ACCESS_KEY_ID?.trim();
   const secretAccessKey = env.R2_SECRET_ACCESS_KEY?.trim();
-  const bucket = env.R2_BUCKET_PRIVATE?.trim();
+  const bucket = env[bucketVariable]?.trim();
 
   if (!accountId || !accessKeyId || !secretAccessKey || !bucket) {
     throw new ServiceConfigurationError(
       "R2",
-      "R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and R2_BUCKET_PRIVATE are required.",
+      `R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY, and ${bucketVariable} are required.`,
     );
   }
 
   return { accountId, accessKeyId, secretAccessKey, bucket };
+}
+
+/**
+ * Which bucket an upload of this kind belongs in. A portrait is a picture on
+ * a public page, so it goes to the public bucket and is served straight from
+ * it; everything else is private and reached only through a signed link our
+ * own code decides to hand out.
+ */
+function bucketFor(kind: UploadKind): "R2_BUCKET_PRIVATE" | "R2_BUCKET_PUBLIC" {
+  return kind === "portrait" ? "R2_BUCKET_PUBLIC" : "R2_BUCKET_PRIVATE";
+}
+
+/**
+ * Whether portraits can be uploaded at all. A lab that has not connected
+ * object storage yet still gets the rest of the profile form, with the
+ * picture field explaining itself rather than failing when it is used.
+ */
+export function isPortraitUploadConfigured(
+  env: NodeJS.ProcessEnv = process.env,
+): boolean {
+  try {
+    r2Config(env, "R2_BUCKET_PUBLIC");
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function hash(value: string): string {
@@ -148,7 +187,7 @@ export function verifyUploadReceipt(
   expected: { key: string; kind: UploadKind },
   options: { env?: NodeJS.ProcessEnv; now?: Date } = {},
 ): UploadReceipt {
-  const config = r2Config(options.env ?? process.env);
+  const config = r2Config(options.env ?? process.env, bucketFor(expected.kind));
   const [payload, providedSignature, extra] = token.split(".");
   if (!payload || !providedSignature || extra) {
     throw new ExternalServiceError("R2", "The upload receipt is invalid.");
@@ -535,6 +574,175 @@ export async function assertAttachmentExists(
     throw new ExternalServiceError(
       "R2",
       `That file is not a valid ${input.contentType.split("/")[1]?.toUpperCase() ?? "file"}.`,
+    );
+  }
+}
+
+/**
+ * An upload slot for one person's portrait. The key carries the member id, so
+ * a receipt minted for one person cannot be spent on another's profile — the
+ * action that writes `photoKey` checks the prefix.
+ */
+export function createPortraitUploadIntent(
+  input: { memberId: string; contentType: string; size: number },
+  options: {
+    env?: NodeJS.ProcessEnv;
+    now?: Date;
+    randomId?: () => string;
+  } = {},
+): PrivateUploadIntent {
+  const extension = portraitExtension(input.contentType);
+  if (!extension) {
+    throw new ExternalServiceError(
+      "R2",
+      "A photograph must be a PNG, JPEG, or WebP image.",
+    );
+  }
+  if (input.size <= 0 || input.size > PORTRAIT_RULES.maximumBytes) {
+    throw new ExternalServiceError(
+      "R2",
+      `A photograph must be under ${Math.round(
+        PORTRAIT_RULES.maximumBytes / (1024 * 1024),
+      )} MB.`,
+    );
+  }
+
+  const env = options.env ?? process.env;
+  const config = r2Config(env, "R2_BUCKET_PUBLIC");
+  const now = options.now ?? new Date();
+  const expiresAt = new Date(now.getTime() + 10 * 60 * 1000);
+  const id = (options.randomId ?? randomUUID)();
+  const key = `${portraitPrefix(input.memberId)}${id}.${extension}`;
+  const receipt: UploadReceipt = {
+    version: 1,
+    key,
+    kind: "portrait",
+    size: input.size,
+    expiresAt: expiresAt.getTime(),
+  };
+
+  return {
+    uploadUrl: presignedR2Url("PUT", key, config, now),
+    key,
+    uploadToken: signReceipt(receipt, config.secretAccessKey),
+    expiresAt: expiresAt.toISOString(),
+  };
+}
+
+/** Where one member's portraits live. Nothing else may be written under it. */
+export function portraitPrefix(memberId: string): string {
+  return `members/${memberId}/`;
+}
+
+/**
+ * Confirms a portrait arrived, is the size that was validated, and begins
+ * with that format's signature. The declared media type is the browser's
+ * claim; these bytes are what a visitor's browser will be handed.
+ */
+export async function assertPortraitExists(
+  input: {
+    key: string;
+    memberId: string;
+    contentType: string;
+    uploadToken: string;
+  },
+  dependencies: {
+    env?: NodeJS.ProcessEnv;
+    now?: Date;
+    fetcher?: Fetcher;
+  } = {},
+): Promise<void> {
+  const env = dependencies.env ?? process.env;
+  const now = dependencies.now ?? new Date();
+  const fetcher = dependencies.fetcher ?? fetch;
+
+  if (!(PORTRAIT_RULES.types as readonly string[]).includes(input.contentType)) {
+    throw new ExternalServiceError(
+      "R2",
+      "A photograph must be a PNG, JPEG, or WebP image.",
+    );
+  }
+  // The receipt proves we minted this key; the prefix proves we minted it for
+  // this person. Both, because a member may hold a valid receipt of their own.
+  if (!input.key.startsWith(portraitPrefix(input.memberId))) {
+    throw new ExternalServiceError("R2", "That photograph is not yours.");
+  }
+
+  const receipt = verifyUploadReceipt(
+    input.uploadToken,
+    { key: input.key, kind: "portrait" },
+    { env, now },
+  );
+  if (receipt.size <= 0 || receipt.size > PORTRAIT_RULES.maximumBytes) {
+    throw new ExternalServiceError(
+      "R2",
+      "That photograph exceeds its size limit.",
+    );
+  }
+
+  const config = r2Config(env, "R2_BUCKET_PUBLIC");
+  let head: Response;
+  try {
+    head = await fetcher(presignedR2Url("HEAD", input.key, config, now, 60), {
+      method: "HEAD",
+      signal: AbortSignal.timeout(8_000),
+    });
+  } catch (error) {
+    throw new ExternalServiceError(
+      "R2",
+      `The upload could not be confirmed: ${
+        error instanceof Error ? error.message : "network error"
+      }`,
+    );
+  }
+  if (!head.ok) {
+    throw new ExternalServiceError(
+      "R2",
+      `The upload could not be confirmed (HTTP ${head.status}).`,
+    );
+  }
+
+  const storedLength = Number(head.headers.get("content-length"));
+  if (!Number.isSafeInteger(storedLength) || storedLength !== receipt.size) {
+    throw new ExternalServiceError(
+      "R2",
+      "The uploaded photograph does not match the validated upload.",
+    );
+  }
+
+  const signatures = MAGIC[input.contentType];
+  if (!signatures) return;
+
+  let prefixResponse: Response;
+  try {
+    prefixResponse = await fetcher(
+      presignedR2Url("GET", input.key, config, now, 60),
+      {
+        method: "GET",
+        headers: { Range: "bytes=0-15" },
+        signal: AbortSignal.timeout(8_000),
+      },
+    );
+  } catch (error) {
+    throw new ExternalServiceError(
+      "R2",
+      `The uploaded photograph could not be checked: ${
+        error instanceof Error ? error.message : "network error"
+      }`,
+    );
+  }
+  if (!prefixResponse.ok) {
+    throw new ExternalServiceError(
+      "R2",
+      `The uploaded photograph could not be read back (HTTP ${prefixResponse.status}).`,
+    );
+  }
+
+  const bytes = new Uint8Array(await prefixResponse.arrayBuffer());
+  if (!signatures.some((signature) => startsWith(bytes, signature))) {
+    throw new ExternalServiceError(
+      "R2",
+      "That file is not the image type it claims to be.",
     );
   }
 }

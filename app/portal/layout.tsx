@@ -3,7 +3,11 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 
-import { getViewer, TWO_FACTOR_SETUP_PATH } from "@/lib/authz";
+import {
+  getViewer,
+  PROFILE_SETUP_PATH,
+  TWO_FACTOR_SETUP_PATH,
+} from "@/lib/authz";
 
 export const metadata: Metadata = {
   robots: { index: false, follow: false },
@@ -24,10 +28,19 @@ const OPEN_PATHS = [
   "/portal/security",
 ];
 
+/**
+ * Where the profile is written. Not an open path: a person still needs their
+ * second factor before they get here. It is only exempt from the rung that
+ * sends people to it, which would otherwise be a redirect to itself.
+ */
+const PROFILE_PATH = "/portal/profile";
+
+function matches(pathname: string, path: string): boolean {
+  return pathname === path || pathname.startsWith(`${path}/`);
+}
+
 function isOpen(pathname: string): boolean {
-  return OPEN_PATHS.some(
-    (path) => pathname === path || pathname.startsWith(`${path}/`),
-  );
+  return OPEN_PATHS.some((path) => matches(pathname, path));
 }
 
 /**
@@ -46,7 +59,21 @@ export default async function PortalLayout({
   // A signed-out visitor is already being sent to sign in, by the proxy and
   // by the page itself; this gate has nothing to add.
   const viewer = await getViewer();
-  if (viewer && !viewer.secondFactor) redirect(TWO_FACTOR_SETUP_PATH);
+  if (!viewer) return children;
+
+  // In order. Someone who has just set their second factor is asked for their
+  // profile next, and not before — two demands at once is how people give up
+  // halfway and leave an account half-made.
+  if (!viewer.secondFactor) redirect(TWO_FACTOR_SETUP_PATH);
+  // An account with no member record has no profile to complete; it is not
+  // held here, because nothing it could do would let it through.
+  if (
+    viewer.member &&
+    !viewer.member.profileComplete &&
+    !matches(pathname, PROFILE_PATH)
+  ) {
+    redirect(PROFILE_SETUP_PATH);
+  }
 
   return children;
 }

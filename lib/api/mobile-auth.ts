@@ -102,6 +102,8 @@ export interface ViewerPayload {
     name: string;
     rank: string;
     status: string;
+    /** False while the portal is still asking them to finish their profile. */
+    profileComplete: boolean;
   } | null;
   /** Every capability this viewer holds, so the app can hide what it cannot do. */
   capabilities: Capability[];

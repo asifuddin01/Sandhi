@@ -521,6 +521,59 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### Writing your profile, on the way in
+
+The portal gate has two rungs now, taken in order. A new member sets up an
+authenticator, and then — not before — is asked to write their profile.
+Asking for both at once is how somebody gives up halfway and leaves an
+account half-made.
+
+The second rung costs nothing per request. `Member.profileCompletedAt` is one
+more column on the row `getViewer()` already reads, so the gate is a boolean
+on the session rather than a query. The migration backfills it for everyone
+who already has a description and an interest, because sending the people
+already in the lab to fill in a form they filled in long ago would be
+absurd.
+
+What counts as written: a name, a paragraph about the work, and at least one
+research interest. **Not a photograph.** It is the one thing somebody may not
+have to hand on their first morning, and locking a new member out of their
+own projects over a missing picture is a worse outcome than a profile without
+one. The form asks; the gate does not insist.
+
+`/portal/profile` is not an open path — a person still needs their second
+factor to reach it. It is exempt only from the rung that sends people to it,
+which would otherwise be a redirect to itself. Like the security page, it
+carries its own sign-out: held there with no way out is how an account gets
+abandoned.
+
+Completion is recomputed on every save, so emptying a field takes the date
+back to null and the portal asks again. The form marks those fields
+`required`, but that is the browser being helpful, not the rule — the server
+decides, and a test proves it by turning the attribute off.
+
+Profile changes are audited. A profile is published to a public page, so who
+changed it and when belongs in the same trail as everything else.
+
+#### Photographs
+
+A portrait goes straight from the browser to the **public** bucket and is
+served from it: it is a picture on a public page, so signing every read would
+be ceremony. The upload slot is minted only for the signed-in member, and the
+key carries their member id — a valid receipt spent on somebody else's key is
+refused, which is a case worth having a test for, because the receipt alone
+would not catch it. The stored object is checked for size and for the format's
+signature before `photoKey` is written: the declared media type is the
+browser's claim, and the bytes are what a visitor will be handed. No SVG.
+
+`R2_BUCKET_PUBLIC` has been in `.env.example` since the start and now has
+its first use. Without it the rest of the profile form works
+normally and the picture field says why it cannot: a lab that has not
+connected storage is not a lab that should be unable to write a profile. The
+upload path itself is unit-tested against an injected environment, so it is
+covered without live credentials — but it has not been exercised against a
+real bucket, and that is the one part of this slice nobody has watched work.
+
 ### Stored images without a bucket
 
 `mediaUrl()` serves from `R2_PUBLIC_BASE_URL` when it is set, and otherwise

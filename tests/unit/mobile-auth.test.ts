@@ -139,6 +139,7 @@ describe("viewerPayload", () => {
       name: "A Person",
       rank: "RESEARCHER",
       status: "ACTIVE",
+      profileComplete: true,
     },
   });
 

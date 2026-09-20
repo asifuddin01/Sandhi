@@ -50,6 +50,7 @@ function viewer(overrides: Partial<Viewer["member"]> | null = {}): Viewer {
           name: "A Member",
           rank: "RESEARCHER",
           status: "ACTIVE",
+          profileComplete: true,
           ...overrides,
         }
       : null,

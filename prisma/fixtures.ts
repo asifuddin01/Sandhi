@@ -44,6 +44,14 @@ const fixtureAccounts = [
     name: "Fixture Fresh",
     role: "MEMBER",
   },
+  // Has an authenticator but has never written a profile: proves the portal
+  // asks for one, and lets go once it is written.
+  {
+    email: "fixture-blank@sandhi.test",
+    name: "Fixture Blank",
+    role: "MEMBER",
+    profile: "blank",
+  },
   {
     email: "fixture-suspended@sandhi.test",
     name: "Fixture Suspended",
@@ -241,9 +249,21 @@ async function main(): Promise<void> {
           password: passwordHash,
         },
       });
+      // Fixture people are working members, so their profiles are written —
+      // otherwise every signed-in test would be held at the completion gate.
+      // The one exception proves the gate is there.
+      const written =
+        ("profile" in account ? account.profile : "complete") === "complete";
+      const profile = written
+        ? {
+            bio: "Fixture content used only by automated tests. This paragraph exists so the portal counts the profile as written.",
+            interests: ["Fixture interest"],
+            profileCompletedAt: new Date(),
+          }
+        : { bio: null, interests: [], profileCompletedAt: null };
       const accountMember = await db.member.upsert({
         where: { userId: user.id },
-        update: { name: account.name, status, isPublic: false },
+        update: { name: account.name, status, isPublic: false, ...profile },
         create: {
           userId: user.id,
           slug: account.email.split("@")[0]!,
@@ -251,6 +271,7 @@ async function main(): Promise<void> {
           rank: "RESEARCHER",
           status,
           isPublic: false,
+          ...profile,
         },
       });
       accountMembers.set(account.email, accountMember.id);

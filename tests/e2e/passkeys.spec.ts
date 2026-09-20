@@ -105,6 +105,20 @@ test("a passkey signs in only with the person verified, and can be removed", asy
       timeout: 30_000,
     });
 
+    // The portal also asks a new member to write their profile. That gate has
+    // its own test; this one is about passkeys, so the profile is filled in
+    // directly and stays out of the way.
+    await db.member.update({
+      where: {
+        userId: (await db.user.findUniqueOrThrow({ where: { email } })).id,
+      },
+      data: {
+        bio: "Fixture content used only by automated tests. This paragraph exists so the portal counts the profile as written.",
+        interests: ["Fixture interest"],
+        profileCompletedAt: new Date(),
+      },
+    });
+
     const authenticator = await addAuthenticator(page);
 
     // Adding a passkey needs the password.

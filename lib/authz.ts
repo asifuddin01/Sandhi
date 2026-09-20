@@ -18,6 +18,9 @@ import {
 /** Where staff without two-factor authentication are sent to set it up. */
 export const TWO_FACTOR_SETUP_PATH = "/portal/security?setup=two-factor";
 
+/** Where a member who has not written their profile yet is sent to write it. */
+export const PROFILE_SETUP_PATH = "/portal/profile?setup=profile";
+
 /**
  * Sessions last a week for the portal, but administration needs a sign-in
  * from the last twelve hours, so a session left open on a borrowed or lost
@@ -48,6 +51,8 @@ export interface Viewer {
     name: string;
     rank: string;
     status: string;
+    /** Whether they have written the profile the portal asks everyone for. */
+    profileComplete: boolean;
   } | null;
 }
 
@@ -70,7 +75,16 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
   const [member, passkeys] = await Promise.all([
     getDb().member.findUnique({
       where: { userId: session.user.id },
-      select: { id: true, slug: true, name: true, rank: true, status: true },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        rank: true,
+        status: true,
+        // One more column on a row already being read, so the portal gate
+        // costs nothing per request.
+        profileCompletedAt: true,
+      },
     }),
     // Only asked when it can change the answer: an account with an
     // authenticator already satisfies the requirement.
@@ -93,7 +107,16 @@ export const getViewer = cache(async (): Promise<Viewer | null> => {
     // unverified one). Asking for a code on top of that is ceremony, not
     // security.
     secondFactor: twoFactorEnabled || passkeys > 0,
-    member,
+    member: member
+      ? {
+          id: member.id,
+          slug: member.slug,
+          name: member.name,
+          rank: member.rank,
+          status: member.status,
+          profileComplete: member.profileCompletedAt !== null,
+        }
+      : null,
   };
 });
 

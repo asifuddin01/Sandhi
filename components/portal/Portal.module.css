@@ -523,3 +523,46 @@
   cursor: progress;
   opacity: 0.75;
 }
+
+.portrait {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 1rem;
+  border: 1px solid var(--ink-line);
+}
+
+.portraitPreview {
+  width: 7rem;
+  height: auto;
+  max-height: 9rem;
+  border: 1px solid var(--ink-line);
+  /* The whole photograph, never a crop of it — the same rule the people
+     pages follow, so what is previewed here is what visitors will see. */
+  object-fit: contain;
+  background: var(--ink-raised);
+}
+
+.checkRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.checkRow label {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  font-weight: 550;
+}
+
+.gapList {
+  display: grid;
+  gap: 0.3rem;
+  margin: 0.6rem 0 0;
+  padding-left: 1.1rem;
+  /* The site resets lists; these need their markers, because "still needed"
+     is a list of separate things and reads as prose without them. */
+  list-style: disc outside;
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+}

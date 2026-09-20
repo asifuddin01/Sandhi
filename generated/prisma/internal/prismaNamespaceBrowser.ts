@@ -253,6 +253,7 @@ export const MemberScalarFieldEnum = {
   isPublic: 'isPublic',
   joinedAt: 'joinedAt',
   leftAt: 'leftAt',
+  profileCompletedAt: 'profileCompletedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

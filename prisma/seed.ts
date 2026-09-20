@@ -231,6 +231,9 @@ async function seedOwner(required: boolean): Promise<void> {
         githubUrl: OWNER_PROFILE.githubUrl,
         linkedinUrl: OWNER_PROFILE.linkedinUrl,
         websiteUrl: OWNER_PROFILE.websiteUrl,
+        // This profile is written here, so the portal has nothing left to ask
+        // for and does not hold the owner at the completion gate.
+        profileCompletedAt: new Date(),
       };
 
       const member = await transaction.member.upsert({
