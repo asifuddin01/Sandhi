@@ -158,6 +158,18 @@ export function requiresProposalFile(type: JoinInterestType): boolean {
   return type === "PROJECT_PROPOSAL";
 }
 
+/**
+ * The paths where somebody is applying to join the lab themselves, rather
+ * than proposing work between organizations. They send one PDF — a cover
+ * letter, then a CV — because a letter explaining why this lab is the thing
+ * a CV alone cannot say.
+ */
+const coverLetterTypes = new Set<JoinInterestType>(["RESEARCHER", "INTERNSHIP"]);
+
+export function expectsCoverLetter(type: JoinInterestType): boolean {
+  return coverLetterTypes.has(type);
+}
+
 export const joinMotivationSchema = z
   .object({
     type: z.enum(joinInterestValues),

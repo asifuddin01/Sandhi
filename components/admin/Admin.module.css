@@ -658,3 +658,33 @@
   background: var(--ink-raised);
   color: var(--moonstone);
 }
+
+/**
+ * What a stranger typed into a textarea, shown as they typed it. Deliberately
+ * not Markdown: an application comes from someone with no account, and an
+ * administrator reading it should see their words, not a rendering of them
+ * that can carry a link wearing someone else's name.
+ */
+.plainText {
+  margin: 0;
+  max-width: 44rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.noteList {
+  display: grid;
+  gap: 0.75rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.noteList li {
+  display: grid;
+  gap: 0.3rem;
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--ink-line);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

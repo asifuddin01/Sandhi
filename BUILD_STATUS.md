@@ -521,6 +521,49 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### Reading what arrives from Join SANDHI
+
+Applications were being collected and emailed to an address, and that was
+all: nothing in the site could read them, so a queue existed only in
+somebody's inbox. `/admin/applications` is that queue — filtered by state and
+by path, searchable by name, email or institution, and headed by how many are
+still waiting on an answer rather than how many exist.
+
+An applicant's words are shown **as plain text, not Markdown**. An
+application comes from somebody with no account, and an administrator reading
+it should see what they typed rather than a rendering of it that can carry a
+link wearing someone else's name.
+
+The CV and the proposal PDF are the most private things the site holds, so
+they are reached through `/files/applications/[id]/[kind]`: the route is the
+authorization decision, the signed link is its last step, it lives ten
+minutes, and it is never cached or shared between readers. A reader without
+`applications:manage` — or with it but no second factor yet — gets the same
+404 as a file that does not exist.
+
+Accepting is what offers an invitation. Inviting somebody the lab has not
+decided about is how a queue stops meaning anything, so the button appears
+only on an accepted application, and `INVITED` is not a state anybody sets by
+hand: it means an invitation was really created and sent. The invitation is
+the same one the members manager sends, so the person lands in the same
+onboarding — accept, set up an authenticator, write a profile. They are
+invited as an ordinary member; administration is granted afterwards,
+deliberately, in Members.
+
+Two things worth keeping:
+
+- **The invite form stays on the page after sending.** Sending revalidates
+  the page, and a form that unmounted on the way would take its message with
+  it — including the one that matters, which is that the email did not go and
+  needs resending from Members.
+- **The dashboard's "New applications" count links only for a reader who can
+  open it.** A count with nowhere to go is a count nobody acts on; a link to a
+  404 is worse.
+
+Still to build here: telling an applicant their decision. A rejection is
+recorded and nobody is told, which is the same hole the proposals pipeline
+has.
+
 ### Writing your profile, on the way in
 
 The portal gate has two rungs now, taken in order. A new member sets up an
@@ -591,10 +634,8 @@ decision is made.
 
 ### Admin routes (Milestone 5)
 
-Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, `/admin/resources`, `/admin/partners`, `/admin/projects`, `/admin/research`, and the sign-in, reset, and invitation routes (slices 1–6). Still to build:
+Built: `/admin`, `/admin/members`, `/admin/settings`, `/admin/audit`, `/admin/news`, `/admin/events`, `/admin/opportunities`, `/admin/resources`, `/admin/partners`, `/admin/projects`, `/admin/research`, `/admin/proposals`, `/admin/applications`, and the sign-in, reset, and invitation routes (slices 1–6). Still to build:
 
-- `/admin/publications`
-- `/admin/applications`
 - `/admin/insights`
 - `/admin/approvals`
 

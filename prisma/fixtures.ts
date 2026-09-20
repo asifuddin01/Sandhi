@@ -320,6 +320,51 @@ async function main(): Promise<void> {
       },
     });
 
+    // Two applications, so the queue and the detail page have something to
+    // be tested against. Nothing here is ever public.
+    const applications = [
+      {
+        email: "fixture-applicant@example.org",
+        name: "Fixture Applicant",
+        type: "RESEARCHER" as const,
+        status: "NEW" as const,
+        currentRole: "PhD student",
+        motivation:
+          "Fixture content used only by automated tests. I work on boundary detection in speech and would like to continue that here.",
+      },
+      {
+        email: "fixture-accepted@example.org",
+        name: "Fixture Accepted",
+        type: "INTERNSHIP" as const,
+        status: "ACCEPTED" as const,
+        currentRole: "Undergraduate",
+        motivation:
+          "Fixture content used only by automated tests. I would like a supervised placement over the summer.",
+      },
+    ];
+    for (const entry of applications) {
+      const existing = await db.application.findFirst({
+        where: { email: entry.email },
+        select: { id: true },
+      });
+      const data = {
+        type: entry.type,
+        status: entry.status,
+        name: entry.name,
+        email: entry.email,
+        institution: "Fixture University",
+        currentRole: entry.currentRole,
+        interests: [area.name],
+        motivation: entry.motivation,
+        consent: true,
+      };
+      if (existing) {
+        await db.application.update({ where: { id: existing.id }, data });
+      } else {
+        await db.application.create({ data });
+      }
+    }
+
     await db.siteSetting.upsert({
       where: { key: "features.showNumbers" },
       update: { value: true },

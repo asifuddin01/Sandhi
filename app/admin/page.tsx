@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 import styles from "@/components/admin/Admin.module.css";
 import { requireCapability } from "@/lib/authz";
@@ -23,6 +24,7 @@ export default async function AdminDashboardPage() {
   const viewer = await requireCapability("admin:access", "/admin");
   const db = getDb();
   const showAudit = can(viewer.role, "audit:view");
+  const readsApplications = can(viewer.role, "applications:manage");
 
   const [
     activeMembers,
@@ -62,11 +64,18 @@ export default async function AdminDashboardPage() {
       : Promise.resolve([]),
   ]);
 
+  // A count with nowhere to go is a count nobody acts on, so the rows that
+  // have somewhere to go carry the link — but only for a reader who can
+  // actually open it, or the link is an invitation to a 404.
   const pending = [
-    ["New applications", newApplications],
-    ["Profile changes awaiting approval", pendingChanges],
-    ["Publications in internal review", publicationsInReview],
-    ["Research notes in review", insightsInReview],
+    [
+      "New applications",
+      newApplications,
+      readsApplications ? "/admin/applications" : null,
+    ],
+    ["Profile changes awaiting approval", pendingChanges, null],
+    ["Publications in internal review", publicationsInReview, null],
+    ["Research notes in review", insightsInReview, null],
   ] as const;
 
   return (
@@ -100,9 +109,9 @@ export default async function AdminDashboardPage() {
       <section className={styles.section} aria-labelledby="pending-heading">
         <h2 id="pending-heading">Waiting for attention</h2>
         <ul className={styles.rows}>
-          {pending.map(([label, count]) => (
+          {pending.map(([label, count, href]) => (
             <li key={label}>
-              <span>{label}</span>
+              <span>{href ? <Link href={href}>{label}</Link> : label}</span>
               <span>{numberFormat.format(count)}</span>
             </li>
           ))}

@@ -6,6 +6,7 @@ import {
   joinInterestTypes,
   joinMotivationSchema,
   joinSubmissionSchema,
+  expectsCoverLetter,
   requiresCv,
   requiresProposal,
   requiresProposalFile,
@@ -35,6 +36,20 @@ describe("join form validation", () => {
     expect(descriptions.PROJECT_PROPOSAL).toContain("proposal PDF");
     expect(descriptions.ACADEMIC_COLLABORATION).toContain("universities");
     expect(descriptions.INDUSTRY_COLLABORATION).toContain("organizations");
+  });
+
+  /**
+   * The cover letter is asked for on the two paths where somebody is applying
+   * to join the lab themselves. A collaboration between organizations is not
+   * a job application, so it is not asked for there.
+   */
+  it("asks for a cover letter only from people applying to join", () => {
+    expect(expectsCoverLetter("RESEARCHER")).toBe(true);
+    expect(expectsCoverLetter("INTERNSHIP")).toBe(true);
+    expect(expectsCoverLetter("COLLABORATION")).toBe(false);
+    expect(expectsCoverLetter("PROJECT_PROPOSAL")).toBe(false);
+    expect(expectsCoverLetter("ACADEMIC_COLLABORATION")).toBe(false);
+    expect(expectsCoverLetter("INDUSTRY_COLLABORATION")).toBe(false);
   });
 
   it("does not require a CV for project, academic, or industry paths", () => {

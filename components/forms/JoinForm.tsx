@@ -3,6 +3,7 @@
 import {
   type ChangeEvent,
   type FormEvent,
+  type ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -17,6 +18,7 @@ import {
 import { TurnstileField } from "@/components/forms/TurnstileField";
 import {
   flattenZodErrors,
+  expectsCoverLetter,
   isValidPdf,
   joinAboutSchema,
   joinInterestSchema,
@@ -500,6 +502,9 @@ export function JoinForm({
   const proposalRequired = draft.type ? requiresProposal(draft.type) : false;
   const cvRequired = draft.type ? requiresCv(draft.type) : true;
   const cvSupported = draft.type ? supportsCv(draft.type) : true;
+  const coverLetterExpected = draft.type
+    ? expectsCoverLetter(draft.type)
+    : false;
   const proposalFileRequired = draft.type
     ? requiresProposalFile(draft.type)
     : false;
@@ -720,7 +725,19 @@ export function JoinForm({
                         ? "CV (PDF, max 5 MB) *"
                         : "CV (optional PDF, max 5 MB)"
                     }
-                    hint="The file is not saved in this browser session."
+                    hint={
+                      coverLetterExpected ? (
+                        <>
+                          Send one PDF holding a cover letter and your CV, in
+                          that order: the letter first, the CV after it. Keep
+                          the letter to a single page.
+                          <br />
+                          The file is not saved in this browser session.
+                        </>
+                      ) : (
+                        "The file is not saved in this browser session."
+                      )
+                    }
                     file={cvFile}
                     required={cvRequired}
                     error={errors.cvFile}
@@ -967,7 +984,7 @@ function FileField({
 }: {
   id: "cvFile" | "proposalFile";
   label: string;
-  hint: string;
+  hint: ReactNode;
   file: File | null;
   required: boolean;
   error?: string;
