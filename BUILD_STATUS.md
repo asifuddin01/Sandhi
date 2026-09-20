@@ -406,6 +406,16 @@ team chooses to show.
 - **`/files/attachments/[id]`** is the authorization decision; the signed link is
   its last step. Public when the update and project both are, otherwise only
   for someone on that project, and the same 404 for every other case.
+- **A research lead hands work out.** `Task` rows belong to a project and go
+  to one member or several (`TaskAssignee`), with a state, a priority and an
+  optional due date in Dhaka time. Whoever a task is on can move it along —
+  a board only tells the truth if the person doing the work can say where it
+  is — while assigning, reassigning and deleting stay with the leads.
+- **An assistant research lead does everything the lead does on that project**
+  (`ProjectMember.isAssistantLead`). A lead or an administrator appoints one;
+  nobody appoints themselves, and the research lead itself is still named in
+  administration, where teams are formed. This is per-project data, never an
+  entry in `lib/permissions.ts`.
 - **The controls live where the work is read.** `/projects/[slug]` shows an
   "Update this project" button to whoever is on that project — `membershipOf()`
   is one indexed row — and nothing at all to everyone else. The header, mobile

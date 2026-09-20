@@ -30,3 +30,41 @@ export const SECTION_PRESETS = [
   "Limitations",
   "Reproducibility",
 ] as const;
+
+export const MAX_TASK_TITLE = 200;
+export const MAX_TASK_DESCRIPTION = 4000;
+
+/** Where a task can be, and what each state is called on the page. */
+export const TASK_STATUSES = [
+  "TODO",
+  "IN_PROGRESS",
+  "BLOCKED",
+  "DONE",
+] as const;
+
+export const TASK_STATUS_LABELS: Record<string, string> = {
+  TODO: "To do",
+  IN_PROGRESS: "In progress",
+  BLOCKED: "Blocked",
+  DONE: "Done",
+};
+
+export const TASK_PRIORITIES = ["LOW", "MEDIUM", "HIGH", "URGENT"] as const;
+
+export const TASK_PRIORITY_LABELS: Record<string, string> = {
+  LOW: "Low",
+  MEDIUM: "Medium",
+  HIGH: "High",
+  URGENT: "Urgent",
+};
+
+export type TaskStatusValue = (typeof TASK_STATUSES)[number];
+export type TaskPriorityValue = (typeof TASK_PRIORITIES)[number];
+
+export function isTaskStatus(value: string): value is TaskStatusValue {
+  return (TASK_STATUSES as readonly string[]).includes(value);
+}
+
+export function isTaskPriority(value: string): value is TaskPriorityValue {
+  return (TASK_PRIORITIES as readonly string[]).includes(value);
+}

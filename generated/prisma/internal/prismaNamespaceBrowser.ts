@@ -86,6 +86,7 @@ export const ModelName = {
   Milestone: 'Milestone',
   ContactMessage: 'ContactMessage',
   Task: 'Task',
+  TaskAssignee: 'TaskAssignee',
   Meeting: 'Meeting',
   Announcement: 'Announcement',
   Experiment: 'Experiment',
@@ -345,6 +346,7 @@ export const ProjectMemberScalarFieldEnum = {
   memberId: 'memberId',
   role: 'role',
   isLead: 'isLead',
+  isAssistantLead: 'isAssistantLead',
   sortOrder: 'sortOrder'
 } as const
 
@@ -691,13 +693,20 @@ export const TaskScalarFieldEnum = {
   sortOrder: 'sortOrder',
   dueAt: 'dueAt',
   projectId: 'projectId',
-  assigneeId: 'assigneeId',
   createdById: 'createdById',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type TaskScalarFieldEnum = (typeof TaskScalarFieldEnum)[keyof typeof TaskScalarFieldEnum]
+
+
+export const TaskAssigneeScalarFieldEnum = {
+  taskId: 'taskId',
+  memberId: 'memberId'
+} as const
+
+export type TaskAssigneeScalarFieldEnum = (typeof TaskAssigneeScalarFieldEnum)[keyof typeof TaskAssigneeScalarFieldEnum]
 
 
 export const MeetingScalarFieldEnum = {

@@ -363,7 +363,7 @@ model Member {
   publicationReviews     PublicationReview[]      @relation("PublicationReviewer")
   newsPosts              NewsPost[]
   insights               InsightAuthor[]
-  tasks                  Task[]                   @relation("TaskAssignee")
+  taskAssignments        TaskAssignee[]           @relation("TaskAssignee")
   createdTasks           Task[]                   @relation("TaskCreator")
   changeRequests         ChangeRequest[]          @relation("ChangeRequestMember")
   reviewedChangeRequests ChangeRequest[]          @relation("ChangeRequestReviewer")
@@ -501,7 +501,11 @@ model ProjectMember {
   projectId String
   memberId  String
   role      String
+  /// The research lead for this project.
   isLead    Boolean @default(false)
+  /// An assistant research lead does everything the lead does on this
+  /// project. A lead or an administrator appoints one.
+  isAssistantLead Boolean @default(false)
   sortOrder Int     @default(0)
   project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
   member    Member  @relation(fields: [memberId], references: [id], onDelete: Cascade)
@@ -915,25 +919,35 @@ model ContactMessage {
 // ---------- Portal ----------
 
 model Task {
-  id          String     @id @default(cuid())
+  id          String         @id @default(cuid())
   title       String
   description String?
-  status      TaskStatus @default(TODO)
-  priority    Priority   @default(MEDIUM)
-  sortOrder   Int        @default(0)
+  status      TaskStatus     @default(TODO)
+  priority    Priority       @default(MEDIUM)
+  sortOrder   Int            @default(0)
   dueAt       DateTime?
   projectId   String?
-  assigneeId  String?
   createdById String?
-  project     Project?   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  assignee    Member?    @relation("TaskAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
-  createdBy   Member?    @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  project     Project?       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdBy   Member?        @relation("TaskCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  assignees   TaskAssignee[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   @@index([projectId, status, sortOrder])
-  @@index([assigneeId, status, dueAt])
   @@index([createdById])
+}
+
+/// Who is on a task. Research work is rarely one person's: a lead assigns
+/// one member or several, and each of them can move the task along.
+model TaskAssignee {
+  taskId   String
+  memberId String
+  task     Task   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  member   Member @relation("TaskAssignee", fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@id([taskId, memberId])
+  @@index([memberId])
 }
 
 model Meeting {

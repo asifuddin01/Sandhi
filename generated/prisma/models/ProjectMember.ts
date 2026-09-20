@@ -39,6 +39,7 @@ export type ProjectMemberMinAggregateOutputType = {
   memberId: string | null
   role: string | null
   isLead: boolean | null
+  isAssistantLead: boolean | null
   sortOrder: number | null
 }
 
@@ -47,6 +48,7 @@ export type ProjectMemberMaxAggregateOutputType = {
   memberId: string | null
   role: string | null
   isLead: boolean | null
+  isAssistantLead: boolean | null
   sortOrder: number | null
 }
 
@@ -55,6 +57,7 @@ export type ProjectMemberCountAggregateOutputType = {
   memberId: number
   role: number
   isLead: number
+  isAssistantLead: number
   sortOrder: number
   _all: number
 }
@@ -73,6 +76,7 @@ export type ProjectMemberMinAggregateInputType = {
   memberId?: true
   role?: true
   isLead?: true
+  isAssistantLead?: true
   sortOrder?: true
 }
 
@@ -81,6 +85,7 @@ export type ProjectMemberMaxAggregateInputType = {
   memberId?: true
   role?: true
   isLead?: true
+  isAssistantLead?: true
   sortOrder?: true
 }
 
@@ -89,6 +94,7 @@ export type ProjectMemberCountAggregateInputType = {
   memberId?: true
   role?: true
   isLead?: true
+  isAssistantLead?: true
   sortOrder?: true
   _all?: true
 }
@@ -184,6 +190,7 @@ export type ProjectMemberGroupByOutputType = {
   memberId: string
   role: string
   isLead: boolean
+  isAssistantLead: boolean
   sortOrder: number
   _count: ProjectMemberCountAggregateOutputType | null
   _avg: ProjectMemberAvgAggregateOutputType | null
@@ -215,6 +222,7 @@ export type ProjectMemberWhereInput = {
   memberId?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   isLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
+  isAssistantLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
   sortOrder?: Prisma.IntFilter<"ProjectMember"> | number
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
@@ -225,6 +233,7 @@ export type ProjectMemberOrderByWithRelationInput = {
   memberId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isLead?: Prisma.SortOrder
+  isAssistantLead?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   project?: Prisma.ProjectOrderByWithRelationInput
   member?: Prisma.MemberOrderByWithRelationInput
@@ -239,6 +248,7 @@ export type ProjectMemberWhereUniqueInput = Prisma.AtLeast<{
   memberId?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   isLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
+  isAssistantLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
   sortOrder?: Prisma.IntFilter<"ProjectMember"> | number
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   member?: Prisma.XOR<Prisma.MemberScalarRelationFilter, Prisma.MemberWhereInput>
@@ -249,6 +259,7 @@ export type ProjectMemberOrderByWithAggregationInput = {
   memberId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isLead?: Prisma.SortOrder
+  isAssistantLead?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
   _count?: Prisma.ProjectMemberCountOrderByAggregateInput
   _avg?: Prisma.ProjectMemberAvgOrderByAggregateInput
@@ -265,12 +276,14 @@ export type ProjectMemberScalarWhereWithAggregatesInput = {
   memberId?: Prisma.StringWithAggregatesFilter<"ProjectMember"> | string
   role?: Prisma.StringWithAggregatesFilter<"ProjectMember"> | string
   isLead?: Prisma.BoolWithAggregatesFilter<"ProjectMember"> | boolean
+  isAssistantLead?: Prisma.BoolWithAggregatesFilter<"ProjectMember"> | boolean
   sortOrder?: Prisma.IntWithAggregatesFilter<"ProjectMember"> | number
 }
 
 export type ProjectMemberCreateInput = {
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
   project: Prisma.ProjectCreateNestedOneWithoutMembersInput
   member: Prisma.MemberCreateNestedOneWithoutProjectsInput
@@ -281,12 +294,14 @@ export type ProjectMemberUncheckedCreateInput = {
   memberId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
 export type ProjectMemberUpdateInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   project?: Prisma.ProjectUpdateOneRequiredWithoutMembersNestedInput
   member?: Prisma.MemberUpdateOneRequiredWithoutProjectsNestedInput
@@ -297,6 +312,7 @@ export type ProjectMemberUncheckedUpdateInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -305,12 +321,14 @@ export type ProjectMemberCreateManyInput = {
   memberId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
 export type ProjectMemberUpdateManyMutationInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -319,6 +337,7 @@ export type ProjectMemberUncheckedUpdateManyInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -342,6 +361,7 @@ export type ProjectMemberCountOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isLead?: Prisma.SortOrder
+  isAssistantLead?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -354,6 +374,7 @@ export type ProjectMemberMaxOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isLead?: Prisma.SortOrder
+  isAssistantLead?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -362,6 +383,7 @@ export type ProjectMemberMinOrderByAggregateInput = {
   memberId?: Prisma.SortOrder
   role?: Prisma.SortOrder
   isLead?: Prisma.SortOrder
+  isAssistantLead?: Prisma.SortOrder
   sortOrder?: Prisma.SortOrder
 }
 
@@ -456,6 +478,7 @@ export type ProjectMemberUncheckedUpdateManyWithoutProjectNestedInput = {
 export type ProjectMemberCreateWithoutMemberInput = {
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
   project: Prisma.ProjectCreateNestedOneWithoutMembersInput
 }
@@ -464,6 +487,7 @@ export type ProjectMemberUncheckedCreateWithoutMemberInput = {
   projectId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
@@ -501,12 +525,14 @@ export type ProjectMemberScalarWhereInput = {
   memberId?: Prisma.StringFilter<"ProjectMember"> | string
   role?: Prisma.StringFilter<"ProjectMember"> | string
   isLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
+  isAssistantLead?: Prisma.BoolFilter<"ProjectMember"> | boolean
   sortOrder?: Prisma.IntFilter<"ProjectMember"> | number
 }
 
 export type ProjectMemberCreateWithoutProjectInput = {
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
   member: Prisma.MemberCreateNestedOneWithoutProjectsInput
 }
@@ -515,6 +541,7 @@ export type ProjectMemberUncheckedCreateWithoutProjectInput = {
   memberId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
@@ -548,12 +575,14 @@ export type ProjectMemberCreateManyMemberInput = {
   projectId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
 export type ProjectMemberUpdateWithoutMemberInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   project?: Prisma.ProjectUpdateOneRequiredWithoutMembersNestedInput
 }
@@ -562,6 +591,7 @@ export type ProjectMemberUncheckedUpdateWithoutMemberInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -569,6 +599,7 @@ export type ProjectMemberUncheckedUpdateManyWithoutMemberInput = {
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -576,12 +607,14 @@ export type ProjectMemberCreateManyProjectInput = {
   memberId: string
   role: string
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: number
 }
 
 export type ProjectMemberUpdateWithoutProjectInput = {
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
   member?: Prisma.MemberUpdateOneRequiredWithoutProjectsNestedInput
 }
@@ -590,6 +623,7 @@ export type ProjectMemberUncheckedUpdateWithoutProjectInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -597,6 +631,7 @@ export type ProjectMemberUncheckedUpdateManyWithoutProjectInput = {
   memberId?: Prisma.StringFieldUpdateOperationsInput | string
   role?: Prisma.StringFieldUpdateOperationsInput | string
   isLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  isAssistantLead?: Prisma.BoolFieldUpdateOperationsInput | boolean
   sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
 }
 
@@ -607,6 +642,7 @@ export type ProjectMemberSelect<ExtArgs extends runtime.Types.Extensions.Interna
   memberId?: boolean
   role?: boolean
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -617,6 +653,7 @@ export type ProjectMemberSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   memberId?: boolean
   role?: boolean
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -627,6 +664,7 @@ export type ProjectMemberSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   memberId?: boolean
   role?: boolean
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -637,10 +675,11 @@ export type ProjectMemberSelectScalar = {
   memberId?: boolean
   role?: boolean
   isLead?: boolean
+  isAssistantLead?: boolean
   sortOrder?: boolean
 }
 
-export type ProjectMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "memberId" | "role" | "isLead" | "sortOrder", ExtArgs["result"]["projectMember"]>
+export type ProjectMemberOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"projectId" | "memberId" | "role" | "isLead" | "isAssistantLead" | "sortOrder", ExtArgs["result"]["projectMember"]>
 export type ProjectMemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   member?: boolean | Prisma.MemberDefaultArgs<ExtArgs>
@@ -664,7 +703,15 @@ export type $ProjectMemberPayload<ExtArgs extends runtime.Types.Extensions.Inter
     projectId: string
     memberId: string
     role: string
+    /**
+     * The research lead for this project.
+     */
     isLead: boolean
+    /**
+     * An assistant research lead does everything the lead does on this
+     * project. A lead or an administrator appoints one.
+     */
+    isAssistantLead: boolean
     sortOrder: number
   }, ExtArgs["result"]["projectMember"]>
   composites: {}
@@ -1095,6 +1142,7 @@ export interface ProjectMemberFieldRefs {
   readonly memberId: Prisma.FieldRef<"ProjectMember", 'String'>
   readonly role: Prisma.FieldRef<"ProjectMember", 'String'>
   readonly isLead: Prisma.FieldRef<"ProjectMember", 'Boolean'>
+  readonly isAssistantLead: Prisma.FieldRef<"ProjectMember", 'Boolean'>
   readonly sortOrder: Prisma.FieldRef<"ProjectMember", 'Int'>
 }
     

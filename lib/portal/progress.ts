@@ -12,6 +12,31 @@ import { memberProjectIds, workspaceMemberId } from "@/lib/portal-content";
  */
 
 export const UPDATES_PAGE_SIZE = 50;
+export const TASKS_PAGE_SIZE = 200;
+
+export interface TeamMember {
+  memberId: string;
+  slug: string;
+  name: string;
+  role: string;
+  isLead: boolean;
+  isAssistantLead: boolean;
+  /** Whether this row is the viewer's own. */
+  isMe: boolean;
+}
+
+export interface ProjectTask {
+  id: string;
+  title: string;
+  description: string | null;
+  status: string;
+  priority: string;
+  dueAt: Date | null;
+  /** Everyone the task is on. Research work is rarely one person's. */
+  assignees: Array<{ memberId: string; slug: string; name: string }>;
+  /** Whether it is the viewer's to do. */
+  mine: boolean;
+}
 
 export interface ProjectSectionEntry {
   id: string;
@@ -58,6 +83,14 @@ export interface ProjectProgress {
   state: string;
   role: string;
   isLead: boolean;
+  isAssistantLead: boolean;
+  /**
+   * Whether the viewer leads this project. An assistant research lead does
+   * everything the lead does here, which is the whole point of the role.
+   */
+  leads: boolean;
+  team: TeamMember[];
+  tasks: ProjectTask[];
   sections: ProjectSectionEntry[];
   updates: ProgressUpdate[];
 }
@@ -110,8 +143,40 @@ export async function getProjectProgress(
       phase: true,
       state: true,
       members: {
-        where: { memberId },
-        select: { role: true, isLead: true },
+        orderBy: [
+          { isLead: "desc" },
+          { isAssistantLead: "desc" },
+          { sortOrder: "asc" },
+        ],
+        select: {
+          memberId: true,
+          role: true,
+          isLead: true,
+          isAssistantLead: true,
+          member: { select: { slug: true, name: true } },
+        },
+      },
+      tasks: {
+        orderBy: [
+          { status: "asc" },
+          { dueAt: { sort: "asc", nulls: "last" } },
+          { sortOrder: "asc" },
+        ],
+        take: TASKS_PAGE_SIZE,
+        select: {
+          id: true,
+          title: true,
+          description: true,
+          status: true,
+          priority: true,
+          dueAt: true,
+          assignees: {
+            select: {
+              memberId: true,
+              member: { select: { slug: true, name: true } },
+            },
+          },
+        },
       },
       sections: {
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
@@ -165,7 +230,9 @@ export async function getProjectProgress(
   });
   if (!row) return null;
 
-  const membership = row.members[0];
+  const membership = row.members.find(
+    (candidate) => candidate.memberId === memberId,
+  );
   return {
     id: row.id,
     slug: row.slug,
@@ -176,6 +243,26 @@ export async function getProjectProgress(
     state: row.state,
     role: membership?.role ?? "Member",
     isLead: membership?.isLead ?? false,
+    isAssistantLead: membership?.isAssistantLead ?? false,
+    leads: Boolean(membership?.isLead || membership?.isAssistantLead),
+    team: row.members.map((person) => ({
+      memberId: person.memberId,
+      slug: person.member.slug,
+      name: person.member.name,
+      role: person.role,
+      isLead: person.isLead,
+      isAssistantLead: person.isAssistantLead,
+      isMe: person.memberId === memberId,
+    })),
+    tasks: row.tasks.map((task) => ({
+      ...task,
+      assignees: task.assignees.map((person) => ({
+        memberId: person.memberId,
+        slug: person.member.slug,
+        name: person.member.name,
+      })),
+      mine: task.assignees.some((person) => person.memberId === memberId),
+    })),
     sections: row.sections,
     updates: row.updates.map(({ authorId, ...update }) => ({
       ...update,
@@ -262,4 +349,33 @@ export async function diagramsForProject(
     take: 50,
     select: { id: true, title: true },
   });
+}
+
+/**
+ * Whether the viewer leads this project — as its research lead, or as an
+ * assistant research lead, who does everything the lead does here. This is
+ * the check every task and team change goes through.
+ */
+export async function leadsProject(
+  viewer: Viewer,
+  projectId: string,
+): Promise<boolean> {
+  const memberId = workspaceMemberId(viewer);
+  if (!memberId || !isDatabaseConfigured()) return false;
+
+  const membership = await getDb().projectMember.findUnique({
+    where: { projectId_memberId: { projectId, memberId } },
+    select: { isLead: true, isAssistantLead: true },
+  });
+  return Boolean(membership?.isLead || membership?.isAssistantLead);
+}
+
+/** The project a task belongs to, for the checks that follow. */
+export async function taskProjectId(taskId: string): Promise<string | null> {
+  if (!isDatabaseConfigured()) return null;
+  const task = await getDb().task.findUnique({
+    where: { id: taskId },
+    select: { projectId: true },
+  });
+  return task?.projectId ?? null;
 }

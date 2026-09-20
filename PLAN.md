@@ -63,7 +63,7 @@ This checklist follows the supplied build specification. Milestones are complete
 - [ ] Build profile editing with approval-gated public fields and private-field direct editing.
 - [ ] Build My projects and the accessible project workspace/kanban. (My projects and project progress are built: `/portal/projects` lists the projects a member is on, `/portal/projects/[slug]` shows the stage and the team's updates, and an update reaches `/projects/[slug]` only when someone publishes it. Kanban remains.)
 - [ ] Build publication entry/import, authorship ordering, review stages, and notifications.
-- [ ] Build personal tasks, meeting calendar and ICS, announcements, and Insights drafting.
+- [ ] Build personal tasks, meeting calendar and ICS, announcements, and Insights drafting. (Project tasks are built: a research lead or assistant lead assigns one member or several, and whoever a task is on moves it along. Personal tasks, meetings and Insights drafting remain.)
 - [ ] Prove profile approval gating and automatic publication propagation through relations.
 - [ ] Pass the four quality commands, contrast checks, accessibility checks, and milestone design review.
 

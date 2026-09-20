@@ -2,8 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 
-import type { ActionState } from "@/lib/admin/actions";
-import { authorize, AuthorizationError, type Viewer } from "@/lib/authz";
 import { cacheTags } from "@/lib/cache-tags";
 import { invalidate } from "@/lib/admin/actions";
 import { getDb } from "@/lib/db";
@@ -31,47 +29,12 @@ import {
 } from "@/lib/portal/progress";
 import { assertAttachmentExists } from "@/lib/storage";
 
-export type ProgressState = ActionState;
-
-class ProgressError extends Error {}
-
-function field(formData: FormData, name: string): string {
-  const value = formData.get(name);
-  return typeof value === "string" ? value : "";
-}
-
-async function run(
-  work: (viewer: Viewer) => Promise<ProgressState>,
-): Promise<ProgressState> {
-  let viewer: Viewer;
-  try {
-    viewer = await authorize("portal:access");
-  } catch (error) {
-    if (error instanceof AuthorizationError) {
-      return { status: "error", message: error.message };
-    }
-    throw error;
-  }
-  if (!workspaceMemberId(viewer)) {
-    return {
-      status: "error",
-      message: "Posting an update needs a lab profile on your account.",
-    };
-  }
-
-  try {
-    return await work(viewer);
-  } catch (error) {
-    if (error instanceof ProgressError) {
-      return { status: "error", message: error.message };
-    }
-    console.error("[progress] action failed:", error);
-    return {
-      status: "error",
-      message: "That could not be saved. Please try again.",
-    };
-  }
-}
+import {
+  field,
+  ProgressError,
+  run,
+  type ProgressState,
+} from "./action-runtime";
 
 function readUpdate(formData: FormData) {
   const title = field(formData, "title").trim();

@@ -3,7 +3,10 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const mocks = vi.hoisted(() => ({
   projectFindFirst: vi.fn(),
   projectMemberFindMany: vi.fn(),
+  projectMemberFindUnique: vi.fn(),
   projectUpdateFindUnique: vi.fn(),
+  projectSectionFindUnique: vi.fn(),
+  taskFindUnique: vi.fn(),
 }));
 
 vi.mock("server-only", () => ({}));
@@ -11,16 +14,23 @@ vi.mock("server-only", () => ({}));
 vi.mock("@/lib/db", () => ({
   getDb: () => ({
     project: { findFirst: mocks.projectFindFirst },
-    projectMember: { findMany: mocks.projectMemberFindMany },
+    projectMember: {
+      findMany: mocks.projectMemberFindMany,
+      findUnique: mocks.projectMemberFindUnique,
+    },
     projectUpdate: { findUnique: mocks.projectUpdateFindUnique },
+    projectSection: { findUnique: mocks.projectSectionFindUnique },
+    task: { findUnique: mocks.taskFindUnique },
   }),
   isDatabaseConfigured: () => true,
 }));
 
 import type { Viewer } from "@/lib/authz";
 import {
+  canEditSection,
   canEditUpdate,
   getProjectProgress,
+  leadsProject,
   onProject,
 } from "@/lib/portal/progress";
 
@@ -56,7 +66,17 @@ function projectRow(overrides: Record<string, unknown> = {}) {
     gloss: "Listening to what is not said.",
     status: "ACTIVE",
     state: "DRAFT",
-    members: [{ role: "Researcher", isLead: false }],
+    members: [
+      {
+        memberId: "member-1",
+        role: "Researcher",
+        isLead: false,
+        isAssistantLead: false,
+        member: { slug: "a-member", name: "A Member" },
+      },
+    ],
+    tasks: [],
+    sections: [],
     updates: [],
     ...overrides,
   };
@@ -134,7 +154,22 @@ describe("getProjectProgress", () => {
   it("carries the membership the page needs to decide what to offer", async () => {
     mocks.projectFindFirst.mockResolvedValue(
       projectRow({
-        members: [{ role: "Principal investigator", isLead: true }],
+        members: [
+          {
+            memberId: "member-1",
+            role: "Principal investigator",
+            isLead: true,
+            isAssistantLead: false,
+            member: { slug: "a-member", name: "A Member" },
+          },
+          {
+            memberId: "member-2",
+            role: "Researcher",
+            isLead: false,
+            isAssistantLead: true,
+            member: { slug: "someone-else", name: "Someone Else" },
+          },
+        ],
       }),
     );
 
@@ -143,8 +178,59 @@ describe("getProjectProgress", () => {
     expect(progress).toMatchObject({
       role: "Principal investigator",
       isLead: true,
+      leads: true,
       state: "DRAFT",
     });
+    // The whole team travels, marked so the page knows which row is the
+    // viewer's own and cannot offer them controls over themselves.
+    expect(progress?.team).toEqual([
+      {
+        memberId: "member-1",
+        slug: "a-member",
+        name: "A Member",
+        role: "Principal investigator",
+        isLead: true,
+        isAssistantLead: false,
+        isMe: true,
+      },
+      {
+        memberId: "member-2",
+        slug: "someone-else",
+        name: "Someone Else",
+        role: "Researcher",
+        isLead: false,
+        isAssistantLead: true,
+        isMe: false,
+      },
+    ]);
+  });
+
+  it("counts an assistant lead as leading, and a plain member as not", async () => {
+    const membership = (extra: Record<string, unknown>) =>
+      projectRow({
+        members: [
+          {
+            memberId: "member-1",
+            role: "Researcher",
+            isLead: false,
+            isAssistantLead: false,
+            member: { slug: "a-member", name: "A Member" },
+            ...extra,
+          },
+        ],
+      });
+
+    mocks.projectFindFirst.mockResolvedValue(membership({}));
+    expect((await getProjectProgress(viewer(), "quiet-signals"))?.leads).toBe(
+      false,
+    );
+
+    mocks.projectFindFirst.mockResolvedValue(
+      membership({ isAssistantLead: true }),
+    );
+    expect((await getProjectProgress(viewer(), "quiet-signals"))?.leads).toBe(
+      true,
+    );
   });
 });
 
@@ -219,6 +305,77 @@ describe("canEditUpdate", () => {
     expect(await canEditUpdate(viewer(), "missing")).toEqual({
       allowed: false,
       projectId: null,
+    });
+  });
+});
+
+describe("who leads a project", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("is the research lead", async () => {
+    mocks.projectMemberFindUnique.mockResolvedValue({
+      isLead: true,
+      isAssistantLead: false,
+    });
+    expect(await leadsProject(viewer(), "project-1")).toBe(true);
+  });
+
+  it("is an assistant research lead, who does everything the lead does", async () => {
+    mocks.projectMemberFindUnique.mockResolvedValue({
+      isLead: false,
+      isAssistantLead: true,
+    });
+    expect(await leadsProject(viewer(), "project-1")).toBe(true);
+  });
+
+  it("is not an ordinary member of the team", async () => {
+    mocks.projectMemberFindUnique.mockResolvedValue({
+      isLead: false,
+      isAssistantLead: false,
+    });
+    expect(await leadsProject(viewer(), "project-1")).toBe(false);
+  });
+
+  it("is nobody who is not on the project, or has no lab profile", async () => {
+    mocks.projectMemberFindUnique.mockResolvedValue(null);
+    expect(await leadsProject(viewer(), "project-1")).toBe(false);
+
+    expect(await leadsProject(viewer(null), "project-1")).toBe(false);
+    expect(
+      await leadsProject(viewer({ status: "SUSPENDED" }), "project-1"),
+    ).toBe(false);
+  });
+});
+
+describe("canEditSection", () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it("lets anyone on the project change the shared account of the work", async () => {
+    // A section is not one person's post, unlike an update, so it is not
+    // owned the way an update is.
+    mocks.projectSectionFindUnique.mockResolvedValue({
+      projectId: "project-1",
+      project: { members: [{ memberId: "member-1" }] },
+    });
+
+    expect(await canEditSection(viewer(), "section-1")).toEqual({
+      allowed: true,
+      projectId: "project-1",
+    });
+  });
+
+  it("refuses someone who is not on the project", async () => {
+    mocks.projectSectionFindUnique.mockResolvedValue({
+      projectId: "project-1",
+      project: { members: [] },
+    });
+
+    expect(await canEditSection(viewer(), "section-1")).toMatchObject({
+      allowed: false,
     });
   });
 });

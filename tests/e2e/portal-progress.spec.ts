@@ -12,6 +12,19 @@ test.skip(
 
 const PROJECT = "fixture-team-project";
 
+async function forgetTasks(prefix: string) {
+  const db = createPrismaClient();
+  try {
+    await db.task.deleteMany({ where: { title: { startsWith: prefix } } });
+    await db.projectMember.updateMany({
+      where: { project: { slug: PROJECT } },
+      data: { isAssistantLead: false },
+    });
+  } finally {
+    await db.$disconnect();
+  }
+}
+
 async function forgetSections(prefix: string) {
   const db = createPrismaClient();
   try {
@@ -195,5 +208,98 @@ test("the team says which step the work is at, and writes the project's own acco
     await expect(page.getByText(heading)).toHaveCount(0);
   } finally {
     await forgetSections("Fixture section ");
+  }
+});
+
+test("a research lead hands work out, and can appoint an assistant lead", async ({
+  page,
+}) => {
+  test.slow();
+  const title = `Fixture task ${Date.now()}`;
+
+  try {
+    await signIn(
+      page,
+      "fixture-member@sandhi.test",
+      `/portal/projects/${PROJECT}`,
+    );
+
+    const board = page.getByRole("region", { name: "Work" });
+    await board.getByLabel("What needs doing").fill(title);
+    // A task goes to one person or several.
+    await board.getByRole("checkbox", { name: "Fixture Researcher A" }).check();
+    await board.getByRole("checkbox", { name: "Fixture Member" }).check();
+    await board.getByLabel("Priority").selectOption("HIGH");
+    await submit(page, "Add task");
+
+    const task = page.getByRole("listitem").filter({ hasText: title });
+    await expect(task).toContainText("To do");
+    await expect(task).toContainText("High");
+    await expect(task).toContainText("Fixture Researcher A");
+    await expect(task).toContainText("Fixture Member");
+
+    // Taking one of them off leaves the other on it.
+    await task.getByRole("checkbox", { name: "Fixture Member" }).uncheck();
+    await submit(page, "Assign");
+    const reassigned = page.getByRole("listitem").filter({ hasText: title });
+    await expect(reassigned).toContainText("Fixture Researcher A");
+    await expect(reassigned).not.toContainText("· Fixture Member");
+
+    // A lead moves it along, and so would the person it belongs to.
+    await task.getByLabel("State").selectOption("DONE");
+    await submit(page, "Set");
+    await expect(
+      page.getByRole("listitem").filter({ hasText: title }),
+    ).toContainText("Done");
+
+    // An assistant lead does everything a lead does, so a lead appoints one.
+    await submit(page, "Make Fixture Researcher A an assistant lead");
+    await expect(
+      page.getByText("Fixture Researcher A is now an assistant lead."),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("region", { name: "Team" })
+        .getByRole("listitem")
+        .filter({ hasText: "Fixture Researcher A" }),
+    ).toContainText("assistant lead");
+
+    await submit(page, "Delete");
+    await expect(page.getByText(title)).toHaveCount(0);
+  } finally {
+    await forgetTasks("Fixture task ");
+  }
+});
+
+test("someone on a project who does not lead it is not offered the lead's controls", async ({
+  page,
+}) => {
+  const db = createPrismaClient();
+  try {
+    // Stand the fixture member down for this test only.
+    await db.projectMember.updateMany({
+      where: { project: { slug: PROJECT }, member: { slug: "fixture-member" } },
+      data: { isLead: false },
+    });
+
+    await signIn(
+      page,
+      "fixture-member@sandhi.test",
+      `/portal/projects/${PROJECT}`,
+    );
+
+    await expect(
+      page.getByText("The research lead assigns work."),
+    ).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add task" })).toHaveCount(0);
+    await expect(
+      page.getByRole("button", { name: /assistant lead/u }),
+    ).toHaveCount(0);
+  } finally {
+    await db.projectMember.updateMany({
+      where: { project: { slug: PROJECT }, member: { slug: "fixture-member" } },
+      data: { isLead: true },
+    });
+    await db.$disconnect();
   }
 });

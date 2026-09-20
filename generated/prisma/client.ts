@@ -221,6 +221,12 @@ export type ContactMessage = Prisma.ContactMessageModel
  */
 export type Task = Prisma.TaskModel
 /**
+ * Model TaskAssignee
+ * Who is on a task. Research work is rarely one person's: a lead assigns
+ * one member or several, and each of them can move the task along.
+ */
+export type TaskAssignee = Prisma.TaskAssigneeModel
+/**
  * Model Meeting
  * 
  */

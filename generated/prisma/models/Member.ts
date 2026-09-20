@@ -372,7 +372,7 @@ export type MemberWhereInput = {
   publicationReviews?: Prisma.PublicationReviewListRelationFilter
   newsPosts?: Prisma.NewsPostListRelationFilter
   insights?: Prisma.InsightAuthorListRelationFilter
-  tasks?: Prisma.TaskListRelationFilter
+  taskAssignments?: Prisma.TaskAssigneeListRelationFilter
   createdTasks?: Prisma.TaskListRelationFilter
   changeRequests?: Prisma.ChangeRequestListRelationFilter
   reviewedChangeRequests?: Prisma.ChangeRequestListRelationFilter
@@ -422,7 +422,7 @@ export type MemberOrderByWithRelationInput = {
   publicationReviews?: Prisma.PublicationReviewOrderByRelationAggregateInput
   newsPosts?: Prisma.NewsPostOrderByRelationAggregateInput
   insights?: Prisma.InsightAuthorOrderByRelationAggregateInput
-  tasks?: Prisma.TaskOrderByRelationAggregateInput
+  taskAssignments?: Prisma.TaskAssigneeOrderByRelationAggregateInput
   createdTasks?: Prisma.TaskOrderByRelationAggregateInput
   changeRequests?: Prisma.ChangeRequestOrderByRelationAggregateInput
   reviewedChangeRequests?: Prisma.ChangeRequestOrderByRelationAggregateInput
@@ -475,7 +475,7 @@ export type MemberWhereUniqueInput = Prisma.AtLeast<{
   publicationReviews?: Prisma.PublicationReviewListRelationFilter
   newsPosts?: Prisma.NewsPostListRelationFilter
   insights?: Prisma.InsightAuthorListRelationFilter
-  tasks?: Prisma.TaskListRelationFilter
+  taskAssignments?: Prisma.TaskAssigneeListRelationFilter
   createdTasks?: Prisma.TaskListRelationFilter
   changeRequests?: Prisma.ChangeRequestListRelationFilter
   reviewedChangeRequests?: Prisma.ChangeRequestListRelationFilter
@@ -586,7 +586,7 @@ export type MemberCreateInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -635,7 +635,7 @@ export type MemberUncheckedCreateInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -684,7 +684,7 @@ export type MemberUpdateInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -733,7 +733,7 @@ export type MemberUncheckedUpdateInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1164,26 +1164,10 @@ export type MemberUpdateOneRequiredWithoutProposalInterestsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutProposalInterestsInput, Prisma.MemberUpdateWithoutProposalInterestsInput>, Prisma.MemberUncheckedUpdateWithoutProposalInterestsInput>
 }
 
-export type MemberCreateNestedOneWithoutTasksInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutTasksInput, Prisma.MemberUncheckedCreateWithoutTasksInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutTasksInput
-  connect?: Prisma.MemberWhereUniqueInput
-}
-
 export type MemberCreateNestedOneWithoutCreatedTasksInput = {
   create?: Prisma.XOR<Prisma.MemberCreateWithoutCreatedTasksInput, Prisma.MemberUncheckedCreateWithoutCreatedTasksInput>
   connectOrCreate?: Prisma.MemberCreateOrConnectWithoutCreatedTasksInput
   connect?: Prisma.MemberWhereUniqueInput
-}
-
-export type MemberUpdateOneWithoutTasksNestedInput = {
-  create?: Prisma.XOR<Prisma.MemberCreateWithoutTasksInput, Prisma.MemberUncheckedCreateWithoutTasksInput>
-  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutTasksInput
-  upsert?: Prisma.MemberUpsertWithoutTasksInput
-  disconnect?: Prisma.MemberWhereInput | boolean
-  delete?: Prisma.MemberWhereInput | boolean
-  connect?: Prisma.MemberWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutTasksInput, Prisma.MemberUpdateWithoutTasksInput>, Prisma.MemberUncheckedUpdateWithoutTasksInput>
 }
 
 export type MemberUpdateOneWithoutCreatedTasksNestedInput = {
@@ -1194,6 +1178,20 @@ export type MemberUpdateOneWithoutCreatedTasksNestedInput = {
   delete?: Prisma.MemberWhereInput | boolean
   connect?: Prisma.MemberWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutCreatedTasksInput, Prisma.MemberUpdateWithoutCreatedTasksInput>, Prisma.MemberUncheckedUpdateWithoutCreatedTasksInput>
+}
+
+export type MemberCreateNestedOneWithoutTaskAssignmentsInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutTaskAssignmentsInput
+  connect?: Prisma.MemberWhereUniqueInput
+}
+
+export type MemberUpdateOneRequiredWithoutTaskAssignmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.MemberCreateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedCreateWithoutTaskAssignmentsInput>
+  connectOrCreate?: Prisma.MemberCreateOrConnectWithoutTaskAssignmentsInput
+  upsert?: Prisma.MemberUpsertWithoutTaskAssignmentsInput
+  connect?: Prisma.MemberWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.MemberUpdateToOneWithWhereWithoutTaskAssignmentsInput, Prisma.MemberUpdateWithoutTaskAssignmentsInput>, Prisma.MemberUncheckedUpdateWithoutTaskAssignmentsInput>
 }
 
 export type MemberCreateNestedOneWithoutAnnouncementsInput = {
@@ -1349,7 +1347,7 @@ export type MemberCreateWithoutUserInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -1397,7 +1395,7 @@ export type MemberUncheckedCreateWithoutUserInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -1461,7 +1459,7 @@ export type MemberUpdateWithoutUserInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -1509,7 +1507,7 @@ export type MemberUncheckedUpdateWithoutUserInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1557,7 +1555,7 @@ export type MemberCreateWithoutInvitationInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -1605,7 +1603,7 @@ export type MemberUncheckedCreateWithoutInvitationInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -1669,7 +1667,7 @@ export type MemberUpdateWithoutInvitationInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -1717,7 +1715,7 @@ export type MemberUncheckedUpdateWithoutInvitationInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1765,7 +1763,7 @@ export type MemberCreateWithoutAreasInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -1813,7 +1811,7 @@ export type MemberUncheckedCreateWithoutAreasInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -1877,7 +1875,7 @@ export type MemberUpdateWithoutAreasInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -1925,7 +1923,7 @@ export type MemberUncheckedUpdateWithoutAreasInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -1973,7 +1971,7 @@ export type MemberCreateWithoutProjectsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -2021,7 +2019,7 @@ export type MemberUncheckedCreateWithoutProjectsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -2085,7 +2083,7 @@ export type MemberUpdateWithoutProjectsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -2133,7 +2131,7 @@ export type MemberUncheckedUpdateWithoutProjectsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -2181,7 +2179,7 @@ export type MemberCreateWithoutAuthorshipsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -2229,7 +2227,7 @@ export type MemberUncheckedCreateWithoutAuthorshipsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -2293,7 +2291,7 @@ export type MemberUpdateWithoutAuthorshipsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -2341,7 +2339,7 @@ export type MemberUncheckedUpdateWithoutAuthorshipsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -2389,7 +2387,7 @@ export type MemberCreateWithoutPublicationReviewsInput = {
   authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -2437,7 +2435,7 @@ export type MemberUncheckedCreateWithoutPublicationReviewsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -2501,7 +2499,7 @@ export type MemberUpdateWithoutPublicationReviewsInput = {
   authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -2549,7 +2547,7 @@ export type MemberUncheckedUpdateWithoutPublicationReviewsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -2597,7 +2595,7 @@ export type MemberCreateWithoutNewsPostsInput = {
   authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -2645,7 +2643,7 @@ export type MemberUncheckedCreateWithoutNewsPostsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -2709,7 +2707,7 @@ export type MemberUpdateWithoutNewsPostsInput = {
   authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -2757,7 +2755,7 @@ export type MemberUncheckedUpdateWithoutNewsPostsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -2805,7 +2803,7 @@ export type MemberCreateWithoutInsightsInput = {
   authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -2853,7 +2851,7 @@ export type MemberUncheckedCreateWithoutInsightsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -2917,7 +2915,7 @@ export type MemberUpdateWithoutInsightsInput = {
   authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -2965,7 +2963,7 @@ export type MemberUncheckedUpdateWithoutInsightsInput = {
   authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -3014,7 +3012,7 @@ export type MemberCreateWithoutApplicationNotesInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -3062,7 +3060,7 @@ export type MemberUncheckedCreateWithoutApplicationNotesInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -3126,7 +3124,7 @@ export type MemberUpdateWithoutApplicationNotesInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -3174,7 +3172,7 @@ export type MemberUncheckedUpdateWithoutApplicationNotesInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -3222,7 +3220,7 @@ export type MemberCreateWithoutProposalsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -3270,7 +3268,7 @@ export type MemberUncheckedCreateWithoutProposalsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -3323,7 +3321,7 @@ export type MemberCreateWithoutProposalsReviewedInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -3371,7 +3369,7 @@ export type MemberUncheckedCreateWithoutProposalsReviewedInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -3424,7 +3422,7 @@ export type MemberCreateWithoutProposalsDecidedInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -3472,7 +3470,7 @@ export type MemberUncheckedCreateWithoutProposalsDecidedInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -3536,7 +3534,7 @@ export type MemberUpdateWithoutProposalsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -3584,7 +3582,7 @@ export type MemberUncheckedUpdateWithoutProposalsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -3643,7 +3641,7 @@ export type MemberUpdateWithoutProposalsReviewedInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -3691,7 +3689,7 @@ export type MemberUncheckedUpdateWithoutProposalsReviewedInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -3750,7 +3748,7 @@ export type MemberUpdateWithoutProposalsDecidedInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -3798,7 +3796,7 @@ export type MemberUncheckedUpdateWithoutProposalsDecidedInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -3846,7 +3844,7 @@ export type MemberCreateWithoutProposalInterestsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -3894,7 +3892,7 @@ export type MemberUncheckedCreateWithoutProposalInterestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -3958,7 +3956,7 @@ export type MemberUpdateWithoutProposalInterestsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -4006,7 +4004,7 @@ export type MemberUncheckedUpdateWithoutProposalInterestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -4020,107 +4018,6 @@ export type MemberUncheckedUpdateWithoutProposalInterestsInput = {
   proposalsDecided?: Prisma.ProposalUncheckedUpdateManyWithoutDecidedByNestedInput
   projectSections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutAuthorNestedInput
   announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
-}
-
-export type MemberCreateWithoutTasksInput = {
-  id?: string
-  slug: string
-  name: string
-  rank: $Enums.MemberRank
-  status?: $Enums.MemberStatus
-  title?: string | null
-  bio?: string | null
-  photoKey?: string | null
-  photoAlt?: string | null
-  interests?: Prisma.MemberCreateinterestsInput | string[]
-  orgEmail?: string | null
-  showOrgEmail?: boolean
-  scholarUrl?: string | null
-  orcid?: string | null
-  githubUrl?: string | null
-  linkedinUrl?: string | null
-  websiteUrl?: string | null
-  sortOrder?: number
-  isPublic?: boolean
-  joinedAt?: Date | string | null
-  leftAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  user?: Prisma.UserCreateNestedOneWithoutMemberInput
-  invitation?: Prisma.InvitationCreateNestedOneWithoutMemberInput
-  areas?: Prisma.MemberAreaCreateNestedManyWithoutMemberInput
-  projects?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
-  authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
-  publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
-  newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
-  insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
-  changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
-  reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
-  experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
-  applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
-  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
-  diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
-  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
-  proposals?: Prisma.ProposalCreateNestedManyWithoutProposerInput
-  proposalsReviewed?: Prisma.ProposalCreateNestedManyWithoutReviewerInput
-  proposalsDecided?: Prisma.ProposalCreateNestedManyWithoutDecidedByInput
-  proposalInterests?: Prisma.ProposalInterestCreateNestedManyWithoutMemberInput
-  projectSections?: Prisma.ProjectSectionCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
-}
-
-export type MemberUncheckedCreateWithoutTasksInput = {
-  id?: string
-  userId?: string | null
-  slug: string
-  name: string
-  rank: $Enums.MemberRank
-  status?: $Enums.MemberStatus
-  title?: string | null
-  bio?: string | null
-  photoKey?: string | null
-  photoAlt?: string | null
-  interests?: Prisma.MemberCreateinterestsInput | string[]
-  orgEmail?: string | null
-  showOrgEmail?: boolean
-  scholarUrl?: string | null
-  orcid?: string | null
-  githubUrl?: string | null
-  linkedinUrl?: string | null
-  websiteUrl?: string | null
-  sortOrder?: number
-  isPublic?: boolean
-  joinedAt?: Date | string | null
-  leftAt?: Date | string | null
-  createdAt?: Date | string
-  updatedAt?: Date | string
-  invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
-  areas?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutMemberInput
-  projects?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
-  authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
-  publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
-  newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
-  insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
-  changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
-  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
-  experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
-  applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
-  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
-  diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
-  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
-  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutProposerInput
-  proposalsReviewed?: Prisma.ProposalUncheckedCreateNestedManyWithoutReviewerInput
-  proposalsDecided?: Prisma.ProposalUncheckedCreateNestedManyWithoutDecidedByInput
-  proposalInterests?: Prisma.ProposalInterestUncheckedCreateNestedManyWithoutMemberInput
-  projectSections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutAuthorInput
-  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
-}
-
-export type MemberCreateOrConnectWithoutTasksInput = {
-  where: Prisma.MemberWhereUniqueInput
-  create: Prisma.XOR<Prisma.MemberCreateWithoutTasksInput, Prisma.MemberUncheckedCreateWithoutTasksInput>
 }
 
 export type MemberCreateWithoutCreatedTasksInput = {
@@ -4155,7 +4052,7 @@ export type MemberCreateWithoutCreatedTasksInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
@@ -4203,7 +4100,7 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
@@ -4222,113 +4119,6 @@ export type MemberUncheckedCreateWithoutCreatedTasksInput = {
 export type MemberCreateOrConnectWithoutCreatedTasksInput = {
   where: Prisma.MemberWhereUniqueInput
   create: Prisma.XOR<Prisma.MemberCreateWithoutCreatedTasksInput, Prisma.MemberUncheckedCreateWithoutCreatedTasksInput>
-}
-
-export type MemberUpsertWithoutTasksInput = {
-  update: Prisma.XOR<Prisma.MemberUpdateWithoutTasksInput, Prisma.MemberUncheckedUpdateWithoutTasksInput>
-  create: Prisma.XOR<Prisma.MemberCreateWithoutTasksInput, Prisma.MemberUncheckedCreateWithoutTasksInput>
-  where?: Prisma.MemberWhereInput
-}
-
-export type MemberUpdateToOneWithWhereWithoutTasksInput = {
-  where?: Prisma.MemberWhereInput
-  data: Prisma.XOR<Prisma.MemberUpdateWithoutTasksInput, Prisma.MemberUncheckedUpdateWithoutTasksInput>
-}
-
-export type MemberUpdateWithoutTasksInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
-  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  interests?: Prisma.MemberUpdateinterestsInput | string[]
-  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneWithoutMemberNestedInput
-  invitation?: Prisma.InvitationUpdateOneWithoutMemberNestedInput
-  areas?: Prisma.MemberAreaUpdateManyWithoutMemberNestedInput
-  projects?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
-  authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
-  publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
-  newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
-  insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
-  changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
-  reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
-  experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
-  applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
-  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
-  diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
-  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
-  proposals?: Prisma.ProposalUpdateManyWithoutProposerNestedInput
-  proposalsReviewed?: Prisma.ProposalUpdateManyWithoutReviewerNestedInput
-  proposalsDecided?: Prisma.ProposalUpdateManyWithoutDecidedByNestedInput
-  proposalInterests?: Prisma.ProposalInterestUpdateManyWithoutMemberNestedInput
-  projectSections?: Prisma.ProjectSectionUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
-}
-
-export type MemberUncheckedUpdateWithoutTasksInput = {
-  id?: Prisma.StringFieldUpdateOperationsInput | string
-  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  slug?: Prisma.StringFieldUpdateOperationsInput | string
-  name?: Prisma.StringFieldUpdateOperationsInput | string
-  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
-  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
-  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  interests?: Prisma.MemberUpdateinterestsInput | string[]
-  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
-  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
-  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
-  areas?: Prisma.MemberAreaUncheckedUpdateManyWithoutMemberNestedInput
-  projects?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
-  authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
-  newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
-  insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
-  changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
-  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
-  experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
-  applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
-  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
-  diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
-  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
-  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutProposerNestedInput
-  proposalsReviewed?: Prisma.ProposalUncheckedUpdateManyWithoutReviewerNestedInput
-  proposalsDecided?: Prisma.ProposalUncheckedUpdateManyWithoutDecidedByNestedInput
-  proposalInterests?: Prisma.ProposalInterestUncheckedUpdateManyWithoutMemberNestedInput
-  projectSections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutAuthorNestedInput
-  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
 }
 
 export type MemberUpsertWithoutCreatedTasksInput = {
@@ -4374,7 +4164,7 @@ export type MemberUpdateWithoutCreatedTasksInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
@@ -4422,7 +4212,215 @@ export type MemberUncheckedUpdateWithoutCreatedTasksInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
+  changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
+  experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
+  applicationNotes?: Prisma.ApplicationNoteUncheckedUpdateManyWithoutAuthorNestedInput
+  uploadedDocuments?: Prisma.DocumentUncheckedUpdateManyWithoutUploadedByNestedInput
+  diagrams?: Prisma.DiagramUncheckedUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedUpdateManyWithoutAuthorNestedInput
+  proposals?: Prisma.ProposalUncheckedUpdateManyWithoutProposerNestedInput
+  proposalsReviewed?: Prisma.ProposalUncheckedUpdateManyWithoutReviewerNestedInput
+  proposalsDecided?: Prisma.ProposalUncheckedUpdateManyWithoutDecidedByNestedInput
+  proposalInterests?: Prisma.ProposalInterestUncheckedUpdateManyWithoutMemberNestedInput
+  projectSections?: Prisma.ProjectSectionUncheckedUpdateManyWithoutAuthorNestedInput
+  announcements?: Prisma.AnnouncementUncheckedUpdateManyWithoutAuthorNestedInput
+}
+
+export type MemberCreateWithoutTaskAssignmentsInput = {
+  id?: string
+  slug: string
+  name: string
+  rank: $Enums.MemberRank
+  status?: $Enums.MemberStatus
+  title?: string | null
+  bio?: string | null
+  photoKey?: string | null
+  photoAlt?: string | null
+  interests?: Prisma.MemberCreateinterestsInput | string[]
+  orgEmail?: string | null
+  showOrgEmail?: boolean
+  scholarUrl?: string | null
+  orcid?: string | null
+  githubUrl?: string | null
+  linkedinUrl?: string | null
+  websiteUrl?: string | null
+  sortOrder?: number
+  isPublic?: boolean
+  joinedAt?: Date | string | null
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user?: Prisma.UserCreateNestedOneWithoutMemberInput
+  invitation?: Prisma.InvitationCreateNestedOneWithoutMemberInput
+  areas?: Prisma.MemberAreaCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectMemberCreateNestedManyWithoutMemberInput
+  authorships?: Prisma.PublicationAuthorCreateNestedManyWithoutMemberInput
+  publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
+  newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
+  insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
+  createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
+  changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
+  reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
+  experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
+  applicationNotes?: Prisma.ApplicationNoteCreateNestedManyWithoutAuthorInput
+  uploadedDocuments?: Prisma.DocumentCreateNestedManyWithoutUploadedByInput
+  diagrams?: Prisma.DiagramCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateCreateNestedManyWithoutAuthorInput
+  proposals?: Prisma.ProposalCreateNestedManyWithoutProposerInput
+  proposalsReviewed?: Prisma.ProposalCreateNestedManyWithoutReviewerInput
+  proposalsDecided?: Prisma.ProposalCreateNestedManyWithoutDecidedByInput
+  proposalInterests?: Prisma.ProposalInterestCreateNestedManyWithoutMemberInput
+  projectSections?: Prisma.ProjectSectionCreateNestedManyWithoutAuthorInput
+  announcements?: Prisma.AnnouncementCreateNestedManyWithoutAuthorInput
+}
+
+export type MemberUncheckedCreateWithoutTaskAssignmentsInput = {
+  id?: string
+  userId?: string | null
+  slug: string
+  name: string
+  rank: $Enums.MemberRank
+  status?: $Enums.MemberStatus
+  title?: string | null
+  bio?: string | null
+  photoKey?: string | null
+  photoAlt?: string | null
+  interests?: Prisma.MemberCreateinterestsInput | string[]
+  orgEmail?: string | null
+  showOrgEmail?: boolean
+  scholarUrl?: string | null
+  orcid?: string | null
+  githubUrl?: string | null
+  linkedinUrl?: string | null
+  websiteUrl?: string | null
+  sortOrder?: number
+  isPublic?: boolean
+  joinedAt?: Date | string | null
+  leftAt?: Date | string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  invitation?: Prisma.InvitationUncheckedCreateNestedOneWithoutMemberInput
+  areas?: Prisma.MemberAreaUncheckedCreateNestedManyWithoutMemberInput
+  projects?: Prisma.ProjectMemberUncheckedCreateNestedManyWithoutMemberInput
+  authorships?: Prisma.PublicationAuthorUncheckedCreateNestedManyWithoutMemberInput
+  publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
+  newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
+  insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
+  createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
+  changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
+  experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
+  applicationNotes?: Prisma.ApplicationNoteUncheckedCreateNestedManyWithoutAuthorInput
+  uploadedDocuments?: Prisma.DocumentUncheckedCreateNestedManyWithoutUploadedByInput
+  diagrams?: Prisma.DiagramUncheckedCreateNestedManyWithoutOwnerInput
+  projectUpdates?: Prisma.ProjectUpdateUncheckedCreateNestedManyWithoutAuthorInput
+  proposals?: Prisma.ProposalUncheckedCreateNestedManyWithoutProposerInput
+  proposalsReviewed?: Prisma.ProposalUncheckedCreateNestedManyWithoutReviewerInput
+  proposalsDecided?: Prisma.ProposalUncheckedCreateNestedManyWithoutDecidedByInput
+  proposalInterests?: Prisma.ProposalInterestUncheckedCreateNestedManyWithoutMemberInput
+  projectSections?: Prisma.ProjectSectionUncheckedCreateNestedManyWithoutAuthorInput
+  announcements?: Prisma.AnnouncementUncheckedCreateNestedManyWithoutAuthorInput
+}
+
+export type MemberCreateOrConnectWithoutTaskAssignmentsInput = {
+  where: Prisma.MemberWhereUniqueInput
+  create: Prisma.XOR<Prisma.MemberCreateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedCreateWithoutTaskAssignmentsInput>
+}
+
+export type MemberUpsertWithoutTaskAssignmentsInput = {
+  update: Prisma.XOR<Prisma.MemberUpdateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedUpdateWithoutTaskAssignmentsInput>
+  create: Prisma.XOR<Prisma.MemberCreateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedCreateWithoutTaskAssignmentsInput>
+  where?: Prisma.MemberWhereInput
+}
+
+export type MemberUpdateToOneWithWhereWithoutTaskAssignmentsInput = {
+  where?: Prisma.MemberWhereInput
+  data: Prisma.XOR<Prisma.MemberUpdateWithoutTaskAssignmentsInput, Prisma.MemberUncheckedUpdateWithoutTaskAssignmentsInput>
+}
+
+export type MemberUpdateWithoutTaskAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
+  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interests?: Prisma.MemberUpdateinterestsInput | string[]
+  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneWithoutMemberNestedInput
+  invitation?: Prisma.InvitationUpdateOneWithoutMemberNestedInput
+  areas?: Prisma.MemberAreaUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectMemberUpdateManyWithoutMemberNestedInput
+  authorships?: Prisma.PublicationAuthorUpdateManyWithoutMemberNestedInput
+  publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
+  newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
+  insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
+  createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
+  changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
+  reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
+  experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
+  applicationNotes?: Prisma.ApplicationNoteUpdateManyWithoutAuthorNestedInput
+  uploadedDocuments?: Prisma.DocumentUpdateManyWithoutUploadedByNestedInput
+  diagrams?: Prisma.DiagramUpdateManyWithoutOwnerNestedInput
+  projectUpdates?: Prisma.ProjectUpdateUpdateManyWithoutAuthorNestedInput
+  proposals?: Prisma.ProposalUpdateManyWithoutProposerNestedInput
+  proposalsReviewed?: Prisma.ProposalUpdateManyWithoutReviewerNestedInput
+  proposalsDecided?: Prisma.ProposalUpdateManyWithoutDecidedByNestedInput
+  proposalInterests?: Prisma.ProposalInterestUpdateManyWithoutMemberNestedInput
+  projectSections?: Prisma.ProjectSectionUpdateManyWithoutAuthorNestedInput
+  announcements?: Prisma.AnnouncementUpdateManyWithoutAuthorNestedInput
+}
+
+export type MemberUncheckedUpdateWithoutTaskAssignmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  rank?: Prisma.EnumMemberRankFieldUpdateOperationsInput | $Enums.MemberRank
+  status?: Prisma.EnumMemberStatusFieldUpdateOperationsInput | $Enums.MemberStatus
+  title?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  bio?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  photoAlt?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  interests?: Prisma.MemberUpdateinterestsInput | string[]
+  orgEmail?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  showOrgEmail?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  scholarUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  orcid?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  linkedinUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  websiteUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sortOrder?: Prisma.IntFieldUpdateOperationsInput | number
+  isPublic?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  joinedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  leftAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  invitation?: Prisma.InvitationUncheckedUpdateOneWithoutMemberNestedInput
+  areas?: Prisma.MemberAreaUncheckedUpdateManyWithoutMemberNestedInput
+  projects?: Prisma.ProjectMemberUncheckedUpdateManyWithoutMemberNestedInput
+  authorships?: Prisma.PublicationAuthorUncheckedUpdateManyWithoutMemberNestedInput
+  publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
+  newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
+  insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
+  createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -4470,7 +4468,7 @@ export type MemberCreateWithoutAnnouncementsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -4518,7 +4516,7 @@ export type MemberUncheckedCreateWithoutAnnouncementsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -4582,7 +4580,7 @@ export type MemberUpdateWithoutAnnouncementsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -4630,7 +4628,7 @@ export type MemberUncheckedUpdateWithoutAnnouncementsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -4678,7 +4676,7 @@ export type MemberCreateWithoutExperimentsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -4726,7 +4724,7 @@ export type MemberUncheckedCreateWithoutExperimentsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -4790,7 +4788,7 @@ export type MemberUpdateWithoutExperimentsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -4838,7 +4836,7 @@ export type MemberUncheckedUpdateWithoutExperimentsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -4886,7 +4884,7 @@ export type MemberCreateWithoutUploadedDocumentsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -4934,7 +4932,7 @@ export type MemberUncheckedCreateWithoutUploadedDocumentsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -4998,7 +4996,7 @@ export type MemberUpdateWithoutUploadedDocumentsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -5046,7 +5044,7 @@ export type MemberUncheckedUpdateWithoutUploadedDocumentsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -5094,7 +5092,7 @@ export type MemberCreateWithoutChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
@@ -5142,7 +5140,7 @@ export type MemberUncheckedCreateWithoutChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
@@ -5195,7 +5193,7 @@ export type MemberCreateWithoutReviewedChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   experiments?: Prisma.ExperimentCreateNestedManyWithoutOwnerInput
@@ -5243,7 +5241,7 @@ export type MemberUncheckedCreateWithoutReviewedChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   experiments?: Prisma.ExperimentUncheckedCreateNestedManyWithoutOwnerInput
@@ -5307,7 +5305,7 @@ export type MemberUpdateWithoutChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
@@ -5355,7 +5353,7 @@ export type MemberUncheckedUpdateWithoutChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5414,7 +5412,7 @@ export type MemberUpdateWithoutReviewedChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   experiments?: Prisma.ExperimentUpdateManyWithoutOwnerNestedInput
@@ -5462,7 +5460,7 @@ export type MemberUncheckedUpdateWithoutReviewedChangeRequestsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   experiments?: Prisma.ExperimentUncheckedUpdateManyWithoutOwnerNestedInput
@@ -5510,7 +5508,7 @@ export type MemberCreateWithoutDiagramsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -5558,7 +5556,7 @@ export type MemberUncheckedCreateWithoutDiagramsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -5622,7 +5620,7 @@ export type MemberUpdateWithoutDiagramsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -5670,7 +5668,7 @@ export type MemberUncheckedUpdateWithoutDiagramsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -5718,7 +5716,7 @@ export type MemberCreateWithoutProjectUpdatesInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -5766,7 +5764,7 @@ export type MemberUncheckedCreateWithoutProjectUpdatesInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -5830,7 +5828,7 @@ export type MemberUpdateWithoutProjectUpdatesInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -5878,7 +5876,7 @@ export type MemberUncheckedUpdateWithoutProjectUpdatesInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -5926,7 +5924,7 @@ export type MemberCreateWithoutProjectSectionsInput = {
   publicationReviews?: Prisma.PublicationReviewCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestCreateNestedManyWithoutReviewerInput
@@ -5974,7 +5972,7 @@ export type MemberUncheckedCreateWithoutProjectSectionsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedCreateNestedManyWithoutReviewerInput
   newsPosts?: Prisma.NewsPostUncheckedCreateNestedManyWithoutAuthorInput
   insights?: Prisma.InsightAuthorUncheckedCreateNestedManyWithoutMemberInput
-  tasks?: Prisma.TaskUncheckedCreateNestedManyWithoutAssigneeInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedCreateNestedManyWithoutMemberInput
   createdTasks?: Prisma.TaskUncheckedCreateNestedManyWithoutCreatedByInput
   changeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutMemberInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedCreateNestedManyWithoutReviewerInput
@@ -6038,7 +6036,7 @@ export type MemberUpdateWithoutProjectSectionsInput = {
   publicationReviews?: Prisma.PublicationReviewUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUpdateManyWithoutReviewerNestedInput
@@ -6086,7 +6084,7 @@ export type MemberUncheckedUpdateWithoutProjectSectionsInput = {
   publicationReviews?: Prisma.PublicationReviewUncheckedUpdateManyWithoutReviewerNestedInput
   newsPosts?: Prisma.NewsPostUncheckedUpdateManyWithoutAuthorNestedInput
   insights?: Prisma.InsightAuthorUncheckedUpdateManyWithoutMemberNestedInput
-  tasks?: Prisma.TaskUncheckedUpdateManyWithoutAssigneeNestedInput
+  taskAssignments?: Prisma.TaskAssigneeUncheckedUpdateManyWithoutMemberNestedInput
   createdTasks?: Prisma.TaskUncheckedUpdateManyWithoutCreatedByNestedInput
   changeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutMemberNestedInput
   reviewedChangeRequests?: Prisma.ChangeRequestUncheckedUpdateManyWithoutReviewerNestedInput
@@ -6114,7 +6112,7 @@ export type MemberCountOutputType = {
   publicationReviews: number
   newsPosts: number
   insights: number
-  tasks: number
+  taskAssignments: number
   createdTasks: number
   changeRequests: number
   reviewedChangeRequests: number
@@ -6138,7 +6136,7 @@ export type MemberCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions
   publicationReviews?: boolean | MemberCountOutputTypeCountPublicationReviewsArgs
   newsPosts?: boolean | MemberCountOutputTypeCountNewsPostsArgs
   insights?: boolean | MemberCountOutputTypeCountInsightsArgs
-  tasks?: boolean | MemberCountOutputTypeCountTasksArgs
+  taskAssignments?: boolean | MemberCountOutputTypeCountTaskAssignmentsArgs
   createdTasks?: boolean | MemberCountOutputTypeCountCreatedTasksArgs
   changeRequests?: boolean | MemberCountOutputTypeCountChangeRequestsArgs
   reviewedChangeRequests?: boolean | MemberCountOutputTypeCountReviewedChangeRequestsArgs
@@ -6210,8 +6208,8 @@ export type MemberCountOutputTypeCountInsightsArgs<ExtArgs extends runtime.Types
 /**
  * MemberCountOutputType without action
  */
-export type MemberCountOutputTypeCountTasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TaskWhereInput
+export type MemberCountOutputTypeCountTaskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TaskAssigneeWhereInput
 }
 
 /**
@@ -6346,7 +6344,7 @@ export type MemberSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   publicationReviews?: boolean | Prisma.Member$publicationReviewsArgs<ExtArgs>
   newsPosts?: boolean | Prisma.Member$newsPostsArgs<ExtArgs>
   insights?: boolean | Prisma.Member$insightsArgs<ExtArgs>
-  tasks?: boolean | Prisma.Member$tasksArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Member$taskAssignmentsArgs<ExtArgs>
   createdTasks?: boolean | Prisma.Member$createdTasksArgs<ExtArgs>
   changeRequests?: boolean | Prisma.Member$changeRequestsArgs<ExtArgs>
   reviewedChangeRequests?: boolean | Prisma.Member$reviewedChangeRequestsArgs<ExtArgs>
@@ -6457,7 +6455,7 @@ export type MemberInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   publicationReviews?: boolean | Prisma.Member$publicationReviewsArgs<ExtArgs>
   newsPosts?: boolean | Prisma.Member$newsPostsArgs<ExtArgs>
   insights?: boolean | Prisma.Member$insightsArgs<ExtArgs>
-  tasks?: boolean | Prisma.Member$tasksArgs<ExtArgs>
+  taskAssignments?: boolean | Prisma.Member$taskAssignmentsArgs<ExtArgs>
   createdTasks?: boolean | Prisma.Member$createdTasksArgs<ExtArgs>
   changeRequests?: boolean | Prisma.Member$changeRequestsArgs<ExtArgs>
   reviewedChangeRequests?: boolean | Prisma.Member$reviewedChangeRequestsArgs<ExtArgs>
@@ -6492,7 +6490,7 @@ export type $MemberPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     publicationReviews: Prisma.$PublicationReviewPayload<ExtArgs>[]
     newsPosts: Prisma.$NewsPostPayload<ExtArgs>[]
     insights: Prisma.$InsightAuthorPayload<ExtArgs>[]
-    tasks: Prisma.$TaskPayload<ExtArgs>[]
+    taskAssignments: Prisma.$TaskAssigneePayload<ExtArgs>[]
     createdTasks: Prisma.$TaskPayload<ExtArgs>[]
     changeRequests: Prisma.$ChangeRequestPayload<ExtArgs>[]
     reviewedChangeRequests: Prisma.$ChangeRequestPayload<ExtArgs>[]
@@ -6935,7 +6933,7 @@ export interface Prisma__MemberClient<T, Null = never, ExtArgs extends runtime.T
   publicationReviews<T extends Prisma.Member$publicationReviewsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$publicationReviewsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$PublicationReviewPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   newsPosts<T extends Prisma.Member$newsPostsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$newsPostsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NewsPostPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   insights<T extends Prisma.Member$insightsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$insightsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InsightAuthorPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  tasks<T extends Prisma.Member$tasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$tasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  taskAssignments<T extends Prisma.Member$taskAssignmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$taskAssignmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskAssigneePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdTasks<T extends Prisma.Member$createdTasksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$createdTasksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TaskPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   changeRequests<T extends Prisma.Member$changeRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$changeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   reviewedChangeRequests<T extends Prisma.Member$reviewedChangeRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Member$reviewedChangeRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChangeRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -7586,27 +7584,27 @@ export type Member$insightsArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
- * Member.tasks
+ * Member.taskAssignments
  */
-export type Member$tasksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type Member$taskAssignmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
-   * Select specific fields to fetch from the Task
+   * Select specific fields to fetch from the TaskAssignee
    */
-  select?: Prisma.TaskSelect<ExtArgs> | null
+  select?: Prisma.TaskAssigneeSelect<ExtArgs> | null
   /**
-   * Omit specific fields from the Task
+   * Omit specific fields from the TaskAssignee
    */
-  omit?: Prisma.TaskOmit<ExtArgs> | null
+  omit?: Prisma.TaskAssigneeOmit<ExtArgs> | null
   /**
    * Choose, which related nodes to fetch as well
    */
-  include?: Prisma.TaskInclude<ExtArgs> | null
-  where?: Prisma.TaskWhereInput
-  orderBy?: Prisma.TaskOrderByWithRelationInput | Prisma.TaskOrderByWithRelationInput[]
-  cursor?: Prisma.TaskWhereUniqueInput
+  include?: Prisma.TaskAssigneeInclude<ExtArgs> | null
+  where?: Prisma.TaskAssigneeWhereInput
+  orderBy?: Prisma.TaskAssigneeOrderByWithRelationInput | Prisma.TaskAssigneeOrderByWithRelationInput[]
+  cursor?: Prisma.TaskAssigneeWhereUniqueInput
   take?: number
   skip?: number
-  distinct?: Prisma.TaskScalarFieldEnum | Prisma.TaskScalarFieldEnum[]
+  distinct?: Prisma.TaskAssigneeScalarFieldEnum | Prisma.TaskAssigneeScalarFieldEnum[]
 }
 
 /**

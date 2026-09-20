@@ -8,9 +8,14 @@ import { Prose } from "@/components/Prose";
 import { requireViewer } from "@/lib/authz";
 import { humanSize } from "@/lib/portal/attachment-input";
 import { diagramsForProject, getProjectProgress } from "@/lib/portal/progress";
+import {
+  TASK_PRIORITY_LABELS,
+  TASK_STATUS_LABELS,
+} from "@/lib/portal/progress-limits";
 import { projectStatusLabel, researchPhaseLabel } from "@/lib/project-status";
 
 import { AttachFile } from "./AttachFile";
+import { AssistantLeadControl, NewTask, TaskControls } from "./TeamForms";
 import { PostUpdate, RemoveAttachment, UpdateControls } from "./ProgressForms";
 import {
   PhasePicker,
@@ -80,6 +85,12 @@ export default async function ProjectWorkspacePage({
   const diagrams = await diagramsForProject(viewer, project.id);
 
   const isPublic = project.state === "PUBLISHED";
+  const team = project.team.map((person) => ({
+    memberId: person.memberId,
+    name: person.name,
+  }));
+  const open = project.tasks.filter((task) => task.status !== "DONE");
+  const done = project.tasks.filter((task) => task.status === "DONE");
   const published = project.updates.filter((update) => update.isPublic).length;
   const sectionsPublic = project.sections.filter(
     (section) => section.isPublic,
@@ -117,6 +128,88 @@ export default async function ProjectWorkspacePage({
           An administrator sets the five stages; the step inside{" "}
           {projectStatusLabel("ACTIVE").toLowerCase()} is yours.
         </p>
+      </section>
+
+      <section className={styles.section} aria-labelledby="team">
+        <h2 id="team">Team</h2>
+        <ul className={styles.attachList}>
+          {project.team.map((person) => (
+            <li key={person.memberId}>
+              <Link href={`/people/${person.slug}`}>{person.name}</Link>
+              <span className={styles.cardMeta}>
+                {person.role}
+                {person.isLead ? " · research lead" : ""}
+                {person.isAssistantLead ? " · assistant lead" : ""}
+                {person.isMe ? " · you" : ""}
+              </span>
+              {project.leads && !person.isLead && !person.isMe ? (
+                <AssistantLeadControl
+                  slug={project.slug}
+                  memberId={person.memberId}
+                  name={person.name}
+                  isAssistantLead={person.isAssistantLead}
+                />
+              ) : null}
+            </li>
+          ))}
+        </ul>
+        <p className={styles.cardMeta}>
+          An administrator adds people to a project and names its research lead.
+          A lead or an assistant lead appoints further assistant leads, who can
+          do everything a lead can here.
+        </p>
+      </section>
+
+      <section className={styles.section} aria-labelledby="tasks">
+        <h2 id="tasks">Work</h2>
+        {project.tasks.length === 0 ? (
+          <p className={styles.cardMeta}>Nothing assigned yet.</p>
+        ) : (
+          <ul className={styles.taskList}>
+            {[...open, ...done].map((task) => (
+              <li
+                className={styles.task}
+                data-state={task.status}
+                key={task.id}
+              >
+                <p className={styles.taskTitle}>
+                  {task.title}
+                  {task.mine ? (
+                    <span className={styles.taskMine}> · yours</span>
+                  ) : null}
+                </p>
+                <p className={styles.cardMeta}>
+                  {TASK_STATUS_LABELS[task.status] ?? task.status} ·{" "}
+                  {TASK_PRIORITY_LABELS[task.priority] ?? task.priority} ·{" "}
+                  {task.assignees.length > 0
+                    ? task.assignees.map((person) => person.name).join(", ")
+                    : "nobody yet"}
+                  {task.dueAt ? ` · due ${when(task.dueAt)}` : ""}
+                </p>
+                {task.description ? <p>{task.description}</p> : null}
+                {task.mine || project.leads ? (
+                  <TaskControls
+                    slug={project.slug}
+                    taskId={task.id}
+                    status={task.status}
+                    canAssign={project.leads}
+                    team={team}
+                    assigneeIds={task.assignees.map(
+                      (person) => person.memberId,
+                    )}
+                  />
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
+        {project.leads ? (
+          <NewTask slug={project.slug} team={team} />
+        ) : (
+          <p className={styles.cardMeta}>
+            The research lead assigns work. You can move your own along.
+          </p>
+        )}
       </section>
 
       <section className={styles.section} aria-labelledby="sections">

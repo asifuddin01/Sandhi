@@ -172,6 +172,67 @@
   font-size: var(--text-h3);
 }
 
+/* The work board: one row per task, quiet until something is overdue or
+   urgent, and struck through once it is done. */
+/* Who a task is on: a short column of names, each a hit target of its own. */
+.who {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.3rem 0.9rem;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.whoOption {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--moonstone);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.whoOption input {
+  width: 1rem;
+  height: 1rem;
+  accent-color: var(--lotus);
+}
+
+.taskList {
+  display: grid;
+  gap: 0;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  border-block-start: 1px solid var(--ink-line);
+  list-style: none;
+}
+
+.task {
+  display: grid;
+  gap: 0.4rem;
+  padding-block: 0.9rem;
+  border-block-end: 1px solid var(--ink-line);
+}
+
+.task[data-state="DONE"] .taskTitle {
+  color: var(--mist);
+  text-decoration: line-through;
+  text-decoration-color: var(--ink-line);
+}
+
+.taskTitle {
+  margin: 0;
+  color: var(--moonstone);
+}
+
+.taskMine {
+  color: var(--lamplight);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
 .historyHeading {
   margin: 0 0 1rem;
   font-size: var(--text-h3);
