@@ -502,6 +502,25 @@ work, its people's addresses and its files sit behind a password otherwise.
   already has, and without this the header went on offering "Sign in" to
   someone who had just signed in.
 
+### Naming a research lead, where the person is
+
+`/people/[slug]` carries an administration panel for anyone with
+`members:manage`, and nothing at all for everyone else. It sets the person's
+standing — Research Lead, Research Assistant, Research Intern — and puts them
+on a research area, with or without leading it. Naming a lead is a decision
+made about a person, so it is made while looking at them rather than in a
+list of rows in administration; the capability is the same either way, and
+the server checks it again on every action.
+
+Both actions audit in the same transaction as the change. Leading an area
+stays a fact on `MemberArea.isLead`, never an entry in the permission matrix,
+and the extra query the panel needs is asked only when the viewer can act on
+the answer.
+
+Granting **administrator** is deliberately not here: that is a site-wide
+change of power and stays in the members manager, where it is audited beside
+the rest of the access trail.
+
 ### Stored images without a bucket
 
 `mediaUrl()` serves from `R2_PUBLIC_BASE_URL` when it is set, and otherwise

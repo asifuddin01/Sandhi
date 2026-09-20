@@ -12,6 +12,7 @@ import {
 } from "@/lib/admin/actions";
 import {
   memberRanks,
+  rankLabels,
   roleLabels,
   scholarlyRecordSize,
   type MemberRankValue,
@@ -607,5 +608,122 @@ export async function transferOwnershipAction(
   });
 
   if (result.status === "success") redirect(`/admin/members/${memberId}`);
+  return result;
+}
+
+/**
+ * A member's standing and their research areas, changed from their own
+ * profile page rather than from administration. Naming a research lead is
+ * something an administrator does while looking at the person, so the
+ * controls sit where that happens — the authority is the same
+ * `members:manage` capability, checked here on the server either way.
+ *
+ * These take a slug, not an id: they are called from a public page, and a
+ * public page should carry public identifiers.
+ */
+async function memberBySlug(viewer: Viewer, slug: string) {
+  const member = await getDb().member.findUnique({
+    where: { slug },
+    select: { id: true },
+  });
+  if (!member) throw new AdminActionError("That profile no longer exists.");
+  return manageableMember(viewer, member.id);
+}
+
+export async function setMemberRankAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const slug = field(formData, "slug");
+  const result = await runAdminAction("members:manage", async (viewer) => {
+    const { member } = await memberBySlug(viewer, slug);
+    const nextRank = parseRank(field(formData, "rank"));
+    if (member.rank === nextRank) {
+      return { status: "success", message: "Nothing changed." };
+    }
+
+    await getDb().$transaction(async (transaction) => {
+      await transaction.member.update({
+        where: { id: member.id },
+        data: { rank: nextRank },
+      });
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: "member.rank",
+        entity: "Member",
+        entityId: member.id,
+        diff: { rank: { from: member.rank, to: nextRank } },
+      });
+    });
+    invalidate(cacheTags.members, cacheTags.research);
+    return {
+      status: "success",
+      message: `${member.name} is now ${rankLabels[nextRank]}.`,
+    };
+  });
+
+  revalidatePath(`/people/${slug}`);
+  revalidatePath("/people");
+  revalidatePath("/admin/members");
+  return result;
+}
+
+/**
+ * Putting someone on a research area, or taking them off it. Leading an area
+ * is a fact about that area, never a system role, so it lives here on the
+ * membership row.
+ */
+export async function setMemberAreaAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const slug = field(formData, "slug");
+  const areaSlug = field(formData, "areaSlug");
+  const remove = field(formData, "remove") === "yes";
+  const isLead = field(formData, "isLead") === "yes";
+
+  const result = await runAdminAction("members:manage", async (viewer) => {
+    const { member } = await memberBySlug(viewer, slug);
+    const area = await getDb().researchArea.findUnique({
+      where: { slug: areaSlug },
+      select: { id: true, name: true },
+    });
+    if (!area) throw new AdminActionError("That research area does not exist.");
+
+    await getDb().$transaction(async (transaction) => {
+      if (remove) {
+        await transaction.memberArea.deleteMany({
+          where: { memberId: member.id, areaId: area.id },
+        });
+      } else {
+        await transaction.memberArea.upsert({
+          where: {
+            memberId_areaId: { memberId: member.id, areaId: area.id },
+          },
+          update: { isLead },
+          create: { memberId: member.id, areaId: area.id, isLead },
+        });
+      }
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: remove ? "member.area_removed" : "member.area_assigned",
+        entity: "Member",
+        entityId: member.id,
+        diff: { area: area.name, isLead },
+      });
+    });
+    invalidate(cacheTags.members, cacheTags.research);
+
+    return {
+      status: "success",
+      message: remove
+        ? `${member.name} is off ${area.name}.`
+        : `${member.name} is on ${area.name}${isLead ? ", leading it" : ""}.`,
+    };
+  });
+
+  revalidatePath(`/people/${slug}`);
+  revalidatePath("/people");
+  revalidatePath("/admin/members");
   return result;
 }

@@ -2,8 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { MemberAdminBar } from "@/components/entries/MemberAdminBar";
 import { PersonPortrait } from "@/components/entries/PersonEntry";
+import { getViewer } from "@/lib/authz";
+import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { rankLabel } from "@/lib/member-rank";
+import { can } from "@/lib/permissions";
+import { publicAreaWhere } from "@/lib/visibility";
 import { ProjectEntry } from "@/components/entries/ProjectEntry";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
 import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
@@ -62,6 +67,14 @@ export default async function PersonPage({ params }: PersonPageProps) {
     },
   };
 
+  // Only asked for when somebody can act on the answer.
+  const viewer = await getViewer();
+  const manages = Boolean(viewer && can(viewer.role, "members:manage"));
+  const management =
+    manages && isDatabaseConfigured()
+      ? await managementData(person.slug)
+      : null;
+
   return (
     <div className={styles.page}>
       <script
@@ -70,6 +83,16 @@ export default async function PersonPage({ params }: PersonPageProps) {
           __html: JSON.stringify(jsonLd).replaceAll("<", "\\u003c"),
         }}
       />
+
+      {management ? (
+        <MemberAdminBar
+          slug={person.slug}
+          name={person.name}
+          rank={person.rank}
+          areas={management.areas}
+          allAreas={management.allAreas}
+        />
+      ) : null}
 
       <header className={styles.profileHero}>
         <PersonPortrait person={person} />
@@ -215,4 +238,37 @@ export default async function PersonPage({ params }: PersonPageProps) {
       </section>
     </div>
   );
+}
+
+/** What the profile's own administration controls need, and nothing else. */
+async function managementData(slug: string) {
+  const db = getDb();
+  const [member, allAreas] = await Promise.all([
+    db.member.findUnique({
+      where: { slug },
+      select: {
+        areas: {
+          orderBy: { area: { sortOrder: "asc" } },
+          select: {
+            isLead: true,
+            area: { select: { slug: true, name: true } },
+          },
+        },
+      },
+    }),
+    db.researchArea.findMany({
+      where: publicAreaWhere,
+      orderBy: { sortOrder: "asc" },
+      select: { slug: true, name: true },
+    }),
+  ]);
+
+  return {
+    areas: (member?.areas ?? []).map((held) => ({
+      slug: held.area.slug,
+      name: held.area.name,
+      isLead: held.isLead,
+    })),
+    allAreas,
+  };
 }
