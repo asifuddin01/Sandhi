@@ -443,7 +443,7 @@
 
 .memberNoticesHead h2 {
   margin: 0;
-  font-size: var(--text-title);
+  font-size: var(--text-h3);
 }
 
 .memberOnly {
