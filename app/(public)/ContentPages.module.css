@@ -418,3 +418,58 @@
     flex-direction: column;
   }
 }
+
+/**
+ * Announcements, shown in the News section to people in the lab and to
+ * nobody else. Marked off from the public posts around them so it is never
+ * in doubt which of the two a reader is looking at.
+ */
+.memberNotices {
+  display: grid;
+  gap: 1rem;
+  margin-block-end: 2.5rem;
+  padding: 1.25rem clamp(1rem, 3vw, 1.5rem);
+  border: 1px solid var(--ink-line);
+  background: var(--ink-raised);
+}
+
+.memberNoticesHead {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+  margin: 0;
+}
+
+.memberNoticesHead h2 {
+  margin: 0;
+  font-size: var(--text-title);
+}
+
+.memberOnly {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+}
+
+.notice {
+  display: grid;
+  gap: 0.4rem;
+  padding-block-start: 1rem;
+  border-block-start: 1px solid var(--ink-line);
+}
+
+.notice:first-of-type {
+  padding-block-start: 0;
+  border-block-start: none;
+}
+
+.noticeTitle {
+  margin: 0;
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.noticeMeta {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+}

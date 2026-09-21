@@ -54,8 +54,12 @@ async function restore() {
   await publish(false);
   const db = createPrismaClient();
   try {
+    // "member.profile" as well as "member.profile_*": saving a profile
+    // directly audits under the shorter name, and a stray row here fails the
+    // escalation test in admin-members, which counts every non-auth entry
+    // for this account.
     await db.auditLog.deleteMany({
-      where: { action: { startsWith: "member.profile_" } },
+      where: { action: { startsWith: "member.profile" } },
     });
   } finally {
     await db.$disconnect();

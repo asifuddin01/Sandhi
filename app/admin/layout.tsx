@@ -22,6 +22,11 @@ const sections: Array<AdminNavItem & { capability: Capability }> = [
     capability: "publications:publish",
   },
   { href: "/admin/news", label: "News", capability: "content:manage" },
+  {
+    href: "/admin/announcements",
+    label: "Announcements",
+    capability: "content:manage",
+  },
   { href: "/admin/events", label: "Events", capability: "content:manage" },
   {
     href: "/admin/proposals",

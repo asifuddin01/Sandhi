@@ -688,3 +688,15 @@
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+
+.checkRow {
+  display: flex;
+  align-items: baseline;
+  gap: 0.6rem;
+}
+
+.checkRow label {
+  color: var(--moonstone);
+  font-size: var(--text-meta);
+  font-weight: 550;
+}

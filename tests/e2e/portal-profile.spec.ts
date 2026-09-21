@@ -38,6 +38,12 @@ async function blank() {
         profileCompletedAt: null,
       },
     });
+    // Saving a profile audits; leaving those rows behind fails the
+    // escalation test in admin-members, which counts every non-auth entry
+    // recorded for an account.
+    await db.auditLog.deleteMany({
+      where: { action: { startsWith: "member.profile" } },
+    });
   } finally {
     await db.$disconnect();
   }

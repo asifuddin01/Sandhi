@@ -521,6 +521,30 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### Announcements: the News section, for the lab only
+
+Staff post notices at `/admin/announcements` — a deadline, a seminar, a
+change of plan — and anybody signed in with a member record reads them in a
+marked-off box at the top of `/news`. A signed-out visitor sees no box, no
+heading and no trace that one exists.
+
+The rule is enforced at the source, not by the page remembering to hide
+something: `getMemberAnnouncements` returns nothing at all without a member
+record, so an empty list renders no section. The test holds that across the
+page, the public news API and search.
+
+Called **"Lab announcements"** rather than "Announcements", because the
+public news categories in the filter row directly below already include one
+named Announcements. Two different things with one name on one page is a
+trap.
+
+The body is Markdown, so a deadline can carry a link — staff write these,
+unlike an application, where a stranger's words are shown as plain text.
+
+`/news` is now read per viewer and cannot join the shared public cache. That
+is the right trade: an announcement must never be served from an entry shared
+between readers.
+
 ### A published profile is reviewed before the public sees it
 
 The specification asks for "direct private-field updates and approval-gated

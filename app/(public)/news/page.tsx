@@ -2,7 +2,10 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
+import { MemberNotices } from "@/components/entries/MemberNotices";
 import { NewsEntry } from "@/components/entries/NewsEntry";
+import { getViewer } from "@/lib/authz";
+import { getMemberAnnouncements } from "@/lib/portal-content";
 import {
   getPublicNews,
   humanizeEnum,
@@ -40,6 +43,12 @@ export default async function NewsPage({
   const category = NEWS_CATEGORIES.find((item) => item === requestedCategory);
   const posts = await getPublicNews(category);
 
+  // Announcements are for the lab, so they are read per viewer and never
+  // cached with the public page. Somebody signed out gets an empty list and
+  // therefore no section at all.
+  const viewer = await getViewer();
+  const announcements = viewer ? await getMemberAnnouncements(viewer, 5) : [];
+
   return (
     <div className={styles.page}>
       <header className={styles.pageHeader}>
@@ -49,6 +58,8 @@ export default async function NewsPage({
           the team.
         </p>
       </header>
+
+      <MemberNotices announcements={announcements} />
 
       <nav className={styles.categoryNav} aria-label="News categories">
         <Link href="/news" data-active={!category}>
