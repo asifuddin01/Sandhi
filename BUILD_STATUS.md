@@ -521,6 +521,35 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### A member's own publications
+
+`/portal/publications` is where a member records a paper: title, abstract,
+kind, venue, year, identifiers, links, and an author list in which each
+author is either somebody in the lab or a typed name, never both. It saves as
+a **draft** — not public, and publishing is not theirs to do. **Send for
+internal review** moves the stage and emails the reviewers, the same notice
+the administration manager sends.
+
+After that it is read-only to its author. Letting somebody edit a paper
+underneath the people reading it is how a review ends up approving a version
+nobody saw.
+
+Whoever records a paper is added to its author list, corresponding, if they
+leave themselves off: a paper with nobody from the lab on it would vanish
+from its own author's list the moment it saved. A paper you are not on
+answers 404, the same as one that does not exist.
+
+The author rule — member or typed name, never both, each member once — lived
+inside the administration manager's `"use server"` file. It is now
+`lib/publication-authors.ts`, read by both surfaces, because two copies is
+how one quietly starts accepting a shape the other refuses.
+
+Two styling faults the screenshots caught: `.field input` stretched every
+checkbox to full width, turning it into a large square with its label
+stranded beside it (the portal and the administration announcement form);
+and `styles.facts` was borrowed from the administration stylesheet without
+existing in the portal one.
+
 ### Announcements: the News section, for the lab only
 
 Staff post notices at `/admin/announcements` — a deadline, a seminar, a

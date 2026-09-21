@@ -691,8 +691,18 @@
 
 .checkRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.6rem;
+}
+
+/* The field rules stretch every control to full width, which would make a
+   checkbox a large square with its label stranded beside it. */
+.checkRow input[type="checkbox"] {
+  width: auto;
+  min-height: 0;
+  flex: none;
+  margin: 0;
+  padding: 0;
 }
 
 .checkRow label {

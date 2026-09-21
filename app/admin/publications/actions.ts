@@ -42,9 +42,9 @@ import {
   importByDoi,
   ImportError,
 } from "@/lib/scholarly-import";
+import { readAuthorRows } from "@/lib/publication-authors";
 import { siteOrigin } from "@/lib/site-url";
 
-const MAX_AUTHORS = 100;
 const MAX_AREAS = 10;
 
 function strings(formData: FormData, name: string): string[] {
@@ -116,69 +116,6 @@ function optionalIdentifier(
   return identifier;
 }
 
-export type AuthorRow = {
-  position: number;
-  memberId: string | null;
-  externalName: string | null;
-  externalAffiliation: string | null;
-  equalContribution: boolean;
-  corresponding: boolean;
-};
-
-/**
- * The author list, in the order it was submitted. Each author is either a
- * member or a name typed in, never both: two records for one person is how
- * an author list starts disagreeing with itself.
- */
-function readAuthors(formData: FormData): AuthorRow[] {
-  const memberIds = strings(formData, "authors.memberId");
-  const names = strings(formData, "authors.externalName");
-  const affiliations = strings(formData, "authors.externalAffiliation");
-  const equal = strings(formData, "authors.equalContribution");
-  const corresponding = strings(formData, "authors.corresponding");
-
-  if (memberIds.length > MAX_AUTHORS) {
-    throw new AdminActionError(`List at most ${MAX_AUTHORS} authors.`);
-  }
-
-  const seen = new Set<string>();
-  return memberIds.map((memberId, position) => {
-    const externalName = (names[position] ?? "").trim();
-    if (memberId && externalName) {
-      throw new AdminActionError(
-        `Author ${position + 1} is both a member and a typed name. Choose one.`,
-      );
-    }
-    if (!memberId && !externalName) {
-      throw new AdminActionError(
-        `Choose a member or type a name for author ${position + 1}.`,
-      );
-    }
-    if (memberId) {
-      if (seen.has(memberId)) {
-        throw new AdminActionError("Each member can appear once as an author.");
-      }
-      seen.add(memberId);
-    }
-    if (externalName.length > 200) {
-      throw new AdminActionError("Keep each author name under 200 characters.");
-    }
-    const affiliation = (affiliations[position] ?? "").trim();
-    if (affiliation.length > 200) {
-      throw new AdminActionError("Keep each affiliation under 200 characters.");
-    }
-
-    return {
-      position,
-      memberId: memberId || null,
-      externalName: externalName || null,
-      externalAffiliation: affiliation || null,
-      equalContribution: equal[position] === "yes",
-      corresponding: corresponding[position] === "yes",
-    };
-  });
-}
-
 async function readPublication(formData: FormData) {
   const title = requiredText(formData, "title", "a title", 300);
   const slug = field(formData, "slug").trim();
@@ -196,7 +133,7 @@ async function readPublication(formData: FormData) {
   }
 
   const abstract = requiredText(formData, "abstract", "an abstract", 10_000);
-  const authors = readAuthors(formData);
+  const authors = readAuthorRows(formData, (message) => new AdminActionError(message));
   if (authors.length === 0) throw new AdminActionError("Add at least one author.");
 
   const areaIds = [...new Set(strings(formData, "areaIds"))].filter(Boolean);

@@ -44,6 +44,9 @@ export default async function PortalPage() {
           <Link className={styles.textButton} href="/portal/projects">
             My projects
           </Link>
+          <Link className={styles.textButton} href="/portal/publications">
+            My publications
+          </Link>
           <Link className={styles.textButton} href="/portal/proposals">
             Proposals
           </Link>

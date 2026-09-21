@@ -545,8 +545,18 @@
 
 .checkRow {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   gap: 0.6rem;
+}
+
+/* `.field input` stretches every control to the full width, which turns a
+   checkbox into a large square with its label stranded beside it. */
+.checkRow input[type="checkbox"] {
+  width: auto;
+  min-height: 0;
+  flex: none;
+  margin: 0;
+  padding: 0;
 }
 
 .checkRow label {
@@ -565,4 +575,22 @@
   list-style: disc outside;
   color: var(--moonstone);
   font-size: var(--text-meta);
+}
+
+/* What a paper says about itself, once it is read-only. The same shape the
+   administration pages use for the same job. */
+.facts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1rem 2rem;
+  margin: 0;
+}
+
+.facts dt {
+  color: var(--mist);
+  font-size: var(--text-meta);
+}
+
+.facts dd {
+  margin: 0.25rem 0 0;
 }
