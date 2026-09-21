@@ -125,3 +125,81 @@ export function readInterests(value: string): string[] {
   }
   return interests;
 }
+
+/**
+ * The parts of a profile a visitor can see once it is published. A member's
+ * change to any of these waits for an administrator; there is nothing else on
+ * the form, because a published profile is the lab's public face and all of
+ * it is on show.
+ *
+ * Staff edit directly. So does anybody whose profile is not published yet —
+ * there is nothing to protect, and a new member must not be held at the
+ * completion gate waiting for somebody to approve their own name.
+ */
+export const APPROVAL_FIELDS = [
+  "name",
+  "title",
+  "bio",
+  "interests",
+  "photoKey",
+  "showOrgEmail",
+  "websiteUrl",
+  "scholarUrl",
+  "orcid",
+  "githubUrl",
+  "linkedinUrl",
+] as const;
+
+export type ApprovalField = (typeof APPROVAL_FIELDS)[number];
+
+export const APPROVAL_FIELD_LABELS: Record<ApprovalField, string> = {
+  name: "Name",
+  title: "Role",
+  bio: "About their work",
+  interests: "Research interests",
+  photoKey: "Photograph",
+  showOrgEmail: "Showing their lab address",
+  websiteUrl: "Website",
+  scholarUrl: "Google Scholar",
+  orcid: "ORCID iD",
+  githubUrl: "GitHub",
+  linkedinUrl: "LinkedIn",
+};
+
+export function isApprovalField(value: string): value is ApprovalField {
+  return (APPROVAL_FIELDS as readonly string[]).includes(value);
+}
+
+/**
+ * A change request stores one field as text, whatever its type. These two
+ * are the only places that conversion happens, so a value written by the
+ * portal and a value applied by administration cannot disagree.
+ */
+export function writeFieldValue(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.join("\n");
+  if (typeof value === "boolean") return value ? "yes" : "no";
+  return String(value);
+}
+
+export function readFieldValue(
+  field: ApprovalField,
+  stored: string,
+): string | string[] | boolean | null {
+  if (field === "interests") {
+    return stored.split("\n").filter((line) => line.trim().length > 0);
+  }
+  if (field === "showOrgEmail") return stored === "yes";
+  return stored === "" ? null : stored;
+}
+
+/** What a reader should see in a diff, including for an empty value. */
+export function describeFieldValue(
+  field: ApprovalField,
+  stored: string,
+): string {
+  if (stored === "") return "— nothing —";
+  if (field === "showOrgEmail") return stored === "yes" ? "Shown" : "Hidden";
+  if (field === "interests") return stored.split("\n").join(" · ");
+  return stored;
+}

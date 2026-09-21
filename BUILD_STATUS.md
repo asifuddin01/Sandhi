@@ -521,6 +521,39 @@ Granting **administrator** is deliberately not here: that is a site-wide
 change of power and stays in the members manager, where it is audited beside
 the rest of the access trail.
 
+### A published profile is reviewed before the public sees it
+
+The specification asks for "direct private-field updates and approval-gated
+public fields for Members", with the banner "Your changes are waiting for
+approval." The `/portal/profile` first shipped in this milestone wrote
+straight through for everybody, which did not match it; this closes that, and
+fills `/admin/approvals`, which the dashboard had been counting with nowhere
+to go.
+
+Everything on the profile form shows on a published profile, so for a member
+whose profile is published, all of it waits. Two people edit directly: staff,
+and anybody whose profile is **not published yet** — there is nothing to
+protect, and a new member must not be held at the completion gate waiting for
+somebody to approve their own name. `profileCompletedAt` is therefore set on
+submission, never on approval.
+
+One `ChangeRequest` per field, replacing any earlier request for the same
+field so a queue cannot fill with one person's second thoughts.
+`/admin/approvals` groups them by person and decides them together —
+approving half of somebody's changes would publish a profile nobody wrote.
+
+`APPROVAL_FIELDS` and the row the action reads are kept in step by the type
+system rather than by care: `queueChanges` asks for a row keyed by every
+approval field, so dropping one from the select is a compile error instead of
+a change that silently never queues.
+
+**The third time this bit.** Approving empties the queue, the person's block
+disappears, and the form inside it takes its own message with it — the same
+fault as the invitation form and the decision emails. Rather than patch it a
+third time, the page now carries "Decided in the last day", which outlasts
+the redraw and answers the question somebody actually comes back with: did I
+already do that one?
+
 ### Telling people what was decided
 
 Both inbound paths recorded a decision and told nobody. Somebody sent in an

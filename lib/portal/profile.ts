@@ -3,6 +3,7 @@ import "server-only";
 import type { Viewer } from "@/lib/authz";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { workspaceMemberId } from "@/lib/portal-content";
+import { isApprovalField, type ApprovalField } from "@/lib/portal/profile-fields";
 import { isPortraitUploadConfigured } from "@/lib/storage";
 
 /**
@@ -30,6 +31,11 @@ export interface EditableProfile {
   isPublic: boolean;
   /** Whether a photograph can be uploaded here at all. */
   portraitsEnabled: boolean;
+  /**
+   * Changes this person has asked for and an administrator has not yet
+   * decided. Empty for anybody who edits their profile directly.
+   */
+  pending: Array<{ field: ApprovalField; value: string; asked: Date }>;
 }
 
 export async function getEditableProfile(
@@ -57,6 +63,11 @@ export async function getEditableProfile(
       linkedinUrl: true,
       websiteUrl: true,
       isPublic: true,
+      changeRequests: {
+        where: { status: "PENDING" },
+        orderBy: { createdAt: "asc" },
+        select: { field: true, newValue: true, createdAt: true },
+      },
     },
   });
   if (!member) return null;
@@ -79,6 +90,13 @@ export async function getEditableProfile(
     websiteUrl: member.websiteUrl ?? "",
     isPublic: member.isPublic,
     portraitsEnabled: isPortraitUploadConfigured(),
+    pending: member.changeRequests
+      .filter((request) => isApprovalField(request.field))
+      .map((request) => ({
+        field: request.field as ApprovalField,
+        value: request.newValue,
+        asked: request.createdAt,
+      })),
   };
 }
 

@@ -10,12 +10,15 @@ import { getDb } from "@/lib/db";
 import { ExternalServiceError } from "@/lib/forms-services";
 import { workspaceMemberId } from "@/lib/portal-content";
 import {
+  APPROVAL_FIELDS,
   MAX_PROFILE_BIO,
   MAX_PROFILE_NAME,
   MAX_PROFILE_TITLE,
   MIN_PROFILE_NAME,
   isProfileComplete,
   readInterests,
+  writeFieldValue,
+  type ApprovalField,
 } from "@/lib/portal/profile-fields";
 import { assertPortraitExists } from "@/lib/storage";
 
@@ -65,6 +68,84 @@ const profileSchema = z.object({
 });
 
 /**
+ * Records what a member wants changed about their published profile, one
+ * request per field, and replaces any earlier request for the same field so
+ * a queue cannot fill with a person's own second thoughts.
+ *
+ * `profileCompletedAt` is set on submission, not on approval. Holding the
+ * portal shut until an administrator gets round to it would punish the member
+ * for a rule that exists to protect the public page.
+ */
+async function queueChanges(input: {
+  memberId: string;
+  actorId: string;
+  slug: string;
+  /**
+   * Typed by field, so leaving one out of the select above stops the build
+   * rather than quietly never queueing a change to it.
+   */
+  current: Record<ApprovalField, unknown>;
+  wanted: Record<ApprovalField, unknown>;
+  complete: boolean;
+  alreadyCompletedAt: Date | null;
+}): Promise<ProfileFormState> {
+  const changed = APPROVAL_FIELDS.filter(
+    (field) =>
+      writeFieldValue(input.wanted[field]) !==
+      writeFieldValue(input.current[field]),
+  );
+
+  await getDb().$transaction(async (transaction) => {
+    await transaction.member.update({
+      where: { id: input.memberId },
+      data: {
+        profileCompletedAt: input.complete
+          ? (input.alreadyCompletedAt ?? new Date())
+          : null,
+      },
+    });
+
+    if (changed.length > 0) {
+      await transaction.changeRequest.deleteMany({
+        where: {
+          memberId: input.memberId,
+          status: "PENDING",
+          field: { in: changed },
+        },
+      });
+      await transaction.changeRequest.createMany({
+        data: changed.map((field) => ({
+          memberId: input.memberId,
+          field,
+          oldValue: writeFieldValue(input.current[field]),
+          newValue: writeFieldValue(input.wanted[field]),
+        })),
+      });
+      await recordAudit(transaction, {
+        actorId: input.actorId,
+        action: "member.profile_requested",
+        entity: "Member",
+        entityId: input.memberId,
+        diff: { fields: changed },
+      });
+    }
+  });
+
+  revalidatePath("/portal", "layout");
+  revalidatePath("/admin/approvals");
+  revalidatePath("/admin");
+
+  if (changed.length === 0) {
+    return { status: "success", message: "Nothing changed." };
+  }
+  return {
+    status: "success",
+    // The wording the specification asks for, exactly.
+    message: "Your changes are waiting for approval.",
+  };
+}
+
+/**
  * A person writing their own profile. `portal:access` is the only capability
  * involved, and the member id comes from the session rather than the form, so
  * there is no id here that could be swapped for somebody else's.
@@ -75,10 +156,13 @@ export async function saveProfileAction(
 ): Promise<ProfileFormState> {
   let memberId: string | null;
   let actorId: string;
+  let isMember: boolean;
   try {
     const viewer = await authorize("portal:access");
     memberId = workspaceMemberId(viewer);
     actorId = viewer.userId;
+    // Staff change a published profile directly; a member's change waits.
+    isMember = viewer.role === "MEMBER";
   } catch (error) {
     if (error instanceof AuthorizationError) {
       return { status: "error", message: error.message };
@@ -157,6 +241,61 @@ export async function saveProfileAction(
   const links = Object.fromEntries(
     Object.entries(optional).map(([key, value]) => [key, value || null]),
   );
+
+  // Everything on this form shows on a published profile, so a member's
+  // change to a published one waits for an administrator. Staff edit
+  // directly, and so does anybody not yet published — there is nothing to
+  // protect, and a new member must not be held at the completion gate
+  // waiting for somebody to approve their own name.
+  const current = await getDb().member.findUniqueOrThrow({
+    where: { id: memberId },
+    select: {
+      slug: true,
+      isPublic: true,
+      profileCompletedAt: true,
+      // Written out rather than built from APPROVAL_FIELDS: a computed
+      // select gives Prisma nothing to type. `queueChanges` then asks for a
+      // row keyed by every approval field, so dropping one from here is a
+      // compile error rather than a change that silently never queues.
+      name: true,
+      title: true,
+      bio: true,
+      interests: true,
+      photoKey: true,
+      showOrgEmail: true,
+      orcid: true,
+      websiteUrl: true,
+      scholarUrl: true,
+      githubUrl: true,
+      linkedinUrl: true,
+    },
+  });
+  const wanted: Record<ApprovalField, unknown> = {
+    name: parsed.data.name,
+    title: links.title,
+    bio: bio || null,
+    interests,
+    photoKey: photo ? photo.photoKey : current.photoKey,
+    showOrgEmail,
+    websiteUrl: links.websiteUrl,
+    scholarUrl: links.scholarUrl,
+    orcid: links.orcid,
+    githubUrl: links.githubUrl,
+    linkedinUrl: links.linkedinUrl,
+  };
+
+  const needsApproval = isMember && current.isPublic;
+  if (needsApproval) {
+    return queueChanges({
+      memberId,
+      actorId,
+      slug: current.slug,
+      current,
+      wanted,
+      complete,
+      alreadyCompletedAt: current.profileCompletedAt,
+    });
+  }
 
   const slug = await getDb().$transaction(async (transaction) => {
     const before = await transaction.member.findUnique({

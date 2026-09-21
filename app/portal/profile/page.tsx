@@ -7,6 +7,8 @@ import { signOutAction } from "@/app/portal/actions";
 import { requireViewer } from "@/lib/authz";
 import { getEditableProfile } from "@/lib/portal/profile";
 import {
+  APPROVAL_FIELD_LABELS,
+  describeFieldValue,
   GAP_LABELS,
   profileGaps,
   type ProfileGap,
@@ -53,6 +55,24 @@ export default async function ProfilePage({
                 <li key={gap}>{GAP_LABELS[gap]}</li>
               ))}
             </ul>
+          </div>
+        ) : null}
+        {profile.pending.length > 0 ? (
+          <div className={styles.notice} role="status">
+            {/* The exact words the specification asks for. */}
+            <p>Your changes are waiting for approval.</p>
+            <ul className={styles.gapList}>
+              {profile.pending.map((change) => (
+                <li key={change.field}>
+                  {APPROVAL_FIELD_LABELS[change.field]}:{" "}
+                  {describeFieldValue(change.field, change.value)}
+                </li>
+              ))}
+            </ul>
+            <p className={styles.hint}>
+              Your profile is published, so an administrator reads changes to it
+              before visitors do. What is below is what the site shows now.
+            </p>
           </div>
         ) : null}
         <p className={styles.hint}>

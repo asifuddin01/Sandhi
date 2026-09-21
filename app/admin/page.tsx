@@ -73,7 +73,11 @@ export default async function AdminDashboardPage() {
       newApplications,
       readsApplications ? "/admin/applications" : null,
     ],
-    ["Profile changes awaiting approval", pendingChanges, null],
+    [
+      "Profile changes awaiting approval",
+      pendingChanges,
+      can(viewer.role, "approvals:manage") ? "/admin/approvals" : null,
+    ],
     ["Publications in internal review", publicationsInReview, null],
     ["Research notes in review", insightsInReview, null],
   ] as const;
