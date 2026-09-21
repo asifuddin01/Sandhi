@@ -102,11 +102,43 @@ export const getPublicInsightBySlug = cache(
 );
 
 /**
- * Cached: the same list for everybody, changing only when somebody publishes,
- * which expires the tag.
+ * The cache stores JSON, so the dates cross it as ISO strings and are turned
+ * back into `Date` on the way out. Nothing outside this module notices; the
+ * `CacheSafe` constraint on `cachedPublicRead` is what stops the strings
+ * escaping, and the return types here are what stop a field being revived
+ * and then forgotten.
  */
-export const getPublicInsights = cachedPublicRead(
+type CachedInsight = Omit<PublicInsightSummary, "publishedAt" | "createdAt"> & {
+  publishedAt: string | null;
+  createdAt: string;
+};
+
+const cachedInsights = cachedPublicRead(
   "public-insights",
   [cacheTags.insights],
-  read_getPublicInsights,
+  async (requestedKind?: string): Promise<CachedInsight[]> =>
+    // Built field by field rather than spread: the read hands back the
+    // detail shape, which carries dates the summary type does not declare,
+    // and a spread would send them across the cache unnoticed.
+    (await read_getPublicInsights(requestedKind)).map((insight) => ({
+      id: insight.id,
+      slug: insight.slug,
+      title: insight.title,
+      summary: insight.summary,
+      kind: insight.kind,
+      readingMinutes: insight.readingMinutes,
+      authors: insight.authors,
+      publishedAt: insight.publishedAt?.toISOString() ?? null,
+      createdAt: insight.createdAt.toISOString(),
+    })),
 );
+
+export async function getPublicInsights(
+  requestedKind?: string,
+): Promise<PublicInsightSummary[]> {
+  return (await cachedInsights(requestedKind)).map((insight) => ({
+    ...insight,
+    publishedAt: insight.publishedAt ? new Date(insight.publishedAt) : null,
+    createdAt: new Date(insight.createdAt),
+  }));
+}

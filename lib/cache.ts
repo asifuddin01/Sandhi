@@ -26,10 +26,29 @@ export const PUBLIC_CACHE_SECONDS = 300;
  * published set and apply the clock afterwards — `isPublishedAndDue` and
  * `isOpportunityPublic` exist for exactly that.
  */
+/**
+ * `unstable_cache` stores its answer as JSON, so a `Date` comes back from a
+ * warm cache as a string. The first request after a fill looks perfect and
+ * every one after it calls `.toISOString()` on a string and throws — which
+ * is exactly how this reached production once already, hidden because the
+ * test data had no dated rows in it.
+ *
+ * So a cached read may not return a `Date` at all. Send an ISO string and
+ * let the caller parse it: this turns a 500 that only appears with real
+ * content into a compile error.
+ */
+export type CacheSafe<T> = T extends Date
+  ? "A Date cannot be cached: return an ISO string instead"
+  : T extends (infer Item)[]
+    ? CacheSafe<Item>[]
+    : T extends object
+      ? { [Key in keyof T]: CacheSafe<T[Key]> }
+      : T;
+
 export function cachedPublicRead<Args extends unknown[], Result>(
   key: string,
   tags: readonly CacheTag[],
-  read: (...args: Args) => Promise<Result>,
+  read: (...args: Args) => Promise<Result & CacheSafe<Result>>,
 ): (...args: Args) => Promise<Result> {
   const cached = unstable_cache(read, [key], {
     tags: [...tags],

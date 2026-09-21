@@ -40,10 +40,16 @@ export type HomeNews = {
   date: Date;
 };
 
-/** A post before the clock has been consulted. Never leaves this module. */
-type HomeNewsCandidate = HomeNews & {
+/**
+ * A post before the clock has been consulted. Never leaves this module, and
+ * carries its times as ISO strings because the cache stores JSON — a `Date`
+ * put in comes back out as a string, and the `CacheSafe` constraint on
+ * `cachedPublicRead` refuses it rather than letting that surprise anyone.
+ */
+type HomeNewsCandidate = Omit<HomeNews, "date"> & {
   state: string;
-  publishAt: Date | null;
+  publishAt: string | null;
+  date: string;
 };
 
 type HomeReadData = Omit<HomeData, "news"> & { news: HomeNewsCandidate[] };
@@ -259,8 +265,8 @@ async function readHomeData(): Promise<HomeReadData> {
       title: post.title,
       category: post.category,
       state: post.state,
-      publishAt: post.publishAt,
-      date: post.publishAt ?? post.createdAt,
+      publishAt: post.publishAt?.toISOString() ?? null,
+      date: (post.publishAt ?? post.createdAt).toISOString(),
     })),
     metrics: {
       ...metricCounts,
@@ -289,6 +295,7 @@ const cachedHomeData = cachedPublicRead(
  */
 export async function getHomeData(now = new Date()): Promise<HomeData> {
   const data = await cachedHomeData();
+
   return {
     ...data,
     news: data.news
@@ -298,7 +305,7 @@ export async function getHomeData(now = new Date()): Promise<HomeData> {
         slug: post.slug,
         title: post.title,
         category: post.category,
-        date: post.date,
+        date: new Date(post.date),
       })),
   };
 }

@@ -882,6 +882,18 @@ Open performance items for Milestone 8:
   minute `revalidate` is only a backstop, so a tag somebody forgets to expire
   costs minutes rather than lasting until the next deploy.
 
+  **A cached read may not return a `Date`.** `unstable_cache` stores JSON, so
+  a `Date` put in comes back a string: the first request after a fill looks
+  perfect and every one after it throws on `.toISOString()`. That shipped
+  once and returned 500s on `/insights`, `/publications` and `/news` — hidden
+  because the fixture database has no published insights, publications or
+  news, so the date code never ran and every page answered 200 over an empty
+  list. `CacheSafe` in `lib/cache.ts` now makes it a compile error, each of
+  the three modules converts to ISO on the way in and back on the way out,
+  and `tests/e2e/cached-dates.spec.ts` creates dated rows of each kind and
+  reads every page three times, checking as well that the rows really render
+  — a test on empty lists is how this got through the first time.
+
   Both halves are proved rather than assumed. A probe showed three requests
   producing one database read; and `admin-resources-partners.spec.ts` reads
   the public index *before* publishing a resource, so the entry is warm and a

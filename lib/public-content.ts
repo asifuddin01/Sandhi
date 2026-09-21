@@ -862,14 +862,54 @@ export function serializeJsonLd(value: unknown): string {
 }
 
 /**
- * Cached: the same list for everybody, changing only when somebody publishes,
- * which expires the tag.
+ * The cache stores JSON, so a `Date` put in comes back a string. The two
+ * dated fields cross it as ISO strings and are turned back on the way out;
+ * the `CacheSafe` constraint on `cachedPublicRead` is what refuses the
+ * alternative, and the return type here is what stops one being converted on
+ * the way in and forgotten on the way out.
  */
-export const getPublications = cachedPublicRead(
+type CachedPublication = Omit<
+  PublicPublicationSummary,
+  "publishedAt" | "updatedAt"
+> & { publishedAt: string | null; updatedAt: string };
+
+const cachedPublications = cachedPublicRead(
   "public-publications",
   [cacheTags.publications, cacheTags.members],
-  read_getPublications,
+  async (
+    filters: PublicationFilters = {},
+  ): Promise<
+    Omit<PublicationIndexData, "publications"> & {
+      publications: CachedPublication[];
+    }
+  > => {
+    const data = await read_getPublications(filters);
+    return {
+      ...data,
+      publications: data.publications.map((publication) => ({
+        ...publication,
+        publishedAt: publication.publishedAt?.toISOString() ?? null,
+        updatedAt: publication.updatedAt.toISOString(),
+      })),
+    };
+  },
 );
+
+export async function getPublications(
+  filters: PublicationFilters = {},
+): Promise<PublicationIndexData> {
+  const data = await cachedPublications(filters);
+  return {
+    ...data,
+    publications: data.publications.map((publication) => ({
+      ...publication,
+      publishedAt: publication.publishedAt
+        ? new Date(publication.publishedAt)
+        : null,
+      updatedAt: new Date(publication.updatedAt),
+    })),
+  };
+}
 
 /**
  * Cached: the same list for everybody, changing only when somebody publishes,
