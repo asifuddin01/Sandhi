@@ -4,8 +4,14 @@ import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
-import { publicAreaWhere, publicOpportunityWhere } from "@/lib/visibility";
+import {
+  isOpportunityPublic,
+  publicAreaWhere,
+  publicOpportunityWhere,
+} from "@/lib/visibility";
 
 export const OPPORTUNITY_KINDS = [
   "RESEARCH_POSITION",
@@ -118,28 +124,70 @@ export function opportunityClosingLabel(
   return `Closes in ${days} ${days === 1 ? "day" : "days"}`;
 }
 
+/**
+ * Every published opportunity, open or closed, with its deadline as an ISO
+ * string.
+ *
+ * The clock is left out of the query on purpose: whether an opportunity is
+ * still open is decided per request in `getPublicOpportunities`, so one that
+ * closes at midnight stops being listed at midnight rather than whenever the
+ * cache was last filled. The date crosses as a string because the cache
+ * stores JSON; `CacheSafe` refuses a `Date`.
+ */
+type CachedOpportunity = Omit<PublicOpportunitySummary, "deadline"> & {
+  state: string;
+  deadline: string | null;
+};
+
+const cachedOpportunities = cachedPublicRead(
+  "public-opportunities",
+  [cacheTags.opportunities, cacheTags.research],
+  async (): Promise<CachedOpportunity[]> => {
+    if (!isDatabaseConfigured()) return [];
+
+    const rows = await getDb().opportunity.findMany({
+      where: { state: "PUBLISHED" },
+      orderBy: [{ deadline: { sort: "asc", nulls: "last" } }, { title: "asc" }],
+      select: opportunitySelect,
+    });
+    const areaBySlug = await publicAreaMap(
+      rows.flatMap((row) => row.areaSlugs),
+    );
+
+    return rows.map((row) => ({
+      slug: row.slug,
+      title: row.title,
+      kind: row.kind,
+      duration: row.duration,
+      location: row.location,
+      isRemote: row.isRemote,
+      state: "PUBLISHED",
+      deadline: row.deadline?.toISOString() ?? null,
+      areas: resolveAreas(row.areaSlugs, areaBySlug),
+    }));
+  },
+);
+
 export async function getPublicOpportunities(
   now = new Date(),
 ): Promise<PublicOpportunitySummary[]> {
-  if (!isDatabaseConfigured()) return [];
-
-  const rows = await getDb().opportunity.findMany({
-    where: publicOpportunityWhere(now),
-    orderBy: [{ deadline: { sort: "asc", nulls: "last" } }, { title: "asc" }],
-    select: opportunitySelect,
-  });
-  const areaBySlug = await publicAreaMap(rows.flatMap((row) => row.areaSlugs));
-
-  return rows.map((row) => ({
-    slug: row.slug,
-    title: row.title,
-    kind: row.kind,
-    duration: row.duration,
-    location: row.location,
-    isRemote: row.isRemote,
-    deadline: row.deadline,
-    areas: resolveAreas(row.areaSlugs, areaBySlug),
-  }));
+  const rows = await cachedOpportunities();
+  return (
+    rows
+      // `isOpportunityPublic` is the same rule as `publicOpportunityWhere`,
+      // applied to rows already read.
+      .filter((row) => isOpportunityPublic(row, now))
+      .map((row) => ({
+        slug: row.slug,
+        title: row.title,
+        kind: row.kind,
+        duration: row.duration,
+        location: row.location,
+        isRemote: row.isRemote,
+        areas: row.areas,
+        deadline: row.deadline ? new Date(row.deadline) : null,
+      }))
+  );
 }
 
 async function loadOpportunityDetail(

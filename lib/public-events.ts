@@ -1,5 +1,8 @@
 import "server-only";
 
+import { cachedPublicRead } from "@/lib/cache";
+import { cacheTags } from "@/lib/cache-tags";
+
 import { cache } from "react";
 
 import type { Prisma } from "@/generated/prisma/client";
@@ -132,18 +135,66 @@ export function partitionPublicEvents(
   return { upcoming, past };
 }
 
+/**
+ * The rows, with their times as ISO strings.
+ *
+ * `publicEventWhere()` never consults the clock, so which events are public
+ * is cacheable. What the clock decides — whether registration is still open,
+ * whether a recording may be shown, upcoming or past — is decided per
+ * request in `getPublicEvents`, because a cached entry would freeze the
+ * moment it was filled and an event would never move into the past.
+ *
+ * The times cross as strings because the cache stores JSON; `CacheSafe`
+ * refuses a `Date`.
+ */
+type CachedEventRow = Omit<
+  EventRow,
+  "startsAt" | "endsAt" | "createdAt" | "updatedAt"
+> & {
+  startsAt: string;
+  endsAt: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const cachedEventRows = cachedPublicRead(
+  "public-events",
+  [cacheTags.events],
+  async (): Promise<CachedEventRow[]> => {
+    if (!isDatabaseConfigured()) return [];
+    const rows = await getDb().event.findMany({
+      where: publicEventWhere(),
+      orderBy: { startsAt: "asc" },
+      select: eventSelect,
+    });
+    return rows.map((row) => ({
+      ...row,
+      startsAt: row.startsAt.toISOString(),
+      endsAt: row.endsAt?.toISOString() ?? null,
+      createdAt: row.createdAt.toISOString(),
+      updatedAt: row.updatedAt.toISOString(),
+    }));
+  },
+);
+
 export async function getPublicEvents(
   now = new Date(),
 ): Promise<PublicEventGroups> {
   if (!isDatabaseConfigured()) return { upcoming: [], past: [] };
 
-  const rows = await getDb().event.findMany({
-    where: publicEventWhere(),
-    orderBy: { startsAt: "asc" },
-    select: eventSelect,
-  });
-  const events = rows
-    .map((row) => toPublicEvent(row, now))
+  const events = (await cachedEventRows())
+    .map((row) =>
+      toPublicEvent(
+        {
+          ...row,
+          startsAt: new Date(row.startsAt),
+          endsAt: row.endsAt ? new Date(row.endsAt) : null,
+          createdAt: new Date(row.createdAt),
+          updatedAt: new Date(row.updatedAt),
+        },
+        now,
+      ),
+    )
     .filter((event): event is PublicEvent => event !== null);
   return partitionPublicEvents(events, now);
 }

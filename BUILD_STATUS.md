@@ -911,10 +911,24 @@ Open performance items for Milestone 8:
   request, so a scheduled post appears when it is due rather than when the
   cache next happens to be filled.
 
-  Still per-request on purpose: `/news`, `/events` and `/opportunities`. They
-  depend on the clock in more tangled ways than home, and they are better
-  left honest and slow than fast and subtly wrong. The cache-then-filter
-  pattern is established for when they are done.
+  **Events and opportunities** follow the same shape. `publicEventWhere()`
+  never consulted the clock, so which events are public was always cacheable;
+  what the clock decides — registration still open, recording viewable,
+  upcoming or past — is decided per request, so an event moves into the past
+  when it does rather than when the cache next fills. The opportunities query
+  used to filter `deadline >= now`, which inside a cache entry would have
+  gone on advertising a closed role; it now reads every published one and
+  applies `isOpportunityPublic` per request.
+
+  That changed a test which asserted the index query *uses*
+  `publicOpportunityWhere(now)` — it enforced the implementation, and moving
+  the clock out of the query was the point. It now enforces the guarantee:
+  given an open, a closed and a deadline-free opportunity, only the open and
+  deadline-free ones are listed.
+
+  `/news` itself stays per-request, because it carries member-only
+  announcements and is read per viewer. The public news list within it is
+  cached.
 
 - **Server-side caching (original note):** every public page renders per request and queries the database. The specification's nonce-based CSP requires dynamic rendering, which rules out ISR/CDN page caching. The compatible design is data-level caching (`unstable_cache` with tags): cache published records, apply time rules (`publishAt`, deadlines, event end) after the cache so visibility guarantees stay exact, and have Milestone 5 admin mutations revalidate the tags.
 - Not applicable: a load balancer or CDN (Vercel provides both); minification and compression (Next production builds and Vercel already do this); a route loading skeleton (removed deliberately in Milestone 2).

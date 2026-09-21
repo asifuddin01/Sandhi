@@ -29,6 +29,8 @@ async function withDatedContent(run: () => Promise<void>) {
     insight: `fixture-dated-insight-${stamp}`,
     news: `fixture-dated-news-${stamp}`,
     publication: `fixture-dated-publication-${stamp}`,
+    event: `fixture-dated-event-${stamp}`,
+    opportunity: `fixture-dated-opportunity-${stamp}`,
   };
   const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000);
 
@@ -57,6 +59,30 @@ async function withDatedContent(run: () => Promise<void>) {
         publishAt: yesterday,
       },
     });
+    await db.event.create({
+      data: {
+        id: ids.event,
+        slug: ids.event,
+        title: `${PREFIX} event`,
+        kind: "SEMINAR",
+        abstract: "Fixture content used only by automated tests.",
+        state: "PUBLISHED",
+        // One in the past and one ahead would be better still; this one is
+        // ahead so the registration branch of `toPublicEvent` is exercised.
+        startsAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
+    await db.opportunity.create({
+      data: {
+        id: ids.opportunity,
+        slug: ids.opportunity,
+        title: `${PREFIX} opportunity`,
+        kind: "RESEARCH_POSITION",
+        description: "Fixture content used only by automated tests.",
+        state: "PUBLISHED",
+        deadline: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      },
+    });
     await db.publication.create({
       data: {
         id: ids.publication,
@@ -75,6 +101,8 @@ async function withDatedContent(run: () => Promise<void>) {
     await db.insight.deleteMany({ where: { id: ids.insight } });
     await db.newsPost.deleteMany({ where: { id: ids.news } });
     await db.publication.deleteMany({ where: { id: ids.publication } });
+    await db.event.deleteMany({ where: { id: ids.event } });
+    await db.opportunity.deleteMany({ where: { id: ids.opportunity } });
     await db.$disconnect();
   }
 }
@@ -84,7 +112,14 @@ test("every page that renders a cached date survives a warm cache", async ({
 }) => {
   test.slow();
   await withDatedContent(async () => {
-    for (const path of ["/insights", "/publications", "/news", "/"]) {
+    for (const path of [
+      "/insights",
+      "/publications",
+      "/news",
+      "/events",
+      "/opportunities",
+      "/",
+    ]) {
       // Three times: the first fills the cache, the rest read it back.
       for (let attempt = 1; attempt <= 3; attempt += 1) {
         const response = await request.get(path);
@@ -105,6 +140,8 @@ test("the dated rows are actually rendered, so the date code really ran", async 
       ["/insights", `${PREFIX} insight`],
       ["/publications", `${PREFIX} publication`],
       ["/news", `${PREFIX} news`],
+      ["/events", `${PREFIX} event`],
+      ["/opportunities", `${PREFIX} opportunity`],
     ] as const) {
       await request.get(path);
       const html = await (await request.get(path)).text();

@@ -35,7 +35,6 @@ import {
 } from "@/lib/public-resources";
 import {
   isOpportunityPublic,
-  publicOpportunityWhere,
   publicResourceWhere,
 } from "@/lib/visibility";
 
@@ -80,11 +79,48 @@ describe("opportunity public visibility", () => {
     expect(opportunityClosingLabel(now, now)).toBe("Closes in 0 days");
   });
 
-  it("uses the centralized published-and-unexpired predicate in the index query", async () => {
-    await getPublicOpportunities(now);
+  /**
+   * The index is cached, so the query cannot carry the clock — a cached
+   * entry would freeze whatever `now` was when it was filled and go on
+   * offering an opportunity that had since closed. The query reads every
+   * published one and `isOpportunityPublic` decides per request, which is
+   * what this checks: the guarantee, not the shape of the query.
+   */
+  it("leaves an opportunity out once its deadline has passed", async () => {
+    const row = {
+      title: "Role",
+      kind: "RESEARCH_POSITION",
+      areaSlugs: [],
+      description: "Description",
+      responsibilities: [],
+      requirements: [],
+      duration: null,
+      location: null,
+      isRemote: true,
+    };
+    mocks.opportunityFindMany.mockResolvedValue([
+      {
+        ...row,
+        slug: "still-open",
+        deadline: new Date("2026-09-18T00:00:00.000Z"),
+      },
+      {
+        ...row,
+        slug: "closed",
+        deadline: new Date("2026-09-15T00:00:00.000Z"),
+      },
+      { ...row, slug: "no-deadline", deadline: null },
+    ]);
 
+    const listed = await getPublicOpportunities(now);
+    expect(listed.map((opportunity) => opportunity.slug)).toEqual([
+      "still-open",
+      "no-deadline",
+    ]);
+
+    // The query itself asks for every published one, clock and all left out.
     expect(mocks.opportunityFindMany).toHaveBeenCalledWith(
-      expect.objectContaining({ where: publicOpportunityWhere(now) }),
+      expect.objectContaining({ where: { state: "PUBLISHED" } }),
     );
   });
 
