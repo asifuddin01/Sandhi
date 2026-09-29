@@ -283,6 +283,9 @@ export default async function PortalPage() {
           <Link className={portal.textButton} href="/portal/tasks">
             My tasks
           </Link>
+          <Link className={portal.textButton} href="/portal/meetings">
+            Meetings
+          </Link>
           <Link className={portal.textButton} href="/portal/publications">
             My publications
           </Link>
