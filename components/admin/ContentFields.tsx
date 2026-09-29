@@ -8,7 +8,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { previewMarkdownAction } from "@/app/admin/preview-actions";
+import { previewMarkdownAction } from "@/components/forms/preview-actions";
 import { slugify } from "@/lib/content-state";
 
 import styles from "./Admin.module.css";

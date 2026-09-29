@@ -97,3 +97,14 @@ export function generateInsightBibtex(input: {
 
   return `@misc{${citationKey(input.slug, year)},\n${fields.join(",\n")}\n}`;
 }
+
+/**
+ * Field limits for a research note. They live here, beside the kinds, rather
+ * than in `lib/portal/insights.ts`: the form that enforces them in the
+ * browser and the action that enforces them on the server must agree, and a
+ * client component cannot import a `server-only` module.
+ */
+export const MAX_INSIGHT_TITLE = 200;
+export const MAX_INSIGHT_SUMMARY = 500;
+export const MAX_INSIGHT_BODY = 100_000;
+export const MAX_INSIGHT_AUTHORS = 12;
