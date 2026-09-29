@@ -160,6 +160,9 @@ export async function setTaskStatusAction(
   });
 
   revalidatePath(`/portal/projects/${slug}`);
+  // The same task is on the member's own list, which is where this is often
+  // pressed from.
+  revalidatePath("/portal/tasks");
   return result;
 }
 

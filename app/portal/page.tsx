@@ -75,7 +75,7 @@ function Counts({
       value: counts.openTasks,
       label: counts.openTasks === 1 ? "open task" : "open tasks",
       note: null,
-      href: null,
+      href: "/portal/tasks",
     },
     {
       value: counts.publicationsInProgress,
@@ -279,6 +279,9 @@ export default async function PortalPage() {
           ) : null}
           <Link className={portal.textButton} href="/portal/projects">
             My projects
+          </Link>
+          <Link className={portal.textButton} href="/portal/tasks">
+            My tasks
           </Link>
           <Link className={portal.textButton} href="/portal/publications">
             My publications
