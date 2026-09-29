@@ -48,7 +48,9 @@ export const portraitUploadSchema = z
     size: z.number().int().positive(),
   })
   .superRefine((value, context) => {
-    if (!(PORTRAIT_RULES.types as readonly string[]).includes(value.contentType)) {
+    if (
+      !(PORTRAIT_RULES.types as readonly string[]).includes(value.contentType)
+    ) {
       context.addIssue({
         code: "custom",
         path: ["contentType"],

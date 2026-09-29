@@ -3,7 +3,10 @@ import "server-only";
 import type { Viewer } from "@/lib/authz";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { workspaceMemberId } from "@/lib/portal-content";
-import { isApprovalField, type ApprovalField } from "@/lib/portal/profile-fields";
+import {
+  isApprovalField,
+  type ApprovalField,
+} from "@/lib/portal/profile-fields";
 import { isPortraitUploadConfigured } from "@/lib/storage";
 
 /**

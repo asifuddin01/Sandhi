@@ -172,9 +172,7 @@ export function ProfileForm({ profile }: { profile: ProfileFormValues }) {
           rows={4}
           required
         />
-        <p className={styles.hint}>
-          One per line, up to {MAX_INTERESTS}.
-        </p>
+        <p className={styles.hint}>One per line, up to {MAX_INTERESTS}.</p>
       </div>
 
       <fieldset className={styles.portrait}>
