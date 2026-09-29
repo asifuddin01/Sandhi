@@ -23,7 +23,7 @@ async function loadMermaid() {
       theme: "dark",
       darkMode: true,
       fontFamily:
-        'var(--font-hanken), ui-sans-serif, system-ui, -apple-system, sans-serif',
+        "var(--font-hanken), ui-sans-serif, system-ui, -apple-system, sans-serif",
       flowchart: { curve: "basis", useMaxWidth: true },
     });
     return mermaid;
@@ -59,10 +59,7 @@ export function MermaidPreview({ source, onRendered, onError }: PreviewProps) {
 
       try {
         const mermaid = await loadMermaid();
-        const { svg } = await mermaid.render(
-          `diagram-${mine}`,
-          source,
-        );
+        const { svg } = await mermaid.render(`diagram-${mine}`, source);
         if (cancelled || mine !== generation.current || !host.current) return;
         host.current.innerHTML = svg;
         const element = host.current.querySelector("svg");
