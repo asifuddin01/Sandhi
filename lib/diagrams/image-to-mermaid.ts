@@ -290,14 +290,8 @@ function nearestShape(
   shapes.forEach((shape, index) => {
     const [cx, cy] = centre(shape.box);
     // Distance to the box, not to its middle: a wide box is near along its edge.
-    const dx = Math.max(
-      Math.abs(point[0] - cx) - shape.box.width / 2,
-      0,
-    );
-    const dy = Math.max(
-      Math.abs(point[1] - cy) - shape.box.height / 2,
-      0,
-    );
+    const dx = Math.max(Math.abs(point[0] - cx) - shape.box.width / 2, 0);
+    const dy = Math.max(Math.abs(point[1] - cy) - shape.box.height / 2, 0);
     const distance = Math.hypot(dx, dy);
     if (!best || distance < best.distance) best = { index, distance };
   });
@@ -320,10 +314,7 @@ export function analyseImage(
   const boxes = kept
     .filter((component) => !isConnector(component))
     // Reading order: down the page, then across.
-    .sort(
-      (left, right) =>
-        left.box.y - right.box.y || left.box.x - right.box.x,
-    )
+    .sort((left, right) => left.box.y - right.box.y || left.box.x - right.box.x)
     .slice(0, maxShapes);
 
   if (boxes.length === 0) {

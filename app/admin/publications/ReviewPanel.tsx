@@ -64,7 +64,11 @@ export function ReviewPanel({
         <div className={styles.fieldRow}>
           <div className={styles.field}>
             <label htmlFor="review-decision">Decision</label>
-            <select id="review-decision" name="decision" defaultValue="APPROVED">
+            <select
+              id="review-decision"
+              name="decision"
+              defaultValue="APPROVED"
+            >
               <option value="APPROVED">Approve</option>
               <option value="REJECTED">Reject</option>
             </select>
@@ -84,7 +88,9 @@ export function ReviewPanel({
           {reviews.map((review) => (
             <li key={review.id}>
               <p className={styles.reviewMeta}>
-                <strong>{reviewDecisionLabels[review.decision] ?? "Recorded"}</strong>{" "}
+                <strong>
+                  {reviewDecisionLabels[review.decision] ?? "Recorded"}
+                </strong>{" "}
                 by {review.reviewer} · {formatWhen(review.createdAt)}
               </p>
               <p>{review.comment}</p>

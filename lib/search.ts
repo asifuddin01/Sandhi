@@ -48,9 +48,7 @@ export function toTsQuery(term: string): string | null {
     .filter((token) => token.length > 0);
   if (tokens.length === 0) return null;
   return tokens
-    .map((token, index) =>
-      index === tokens.length - 1 ? `${token}:*` : token,
-    )
+    .map((token, index) => (index === tokens.length - 1 ? `${token}:*` : token))
     .join(" & ");
 }
 
@@ -85,39 +83,34 @@ export async function searchPublic(
   if (term.length < 2 || !tsq || !isDatabaseConfigured()) return [];
 
   const db = getDb();
-  const [
-    projectIds,
-    publicationIds,
-    memberIds,
-    newsIds,
-    insightIds,
-  ] = await Promise.all([
-    db.$queryRaw<Array<{ id: string }>>`
+  const [projectIds, publicationIds, memberIds, newsIds, insightIds] =
+    await Promise.all([
+      db.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "Project"
       WHERE "search_vector" @@ to_tsquery('english', ${tsq})
       ORDER BY ts_rank_cd("search_vector", to_tsquery('english', ${tsq})) DESC
       LIMIT ${CANDIDATES}`,
-    db.$queryRaw<Array<{ id: string }>>`
+      db.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "Publication"
       WHERE "search_vector" @@ to_tsquery('english', ${tsq})
       ORDER BY ts_rank_cd("search_vector", to_tsquery('english', ${tsq})) DESC
       LIMIT ${CANDIDATES}`,
-    db.$queryRaw<Array<{ id: string }>>`
+      db.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "Member"
       WHERE "search_vector" @@ to_tsquery('english', ${tsq})
       ORDER BY ts_rank_cd("search_vector", to_tsquery('english', ${tsq})) DESC
       LIMIT ${CANDIDATES}`,
-    db.$queryRaw<Array<{ id: string }>>`
+      db.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "NewsPost"
       WHERE "search_vector" @@ to_tsquery('english', ${tsq})
       ORDER BY ts_rank_cd("search_vector", to_tsquery('english', ${tsq})) DESC
       LIMIT ${CANDIDATES}`,
-    db.$queryRaw<Array<{ id: string }>>`
+      db.$queryRaw<Array<{ id: string }>>`
       SELECT "id" FROM "Insight"
       WHERE "search_vector" @@ to_tsquery('english', ${tsq})
       ORDER BY ts_rank_cd("search_vector", to_tsquery('english', ${tsq})) DESC
       LIMIT ${CANDIDATES}`,
-  ]);
+    ]);
 
   const ids = {
     projects: projectIds.map((row) => row.id),

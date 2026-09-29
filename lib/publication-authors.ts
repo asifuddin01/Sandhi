@@ -55,7 +55,9 @@ export function readAuthorRows(
       );
     }
     if (!memberId && !externalName) {
-      throw refuse(`Choose a member or type a name for author ${position + 1}.`);
+      throw refuse(
+        `Choose a member or type a name for author ${position + 1}.`,
+      );
     }
     if (memberId) {
       if (seen.has(memberId)) {

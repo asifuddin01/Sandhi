@@ -3,10 +3,7 @@ import type { Metadata } from "next";
 import styles from "@/components/admin/Admin.module.css";
 import { ActionForm, SubmitButton } from "@/components/admin/AdminForms";
 import { requireCapability } from "@/lib/authz";
-import {
-  IOS_DISTRIBUTIONS,
-  MAX_RELEASE_NOTES_LENGTH,
-} from "@/lib/mobile-app";
+import { IOS_DISTRIBUTIONS, MAX_RELEASE_NOTES_LENGTH } from "@/lib/mobile-app";
 import { getSiteSettings } from "@/lib/site-settings";
 import {
   contactTopics,

@@ -28,7 +28,7 @@ describe("toTsQuery", () => {
     expect(toTsQuery("cat & !dog")).toBe("cat & dog:*");
     expect(toTsQuery("(unbalanced")).toBe("unbalanced:*");
     expect(toTsQuery("a:*:*:*")).toBe("a:*");
-    expect(toTsQuery("'; DROP TABLE \"Project\"; --")).toBe(
+    expect(toTsQuery('\'; DROP TABLE "Project"; --')).toBe(
       "drop & table & project:*",
     );
   });

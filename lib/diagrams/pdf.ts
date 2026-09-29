@@ -57,10 +57,12 @@ export function fitImage(
   };
 }
 
-export function buildPdf(image: PdfImage, options: PdfOptions = {}): Uint8Array {
+export function buildPdf(
+  image: PdfImage,
+  options: PdfOptions = {},
+): Uint8Array {
   const page =
-    options.page ??
-    (image.width >= image.height ? A4_LANDSCAPE : A4_PORTRAIT);
+    options.page ?? (image.width >= image.height ? A4_LANDSCAPE : A4_PORTRAIT);
   const placed = fitImage(image, page);
 
   const content = `q\n${placed.width.toFixed(2)} 0 0 ${placed.height.toFixed(

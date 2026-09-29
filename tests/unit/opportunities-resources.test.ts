@@ -33,10 +33,7 @@ import {
   RESOURCE_KINDS,
   safeResourceUrl,
 } from "@/lib/public-resources";
-import {
-  isOpportunityPublic,
-  publicResourceWhere,
-} from "@/lib/visibility";
+import { isOpportunityPublic, publicResourceWhere } from "@/lib/visibility";
 
 describe("opportunity public visibility", () => {
   const now = new Date("2026-09-16T12:00:00.000Z");

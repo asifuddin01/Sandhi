@@ -39,7 +39,10 @@ export function standaloneSvg(svg: SVGSVGElement): {
 } {
   const clone = svg.cloneNode(true) as SVGSVGElement;
   const box = svg.getBoundingClientRect();
-  const viewBox = svg.getAttribute("viewBox")?.split(/[\s,]+/u).map(Number);
+  const viewBox = svg
+    .getAttribute("viewBox")
+    ?.split(/[\s,]+/u)
+    .map(Number);
   const width = Math.max(1, Math.round(viewBox?.[2] || box.width || 800));
   const height = Math.max(1, Math.round(viewBox?.[3] || box.height || 600));
 

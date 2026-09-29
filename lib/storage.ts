@@ -14,10 +14,7 @@ import {
   attachmentExtension,
   type AttachmentUploadKind,
 } from "@/lib/portal/attachment-input";
-import {
-  PORTRAIT_RULES,
-  portraitExtension,
-} from "@/lib/portal/profile-fields";
+import { PORTRAIT_RULES, portraitExtension } from "@/lib/portal/profile-fields";
 
 type Fetcher = typeof fetch;
 
@@ -34,12 +31,7 @@ type R2Config = {
  * caller cannot present a small figure's token for a large dataset.
  */
 export type UploadKind =
-  | "cv"
-  | "proposal"
-  | "figure"
-  | "document"
-  | "data"
-  | "portrait";
+  "cv" | "proposal" | "figure" | "document" | "data" | "portrait";
 
 type UploadReceipt = {
   version: 1;
@@ -58,7 +50,8 @@ export type PrivateUploadIntent = {
 
 function r2Config(
   env: NodeJS.ProcessEnv,
-  bucketVariable: "R2_BUCKET_PRIVATE" | "R2_BUCKET_PUBLIC" = "R2_BUCKET_PRIVATE",
+  bucketVariable:
+    "R2_BUCKET_PRIVATE" | "R2_BUCKET_PUBLIC" = "R2_BUCKET_PRIVATE",
 ): R2Config {
   const accountId = env.R2_ACCOUNT_ID?.trim();
   const accessKeyId = env.R2_ACCESS_KEY_ID?.trim();
@@ -656,7 +649,9 @@ export async function assertPortraitExists(
   const now = dependencies.now ?? new Date();
   const fetcher = dependencies.fetcher ?? fetch;
 
-  if (!(PORTRAIT_RULES.types as readonly string[]).includes(input.contentType)) {
+  if (
+    !(PORTRAIT_RULES.types as readonly string[]).includes(input.contentType)
+  ) {
     throw new ExternalServiceError(
       "R2",
       "A photograph must be a PNG, JPEG, or WebP image.",

@@ -133,8 +133,12 @@ async function readPublication(formData: FormData) {
   }
 
   const abstract = requiredText(formData, "abstract", "an abstract", 10_000);
-  const authors = readAuthorRows(formData, (message) => new AdminActionError(message));
-  if (authors.length === 0) throw new AdminActionError("Add at least one author.");
+  const authors = readAuthorRows(
+    formData,
+    (message) => new AdminActionError(message),
+  );
+  if (authors.length === 0)
+    throw new AdminActionError("Add at least one author.");
 
   const areaIds = [...new Set(strings(formData, "areaIds"))].filter(Boolean);
   if (areaIds.length > MAX_AREAS) {
@@ -249,134 +253,138 @@ export async function savePublicationAction(
   const id = field(formData, "id");
   let createdId: string | null = null;
 
-  const result = await runAdminAction("publications:publish", async (viewer) => {
-    const { data, authors, areaIds } = await readPublication(formData);
-    const db = getDb();
-    let enteredReview = false;
+  const result = await runAdminAction(
+    "publications:publish",
+    async (viewer) => {
+      const { data, authors, areaIds } = await readPublication(formData);
+      const db = getDb();
+      let enteredReview = false;
 
-    try {
-      if (!id) {
-        const created = await db.$transaction(async (transaction) => {
-          const publication = await transaction.publication.create({
-            data: {
-              ...data,
-              authors: { create: authors },
-              areas: { create: areaIds.map((areaId) => ({ areaId })) },
-            },
-            select: { id: true },
-          });
-          await recordAudit(transaction, {
-            actorId: viewer.userId,
-            action: "publication.create",
-            entity: "Publication",
-            entityId: publication.id,
-            diff: { title: data.title, stage: data.stage, state: data.state },
-          });
-          return publication;
-        });
-        createdId = created.id;
-        enteredReview = data.stage === "INTERNAL_REVIEW";
-      } else {
-        const before = await db.publication.findUnique({
-          where: { id },
-          select: {
-            title: true,
-            slug: true,
-            abstract: true,
-            type: true,
-            stage: true,
-            state: true,
-            venueName: true,
-            venueShort: true,
-            year: true,
-            publishedAt: true,
-            doi: true,
-            arxivId: true,
-            pdfUrl: true,
-            codeUrl: true,
-            datasetUrl: true,
-            pageUrl: true,
-            bibtexOverride: true,
-            award: true,
-            featured: true,
-            projectId: true,
-            authors: {
-              orderBy: { position: "asc" },
-              select: {
-                memberId: true,
-                externalName: true,
-                externalAffiliation: true,
-                equalContribution: true,
-                corresponding: true,
+      try {
+        if (!id) {
+          const created = await db.$transaction(async (transaction) => {
+            const publication = await transaction.publication.create({
+              data: {
+                ...data,
+                authors: { create: authors },
+                areas: { create: areaIds.map((areaId) => ({ areaId })) },
               },
-            },
-            areas: { select: { areaId: true } },
-          },
-        });
-        if (!before) {
-          throw new AdminActionError("That publication no longer exists.");
-        }
-
-        const diff = changes(
-          {
-            ...before,
-            areaIds: before.areas.map((area) => area.areaId).sort(),
-            authors: before.authors,
-          },
-          {
-            ...data,
-            areaIds: [...areaIds].sort(),
-            // Position is the array order on both sides, so comparing it
-            // would only ever repeat what the order already says.
-            authors: authors.map((author) => ({
-              memberId: author.memberId,
-              externalName: author.externalName,
-              externalAffiliation: author.externalAffiliation,
-              equalContribution: author.equalContribution,
-              corresponding: author.corresponding,
-            })),
-          },
-          ["abstract", "bibtexOverride"],
-        );
-        if (Object.keys(diff).length === 0) {
-          return { status: "success", message: "Nothing changed." };
-        }
-
-        await db.$transaction(async (transaction) => {
-          await transaction.publication.update({
+              select: { id: true },
+            });
+            await recordAudit(transaction, {
+              actorId: viewer.userId,
+              action: "publication.create",
+              entity: "Publication",
+              entityId: publication.id,
+              diff: { title: data.title, stage: data.stage, state: data.state },
+            });
+            return publication;
+          });
+          createdId = created.id;
+          enteredReview = data.stage === "INTERNAL_REVIEW";
+        } else {
+          const before = await db.publication.findUnique({
             where: { id },
-            data: {
-              ...data,
-              authors: { deleteMany: {}, create: authors },
-              areas: {
-                deleteMany: {},
-                create: areaIds.map((areaId) => ({ areaId })),
+            select: {
+              title: true,
+              slug: true,
+              abstract: true,
+              type: true,
+              stage: true,
+              state: true,
+              venueName: true,
+              venueShort: true,
+              year: true,
+              publishedAt: true,
+              doi: true,
+              arxivId: true,
+              pdfUrl: true,
+              codeUrl: true,
+              datasetUrl: true,
+              pageUrl: true,
+              bibtexOverride: true,
+              award: true,
+              featured: true,
+              projectId: true,
+              authors: {
+                orderBy: { position: "asc" },
+                select: {
+                  memberId: true,
+                  externalName: true,
+                  externalAffiliation: true,
+                  equalContribution: true,
+                  corresponding: true,
+                },
               },
+              areas: { select: { areaId: true } },
             },
           });
-          await recordAudit(transaction, {
-            actorId: viewer.userId,
-            action: "publication.update",
-            entity: "Publication",
-            entityId: id,
-            diff: diff as Prisma.InputJsonValue,
-          });
-        });
-        enteredReview =
-          data.stage === "INTERNAL_REVIEW" && before.stage !== "INTERNAL_REVIEW";
-      }
-    } catch (error) {
-      const message = conflictMessage(error);
-      if (message) throw new AdminActionError(message);
-      throw error;
-    }
+          if (!before) {
+            throw new AdminActionError("That publication no longer exists.");
+          }
 
-    if (enteredReview) {
-      notifyReviewers(createdId ?? id, data.title, viewer);
-    }
-    invalidate(cacheTags.publications);
-    return { status: "success", message: "Saved." };
-  });
+          const diff = changes(
+            {
+              ...before,
+              areaIds: before.areas.map((area) => area.areaId).sort(),
+              authors: before.authors,
+            },
+            {
+              ...data,
+              areaIds: [...areaIds].sort(),
+              // Position is the array order on both sides, so comparing it
+              // would only ever repeat what the order already says.
+              authors: authors.map((author) => ({
+                memberId: author.memberId,
+                externalName: author.externalName,
+                externalAffiliation: author.externalAffiliation,
+                equalContribution: author.equalContribution,
+                corresponding: author.corresponding,
+              })),
+            },
+            ["abstract", "bibtexOverride"],
+          );
+          if (Object.keys(diff).length === 0) {
+            return { status: "success", message: "Nothing changed." };
+          }
+
+          await db.$transaction(async (transaction) => {
+            await transaction.publication.update({
+              where: { id },
+              data: {
+                ...data,
+                authors: { deleteMany: {}, create: authors },
+                areas: {
+                  deleteMany: {},
+                  create: areaIds.map((areaId) => ({ areaId })),
+                },
+              },
+            });
+            await recordAudit(transaction, {
+              actorId: viewer.userId,
+              action: "publication.update",
+              entity: "Publication",
+              entityId: id,
+              diff: diff as Prisma.InputJsonValue,
+            });
+          });
+          enteredReview =
+            data.stage === "INTERNAL_REVIEW" &&
+            before.stage !== "INTERNAL_REVIEW";
+        }
+      } catch (error) {
+        const message = conflictMessage(error);
+        if (message) throw new AdminActionError(message);
+        throw error;
+      }
+
+      if (enteredReview) {
+        notifyReviewers(createdId ?? id, data.title, viewer);
+      }
+      invalidate(cacheTags.publications);
+      return { status: "success", message: "Saved." };
+    },
+  );
 
   revalidatePath("/admin/publications");
   if (createdId) redirect(`/admin/publications/${createdId}?created=1`);
@@ -388,33 +396,36 @@ export async function bulkPublicationsAction(
   _previous: ActionState,
   formData: FormData,
 ): Promise<ActionState> {
-  const result = await runAdminAction("publications:publish", async (viewer) => {
-    const outcome = await runBulk(viewer, formData, {
-      entity: "Publication",
-      prefix: "publication",
-      noun: { one: "publication", many: "publications" },
-      load: (ids) =>
-        getDb().publication.findMany({
-          where: { id: { in: ids } },
-          select: {
-            id: true,
-            state: true,
-            _count: { select: { resources: true, newsPosts: true } },
-          },
-        }),
-      // Deleting would unlink a resource or a news post from its paper.
-      keep: (row) =>
-        row._count.resources + row._count.newsPosts > 0
-          ? "it is linked from a resource or a news post: archive it instead"
-          : null,
-      update: (transaction, id, data) =>
-        transaction.publication.update({ where: { id }, data }),
-      remove: (transaction, id) =>
-        transaction.publication.delete({ where: { id } }),
-    });
-    invalidate(cacheTags.publications);
-    return outcome;
-  });
+  const result = await runAdminAction(
+    "publications:publish",
+    async (viewer) => {
+      const outcome = await runBulk(viewer, formData, {
+        entity: "Publication",
+        prefix: "publication",
+        noun: { one: "publication", many: "publications" },
+        load: (ids) =>
+          getDb().publication.findMany({
+            where: { id: { in: ids } },
+            select: {
+              id: true,
+              state: true,
+              _count: { select: { resources: true, newsPosts: true } },
+            },
+          }),
+        // Deleting would unlink a resource or a news post from its paper.
+        keep: (row) =>
+          row._count.resources + row._count.newsPosts > 0
+            ? "it is linked from a resource or a news post: archive it instead"
+            : null,
+        update: (transaction, id, data) =>
+          transaction.publication.update({ where: { id }, data }),
+        remove: (transaction, id) =>
+          transaction.publication.delete({ where: { id } }),
+      });
+      invalidate(cacheTags.publications);
+      return outcome;
+    },
+  );
   revalidatePath("/admin/publications");
   return result;
 }
@@ -426,54 +437,57 @@ export async function reviewPublicationAction(
 ): Promise<ActionState> {
   const id = field(formData, "publicationId");
 
-  const result = await runAdminAction("publications:publish", async (viewer) => {
-    const decision = parseReviewDecision(field(formData, "decision"));
-    if (!decision) throw new AdminActionError("Choose approve or reject.");
-    const comment = requiredText(formData, "comment", "a comment", 4000);
-    if (!viewer.member) {
-      throw new AdminActionError(
-        "Recording a review needs a lab profile on your account.",
-      );
-    }
+  const result = await runAdminAction(
+    "publications:publish",
+    async (viewer) => {
+      const decision = parseReviewDecision(field(formData, "decision"));
+      if (!decision) throw new AdminActionError("Choose approve or reject.");
+      const comment = requiredText(formData, "comment", "a comment", 4000);
+      if (!viewer.member) {
+        throw new AdminActionError(
+          "Recording a review needs a lab profile on your account.",
+        );
+      }
 
-    const db = getDb();
-    const publication = await db.publication.findUnique({
-      where: { id },
-      select: { id: true, stage: true },
-    });
-    if (!publication) {
-      throw new AdminActionError("That publication no longer exists.");
-    }
-
-    await db.$transaction(async (transaction) => {
-      const review = await transaction.publicationReview.create({
-        data: {
-          publicationId: id,
-          reviewerId: viewer.member!.id,
-          comment,
-          decision,
-        },
-        select: { id: true },
+      const db = getDb();
+      const publication = await db.publication.findUnique({
+        where: { id },
+        select: { id: true, stage: true },
       });
-      await recordAudit(transaction, {
-        actorId: viewer.userId,
-        action: "publication.review",
-        entity: "Publication",
-        entityId: id,
-        diff: { decision, reviewId: review.id },
-      });
-    });
+      if (!publication) {
+        throw new AdminActionError("That publication no longer exists.");
+      }
 
-    return {
-      status: "success",
-      // The stage is not moved here: making a paper public stays a separate,
-      // deliberate act by an editor.
-      message:
-        decision === "APPROVED"
-          ? "Approved. Move the stage on when you are ready."
-          : "Rejected. The comment is on the record.",
-    };
-  });
+      await db.$transaction(async (transaction) => {
+        const review = await transaction.publicationReview.create({
+          data: {
+            publicationId: id,
+            reviewerId: viewer.member!.id,
+            comment,
+            decision,
+          },
+          select: { id: true },
+        });
+        await recordAudit(transaction, {
+          actorId: viewer.userId,
+          action: "publication.review",
+          entity: "Publication",
+          entityId: id,
+          diff: { decision, reviewId: review.id },
+        });
+      });
+
+      return {
+        status: "success",
+        // The stage is not moved here: making a paper public stays a separate,
+        // deliberate act by an editor.
+        message:
+          decision === "APPROVED"
+            ? "Approved. Move the stage on when you are ready."
+            : "Rejected. The comment is on the record.",
+      };
+    },
+  );
 
   revalidatePath(`/admin/publications/${id}`);
   return result;

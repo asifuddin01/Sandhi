@@ -24,7 +24,9 @@ export const MAX_NODES = 300;
 
 /** Longest delimiters first, so `[[` is never read as `[`. */
 const shapesByLength = (
-  Object.entries(NODE_SHAPES) as Array<[NodeShape, (typeof NODE_SHAPES)[NodeShape]]>
+  Object.entries(NODE_SHAPES) as Array<
+    [NodeShape, (typeof NODE_SHAPES)[NodeShape]]
+  >
 ).sort((left, right) => right[1].open.length - left[1].open.length);
 
 const edgesBySyntax = (
@@ -55,7 +57,10 @@ function readNode(text: string): DiagramNode | null {
     if (start <= 0 || !source.endsWith(close)) continue;
     const id = source.slice(0, start).trim();
     if (!isNodeId(id)) continue;
-    const label = source.slice(start + open.length, source.length - close.length);
+    const label = source.slice(
+      start + open.length,
+      source.length - close.length,
+    );
     return { id, label: unquote(label), shape, className: null };
   }
 
@@ -134,9 +139,9 @@ export function parseFlowchart(source: string): ParsedSource {
     };
   }
 
-  const direction = (
-    DIAGRAM_DIRECTIONS as readonly string[]
-  ).includes(opening[1]!.toUpperCase())
+  const direction = (DIAGRAM_DIRECTIONS as readonly string[]).includes(
+    opening[1]!.toUpperCase(),
+  )
     ? (opening[1]!.toUpperCase() as DiagramDirection)
     : "TD";
 
@@ -147,7 +152,10 @@ export function parseFlowchart(source: string): ParsedSource {
   const remember = (node: DiagramNode) => {
     const existing = nodes.get(node.id);
     // A later mention with a real label wins over a bare identifier.
-    if (!existing || (existing.label === existing.id && node.label !== node.id)) {
+    if (
+      !existing ||
+      (existing.label === existing.id && node.label !== node.id)
+    ) {
       nodes.set(node.id, { ...existing, ...node });
     }
   };

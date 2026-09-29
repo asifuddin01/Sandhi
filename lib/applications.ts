@@ -23,19 +23,17 @@ export const APPLICATION_STATUSES = [
 
 export type ApplicationStatusValue = (typeof APPLICATION_STATUSES)[number];
 
-export const APPLICATION_STATUS_LABELS: Record<
-  ApplicationStatusValue,
-  string
-> = {
-  NEW: "New",
-  IN_REVIEW: "Being read",
-  SHORTLISTED: "Shortlisted",
-  INTERVIEW: "Interview",
-  ACCEPTED: "Accepted",
-  REJECTED: "Not this time",
-  INVITED: "Invited",
-  WITHDRAWN: "Withdrawn",
-};
+export const APPLICATION_STATUS_LABELS: Record<ApplicationStatusValue, string> =
+  {
+    NEW: "New",
+    IN_REVIEW: "Being read",
+    SHORTLISTED: "Shortlisted",
+    INTERVIEW: "Interview",
+    ACCEPTED: "Accepted",
+    REJECTED: "Not this time",
+    INVITED: "Invited",
+    WITHDRAWN: "Withdrawn",
+  };
 
 /** Still waiting on the lab for an answer. */
 export const OPEN_STATUSES: readonly ApplicationStatusValue[] = [

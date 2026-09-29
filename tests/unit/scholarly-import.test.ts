@@ -127,11 +127,12 @@ describe("fromArxivAtom", () => {
 
 describe("importing", () => {
   it("asks only Crossref and arXiv, with the identifier encoded", async () => {
-    const fetcher = vi.fn<(url: string, init?: RequestInit) => Promise<Response>>(
-      async (url) =>
-        url.startsWith("https://api.crossref.org/")
-          ? new Response(JSON.stringify({ message: crossrefWork }))
-          : new Response(arxivFeed),
+    const fetcher = vi.fn<
+      (url: string, init?: RequestInit) => Promise<Response>
+    >(async (url) =>
+      url.startsWith("https://api.crossref.org/")
+        ? new Response(JSON.stringify({ message: crossrefWork }))
+        : new Response(arxivFeed),
     );
     await importByDoi("https://doi.org/10.1038/nature14539", fetcher);
     await importByArxiv("1706.03762", fetcher);

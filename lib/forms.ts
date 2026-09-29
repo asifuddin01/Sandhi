@@ -164,7 +164,10 @@ export function requiresProposalFile(type: JoinInterestType): boolean {
  * letter, then a CV — because a letter explaining why this lab is the thing
  * a CV alone cannot say.
  */
-const coverLetterTypes = new Set<JoinInterestType>(["RESEARCHER", "INTERNSHIP"]);
+const coverLetterTypes = new Set<JoinInterestType>([
+  "RESEARCHER",
+  "INTERNSHIP",
+]);
 
 export function expectsCoverLetter(type: JoinInterestType): boolean {
   return coverLetterTypes.has(type);
