@@ -1,0 +1,137 @@
+/* The member's front page. Everything else in the portal is one job at a
+   time; this is the one page that has to hold four at once, so it leans on
+   whitespace and a single rule between things rather than boxes. */
+
+.glance {
+  max-width: 46rem;
+  margin-block-end: clamp(2.5rem, 5vw, 3.5rem);
+  padding-block: 1.5rem;
+  border-block: 1px solid var(--ink-line);
+}
+
+.counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr));
+  gap: 1.5rem 1rem;
+  margin: 0;
+}
+
+/* The figure reads before its label, but a description list has to name a
+   thing before describing it — so the order is swapped in the layout only. */
+.count {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 0.3rem;
+}
+
+.count dt {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.count dd {
+  margin: 0;
+  color: var(--moonstone);
+  font-family: var(--font-display);
+  font-size: var(--text-h1);
+  line-height: 1;
+}
+
+.count dd a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.count dd a:hover,
+.count dd a:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--lotus);
+  text-underline-offset: 0.12em;
+}
+
+.countNote {
+  white-space: nowrap;
+}
+
+.section {
+  display: grid;
+  max-width: 46rem;
+  gap: 1rem;
+  margin-block-end: clamp(2.5rem, 5vw, 3.5rem);
+}
+
+.section h2 {
+  margin: 0;
+  font-size: var(--text-h3);
+}
+
+.section a {
+  color: var(--moonstone);
+  text-decoration: underline;
+  text-decoration-color: var(--ink-line);
+  text-underline-offset: 0.2em;
+}
+
+.section a:hover,
+.section a:focus-visible {
+  text-decoration-color: var(--lotus);
+}
+
+.dueList {
+  display: grid;
+  gap: 0;
+  margin: 0;
+  padding: 0;
+  border-block-start: 1px solid var(--ink-line);
+  list-style: none;
+}
+
+.due {
+  display: grid;
+  gap: 0.35rem;
+  padding-block: 1rem;
+  border-block-end: 1px solid var(--ink-line);
+}
+
+/* A passed deadline is marked twice over: this edge, and the word "Overdue"
+   in the line beneath, for anyone the colour does not reach. */
+.due[data-overdue="true"] {
+  padding-inline-start: 0.9rem;
+  border-inline-start: 3px solid var(--signal-warn);
+}
+
+.dueTitle {
+  margin: 0;
+  color: var(--moonstone);
+}
+
+.dueMeta {
+  margin: 0;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+}
+
+.overdue {
+  color: var(--signal-warn);
+  font-weight: 600;
+}
+
+.links {
+  display: grid;
+  max-width: 46rem;
+  gap: 1rem;
+  padding-block-start: clamp(1.5rem, 3vw, 2rem);
+  border-block-start: 1px solid var(--ink-line);
+}
+
+.links h2 {
+  margin: 0;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  font-weight: 550;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
