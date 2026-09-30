@@ -78,7 +78,9 @@ async function enforceRateLimit(
     });
   } catch (error) {
     if (limit.failOpen) {
-      console.error(`[api] rate limiting unavailable for ${limit.scope}.`);
+      console.error(
+        `[api] rate limiting unavailable for ${limit.scope}: ${errorMessage(error)}`,
+      );
       return;
     }
     throw error;
