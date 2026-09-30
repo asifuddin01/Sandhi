@@ -69,6 +69,15 @@ Collected: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
    not carry. Running `prisma migrate deploy` through the pooled URL can hang
    or half-apply.
 
+4. In both strings, change `sslmode=require` to **`sslmode=verify-full`**.
+
+   Today the `pg` driver quietly treats `require` as `verify-full` — encrypted
+   _and_ the server's certificate checked — and prints a warning saying so.
+   Its next major version gives `require` the libpq meaning instead: encrypted
+   but unverified, which leaves room for something to impersonate the
+   database. Saying `verify-full` keeps the strong behaviour through the
+   upgrade. Neon's certificates are valid, so nothing else changes.
+
 Free tier is 0.5 GB and scales to zero, so the first request after a quiet
 hour is about a second slower. Fine for launch.
 
