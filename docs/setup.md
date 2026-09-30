@@ -1,7 +1,7 @@
-# Setting the four services up
+# Setting the services up
 
-Work through these in order. The first three each hand you values; Vercel is
-last because it consumes all of them.
+Work through these in order. Each hands you values; Vercel is last because it
+consumes all of them.
 
 Keep a scratch file open for the values as you collect them. **Do not put any
 of them in the repository** — it is public.
@@ -174,6 +174,37 @@ MX record none of them has an inbox, and those submissions bounce.
 
 ---
 
+## 3a. Upstash and Turnstile — attempt limits and the bot check
+
+**Neither is optional in production.** Sign-in and every public form count
+attempts in Upstash, and refuse outright when it is missing rather than let
+someone guess passwords without limit — the page says "Sign-in is temporarily
+unavailable", and Vercel's logs name the missing variable. The public forms
+(contact, join, proposals, event registration) also need Turnstile, and
+refuse the same way without it. Locally both are bypassed, so nothing shows
+the gap until the site is live.
+
+**Upstash** (sign in with GitHub at **console.upstash.com**):
+
+1. **Redis → Create database** → name `sandhi`, region **AWS
+   ap-southeast-1 (Singapore)** — beside the app, since every sign-in waits
+   on it. Free plan; eviction off.
+2. On the database page, **REST API → `.env`** tab → copy. That block is
+   `UPSTASH_REDIS_REST_URL` and `UPSTASH_REDIS_REST_TOKEN`, already in the
+   shape Vercel's Key field splits into rows.
+
+**Turnstile** (Cloudflare → **Application security → Turnstile → Add widget
+manually**):
+
+1. Name `SANDHI forms`, hostname `sandhiresearch.org` (subdomains are
+   covered), mode **Managed**.
+2. **Create** → copy the **Site Key** (`TURNSTILE_SITE_KEY`, public — it is
+   sent to every visitor) and the **Secret Key** (`TURNSTILE_SECRET_KEY`).
+
+Collected: the two `UPSTASH_*` values and the two `TURNSTILE_*` values.
+
+---
+
 ## 4. Vercel — the app
 
 1. Sign up at **vercel.com** with GitHub.
@@ -185,9 +216,9 @@ MX record none of them has an inbox, and those submissions bounce.
    empty lists when no database is configured. **A "Ready" build is not a
    working site.** The check that means something is `/research` showing
    the research themes, which only exist in the database.
-5. **Settings → Environment Variables → Add Environment Variable.** Twelve
-   values, five of them secret. Rather than copy each by hand, this puts all
-   twelve on the clipboard without showing or saving any of them — it asks
+5. **Settings → Environment Variables → Add Environment Variable.** Sixteen
+   values. Rather than copy the first twelve by hand, this puts them on the
+   clipboard without showing or saving any of them — it asks
    for the pooled Neon URL, upgrades its `sslmode` to `verify-full`, and
    generates the auth secret itself:
 
@@ -195,10 +226,10 @@ MX record none of them has an inbox, and those submissions bounce.
    cd /path/to/sandhi && printf "Pooled Neon URL: " && read -rs NEON_POOLED && echo && { cat .env.local; printf '\nDATABASE_URL=%s\nBETTER_AUTH_SECRET=%s\nBETTER_AUTH_URL=https://sandhiresearch.org\nADMIN_NOTIFY_EMAIL=join@sandhiresearch.org\n' "${NEON_POOLED/sslmode=require/sslmode=verify-full}" "$(openssl rand -base64 32)"; } | pbcopy; unset NEON_POOLED
    ```
 
-   Paste into the **Key** field and Vercel splits the block into rows.
-   Choose **Production only**: Vercel builds a preview for every branch,
-   Dependabot's included, and a preview holding the production secrets can
-   write to the live database.
+   Paste into the **Key** field and Vercel splits the block into rows. Add
+   the four from 3a the same way. Choose **Production only**: Vercel builds
+   a preview for every branch, Dependabot's included, and a preview holding
+   the production secrets can write to the live database.
 
    Vercel flags the four real secrets as "Needs Attention" — not wrong, just
    not marked Secret, so anyone with access to the project could read them.
@@ -289,7 +320,8 @@ Then:
 ## 6. Check it works
 
 - `/` loads, `/research` and `/people` render
-- `/contact` sends and the message arrives — proves Resend
+- Signing in reaches the two-factor step — proves Upstash
+- `/contact` sends and the message arrives — proves Resend and Turnstile
 - `/portal/profile` accepts a photo — proves R2
 - Search returns results — proves the tsvector indexes survived the migration
 
