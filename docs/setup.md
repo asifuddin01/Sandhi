@@ -41,6 +41,39 @@ You are already signed in. R2 is not switched on yet.
    - Create, then copy **Access Key ID** and **Secret Access Key**. The secret
      is shown **once**.
 6. Your **Account ID** is on the R2 overview page, and in the dashboard URL.
+7. **On both buckets: Settings → CORS Policy → Add**, and replace the example
+   with:
+
+   ```json
+   [
+     {
+       "AllowedOrigins": [
+         "https://sandhiresearch.org",
+         "https://www.sandhiresearch.org",
+         "http://localhost:3000",
+         "http://localhost:3100",
+         "http://localhost:3200"
+       ],
+       "AllowedMethods": ["PUT"],
+       "AllowedHeaders": ["content-type"],
+       "MaxAgeSeconds": 3600
+     }
+   ]
+   ```
+
+   **Uploads fail without this, and nothing on the server says so.** The
+   browser sends every file straight to R2 — profile photos, CVs, project
+   attachments — so each one is a cross-origin request, and the browser
+   refuses it at the preflight unless the bucket names the site. A test run
+   from Node passes regardless, because Node does not enforce CORS; only a
+   real browser shows the failure.
+
+   `PUT` with `content-type` is everything the three upload forms send.
+   Reads need no rule: images load through `<img>`, private files through
+   signed links the browser navigates to.
+
+   When Vercel gives the project its `*.vercel.app` address, add that origin
+   too, or uploads fail on it until the custom domain is live.
 
 Collected: `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`,
 `R2_BUCKET_PUBLIC=sandhi-public`, `R2_BUCKET_PRIVATE=sandhi-private`,
