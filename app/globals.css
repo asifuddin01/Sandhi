@@ -488,6 +488,17 @@ pre {
   white-space: nowrap;
 }
 
+/* The text is 20px tall, half the controls beside it — a small thing to hit
+   with a thumb. The tappable area grows instead of the box: the box has to
+   stay the size of the text, because the accent line under every text link
+   is drawn from the bottom of it. */
+.site-header__signin::before {
+  position: absolute;
+  inset-block: -0.625rem;
+  inset-inline: 0;
+  content: "";
+}
+
 .more-menu {
   position: relative;
 }
@@ -604,6 +615,49 @@ pre {
   stroke: currentColor;
   stroke-linecap: round;
   stroke-width: 1.5;
+}
+
+/* Below this width the header cannot hold the brand, three controls and
+   the word "Menu" together — at 375px it ran 27px past the edge. The word
+   gives way rather than Sign in: the icon alone is the convention people
+   know. It is hidden from sight only, because it is the button's one
+   accessible name; removing it would leave a screen reader a nameless
+   button. */
+@media (max-width: 26rem) {
+  .mobile-menu__trigger span {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+  }
+}
+
+/* The header needs 361px at its normal spacing, and WCAG's reflow test is
+   320px — it already ran past the edge there before Sign in joined it. The
+   spacing tightens rather than a control going: the menu offers no theme
+   switch, so dropping the header's would cost the smallest phones dark mode.
+   Every control stays at least 36px, above the 24px target minimum. */
+@media (max-width: 22.5rem) {
+  .site-header__inner {
+    gap: 0.5rem;
+    padding-inline: 1rem;
+  }
+
+  .site-header__actions {
+    gap: 0;
+  }
+
+  .site-header__signin {
+    margin-inline: 0.125rem;
+  }
+
+  .site-header .icon-button {
+    width: 2.25rem;
+    height: 2.25rem;
+  }
 }
 
 .mobile-menu__panel {
@@ -1609,9 +1663,12 @@ pre {
 }
 
 @media (max-width: 72rem) {
+  /* The full navigation folds into the menu on a narrow screen, and so does
+     the invitation to join — the home page makes it again. Sign in stays:
+     it is the one thing a returning member came to the header for, and
+     hiding it behind the menu made them hunt for it. */
   .site-header__nav,
-  .site-header__join,
-  .site-header__signin {
+  .site-header__join {
     display: none;
   }
 
@@ -1743,8 +1800,17 @@ pre {
     height: 1.75rem;
   }
 
+  /* Hidden from sight, not from screen readers: the word is the search
+     button's only name, and display: none left phones announcing a bare
+     "button" that axe flagged as nameless. */
   .command-trigger__label {
-    display: none;
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
   }
 
   .command-trigger {
