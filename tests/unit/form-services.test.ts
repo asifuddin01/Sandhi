@@ -240,6 +240,33 @@ describe("public form service guards", () => {
     expect(fetcher).not.toHaveBeenCalled();
   });
 
+  it("never sends to reserved test domains, even with a real key", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(Response.json({ id: "sent" }));
+    const env = {
+      NODE_ENV: "development",
+      RESEND_API_KEY: "re_key",
+      EMAIL_FROM: "SANDHI <no-reply@sandhiresearch.org>",
+    } as NodeJS.ProcessEnv;
+    const email = { subject: "Test", text: "Test", html: "<p>Test</p>" };
+
+    await expect(
+      sendEmail(
+        { ...email, to: "fixture-staff@sandhi.test" },
+        { env, fetcher },
+      ),
+    ).resolves.toMatchObject({ mode: "development-bypass" });
+    expect(fetcher).not.toHaveBeenCalled();
+
+    await sendEmail(
+      { ...email, to: ["owner@example.org", "fixture@sandhi.test"] },
+      { env, fetcher },
+    );
+    const body = JSON.parse(String(fetcher.mock.calls[0]?.[1]?.body));
+    expect(body.to).toEqual(["owner@example.org"]);
+  });
+
   it("uses a no-send development email adapter and fails closed in production", async () => {
     await expect(
       sendEmail(

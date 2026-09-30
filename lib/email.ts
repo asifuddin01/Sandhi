@@ -15,6 +15,14 @@ type EmailMessage = {
   replyTo?: string;
 };
 
+/**
+ * RFC 6761 reserves these top-level domains: mail to them can only bounce.
+ * The e2e fixtures live at `@sandhi.test`, and a local server loads the real
+ * Resend key from `.env.local`, so without this every test run bounced real
+ * mail and spent the domain's sending reputation.
+ */
+const UNDELIVERABLE_TLD = /\.(?:test|example|invalid|localhost)$/iu;
+
 export type EmailDelivery = {
   id: string;
   mode: "resend" | "development-bypass";
@@ -61,7 +69,10 @@ export async function sendEmail(
 
   assertEmailConfigured(env);
 
-  if (!apiKey || !from) {
+  const to = [message.to]
+    .flat()
+    .filter((address) => !UNDELIVERABLE_TLD.test(address.trim()));
+  if (!apiKey || !from || to.length === 0) {
     return { id: "development-bypass", mode: "development-bypass" };
   }
 
@@ -77,7 +88,7 @@ export async function sendEmail(
         },
         body: JSON.stringify({
           from,
-          to: message.to,
+          to: typeof message.to === "string" ? to[0] : to,
           subject: message.subject,
           text: message.text,
           html: message.html,
