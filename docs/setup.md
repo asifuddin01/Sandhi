@@ -124,21 +124,53 @@ Nothing leaves the site without this: `assertEmailConfigured` refuses to start
 in production without both values.
 
 1. Sign up at **resend.com**.
-2. **Domains → Add Domain** → `sandhiresearch.org`.
-3. Resend shows a set of DNS records — an MX and TXT for the return path, a
-   TXT for DKIM, optionally DMARC. Add each one in **Cloudflare → your domain
-   → DNS → Add record**, copying name and value exactly.
-4. Back in Resend, **Verify**. It is usually a few minutes; DNS can take
-   longer.
-5. **API Keys → Create API Key** → permission **Sending access** → copy it.
+2. **Domains → Add Domain** → `sandhiresearch.org`, region **Tokyo
+   (ap-northeast-1)** — the closest Resend offers to Dhaka.
+3. With the domain on Cloudflare, Resend's **Auto configure** adds its records:
+   DKIM (`resend._domainkey`) and the sending path (`rsend`, `send`). Those two
+   are what sending needs.
+4. **Switch off "Enable Receiving".** This is not optional for this site. It
+   asks for an MX record on the root domain pointing at Resend's inbound
+   servers, and the root MX decides where _all_ mail to `@sandhiresearch.org`
+   goes. The app only sends — it has no inbound handler — so mail to
+   `join@sandhiresearch.org` would land in a pipeline nothing reads, and
+   vanish rather than bounce. Receiving left on is also what keeps the domain
+   at "Partially verified".
+5. Add the DMARC record Resend lists as optional — TXT `_dmarc`,
+   `v=DMARC1; p=none;`. `p=none` only monitors; it blocks nothing.
+6. **API Keys → Create API Key** → permission **Sending access** → copy it.
    Shown once.
+
+Leave open and click tracking off (the pixels cost deliverability, and read as
+surveillance on a password reset), and TLS on Opportunistic — Enforced makes an
+email to any server without TLS fail rather than send.
 
 Free tier is 3,000 emails a month, 100 a day — far beyond what this site sends.
 
 Collected: `RESEND_API_KEY`, and
 `EMAIL_FROM="SANDHI Research Lab <no-reply@sandhiresearch.org>"`. The address
-must be on the domain you just verified. Also set `ADMIN_NOTIFY_EMAIL` to
-wherever join and contact submissions should land.
+must be on the domain you just verified.
+
+### Somewhere for the lab's own addresses to land
+
+Resend only sends. The site _publishes_ four addresses people will write to —
+`join@`, `contact@`, `research@` and `collaborate@` — and `ADMIN_NOTIFY_EMAIL`
+is `join@`, where every join and contact submission is delivered. Without an
+MX record none of them has an inbox, and those submissions bounce.
+
+**Cloudflare → your domain → Email → Email Routing**, free:
+
+1. **Destination addresses** → add the inbox that should receive them. One on
+   the same address as the Cloudflare login is verified at once; any other
+   gets a confirmation email.
+2. **Settings → DNS records → Add missing records.** Three MX, a DKIM key and
+   an SPF line. None of them collide with Resend's: different names, a
+   different DKIM selector, and Resend's SPF lives on the `send.` subdomain.
+3. **Routing rules** → one per address, each **Send to an email** → that
+   inbox. Leave the **catch-all disabled**: it forwards every address at the
+   domain, which in practice means forwarding spam.
+
+`no-reply@` stays unrouted on purpose.
 
 ---
 
