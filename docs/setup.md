@@ -231,9 +231,13 @@ Collected: the two `UPSTASH_*` values and the two `TURNSTILE_*` values.
    a preview for every branch, Dependabot's included, and a preview holding
    the production secrets can write to the live database.
 
-   Vercel flags the four real secrets as "Needs Attention" — not wrong, just
-   not marked Secret, so anyone with access to the project could read them.
-   Worth converting before anyone else joins the Vercel team.
+   **Choose Type: Secret** for `DATABASE_URL`, `BETTER_AUTH_SECRET`,
+   `RESEND_API_KEY`, `R2_SECRET_ACCESS_KEY` and the four from 3a. A value
+   saved as Config is readable by anyone on the Vercel team, and Vercel will
+   not convert it to Secret later without a *new* value — so fixing it
+   afterwards means issuing new credentials at each service (and, for the
+   auth secret, re-enrolling every authenticator). Doing it at first paste
+   costs nothing.
 
    **Never regenerate `BETTER_AUTH_SECRET` once it is in use.** It signs every
    session and encrypts every stored two-factor secret; changing it signs
