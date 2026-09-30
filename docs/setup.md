@@ -237,7 +237,13 @@ MX record none of them has an inbox, and those submissions bounce.
    dig +short MX sandhiresearch.org    # still route1-3.mx.cloudflare.net
    ```
 
-4. **Deployments → ⋯ → Redeploy**, build cache unticked. Variables and region
+4. **Add Existing** again → `www.sandhiresearch.org` → **Redirect to
+   `sandhiresearch.org`, 308**. Vercel re-ticks "Redirect apex domains to www"
+   the moment it sees `www` — untick it again. Then **Cloudflare → DNS →
+   CNAME `www`** → the same `…vercel-dns-….com` target as the root, proxy off.
+   The certificate follows a minute after Vercel sees the record; **Refresh**
+   on the domain row nudges it.
+5. **Deployments → ⋯ → Redeploy**, build cache unticked. Variables and region
    apply only to deployments made after they were set; the build already
    running keeps what it started with.
 
