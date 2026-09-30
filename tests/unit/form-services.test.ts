@@ -194,6 +194,32 @@ describe("public form service guards", () => {
     expect(fetcher).toHaveBeenCalledOnce();
   });
 
+  it("accepts Upstash values pasted with their .env quotes or a newline", async () => {
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValue(
+        Response.json([{ result: 1 }, { result: 1 }, { result: 900 }]),
+      );
+    await checkRateLimit(
+      { scope: "auth-ip", identifier: "client", limit: 10, windowSeconds: 900 },
+      {
+        env: {
+          NODE_ENV: "production",
+          UPSTASH_REDIS_REST_URL: '"https://redis.example.test"\n',
+          UPSTASH_REDIS_REST_TOKEN: ' "token"\n',
+        } as NodeJS.ProcessEnv,
+        fetcher,
+      },
+    );
+
+    expect(fetcher).toHaveBeenCalledWith(
+      "https://redis.example.test/pipeline",
+      expect.objectContaining({
+        headers: expect.objectContaining({ Authorization: "Bearer token" }),
+      }),
+    );
+  });
+
   it("refuses a malformed Upstash URL without echoing it", async () => {
     const fetcher = vi.fn<typeof fetch>();
     const pasted = "gQAAAAtokenPastedIntoTheUrlVariable";

@@ -16,6 +16,11 @@ export type RateLimitDecision = {
 
 type UpstashResult = { result?: number | string | null; error?: string };
 
+/** A dashboard copy often keeps the .env quotes or a trailing newline. */
+function pasted(value: string | undefined): string | undefined {
+  return value?.trim().replace(/^(["'])(.*)\1$/su, "$2").trim();
+}
+
 export async function checkRateLimit(
   input: {
     scope: string;
@@ -29,8 +34,8 @@ export async function checkRateLimit(
   } = {},
 ): Promise<RateLimitDecision> {
   const env = dependencies.env ?? process.env;
-  const url = env.UPSTASH_REDIS_REST_URL?.replace(/\/$/, "");
-  const token = env.UPSTASH_REDIS_REST_TOKEN?.trim();
+  const url = pasted(env.UPSTASH_REDIS_REST_URL)?.replace(/\/$/, "");
+  const token = pasted(env.UPSTASH_REDIS_REST_TOKEN);
 
   if (!url || !token) {
     if (isProductionEnvironment(env)) {
@@ -51,10 +56,13 @@ export async function checkRateLimit(
 
   // Checked before fetch sees it: fetch's own parse error quotes the value, and
   // a token pasted into the URL variable would then be written to the logs.
+  // The shape is described, never the value, so the log says what is wrong.
   if (!/^https:\/\/[a-z0-9.-]+$/iu.test(url)) {
     throw new ServiceConfigurationError(
       "Upstash",
-      "UPSTASH_REDIS_REST_URL must be the database's https:// address.",
+      `UPSTASH_REDIS_REST_URL must be the database's https:// address (the value set is ${url.length} characters${
+        url.startsWith("https://") ? "" : " and does not start with https://"
+      }${/\s/u.test(url) ? " and contains whitespace" : ""}).`,
     );
   }
 
