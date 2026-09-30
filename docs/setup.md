@@ -180,56 +180,96 @@ MX record none of them has an inbox, and those submissions bounce.
 2. **Add New → Project** → import `asifuddin01/Sandhi`.
 3. Framework is detected as Next.js. Leave the build command alone — the
    project's own `build` script already runs `prisma generate` first.
-4. **Before deploying**, open **Environment Variables** and add every value
-   you collected, for the Production environment:
+4. **Deploy.** It builds cleanly with no variables at all, and every page
+   answers 200 — because pages render on demand and much of the code returns
+   empty lists when no database is configured. **A "Ready" build is not a
+   working site.** The check that means something is `/research` showing
+   the research themes, which only exist in the database.
+5. **Settings → Environment Variables → Add Environment Variable.** Twelve
+   values, five of them secret. Rather than copy each by hand, this puts all
+   twelve on the clipboard without showing or saving any of them — it asks
+   for the pooled Neon URL, upgrades its `sslmode` to `verify-full`, and
+   generates the auth secret itself:
 
-   ```
-   DATABASE_URL            (the pooled Neon string)
-   BETTER_AUTH_SECRET
-   BETTER_AUTH_URL         https://sandhiresearch.org
-   RESEND_API_KEY
-   EMAIL_FROM
-   ADMIN_NOTIFY_EMAIL
-   R2_ACCOUNT_ID
-   R2_ACCESS_KEY_ID
-   R2_SECRET_ACCESS_KEY
-   R2_BUCKET_PUBLIC
-   R2_BUCKET_PRIVATE
-   R2_PUBLIC_BASE_URL
+   ```bash
+   cd /path/to/sandhi && printf "Pooled Neon URL: " && read -rs NEON_POOLED && echo && { cat .env.local; printf '\nDATABASE_URL=%s\nBETTER_AUTH_SECRET=%s\nBETTER_AUTH_URL=https://sandhiresearch.org\nADMIN_NOTIFY_EMAIL=join@sandhiresearch.org\n' "${NEON_POOLED/sslmode=require/sslmode=verify-full}" "$(openssl rand -base64 32)"; } | pbcopy; unset NEON_POOLED
    ```
 
-5. **Deploy.** The first build takes a few minutes.
-6. **Settings → General → Node.js Version → 22.x** (or 24.x). The package
-   requires `>=20.19 <25`; a newer default fails the build.
-7. **Settings → Functions → Function Region → Singapore (sin1)**, to match
-   Neon.
-8. Redeploy so both settings take effect.
+   Paste into the **Key** field and Vercel splits the block into rows.
+   Choose **Production only**: Vercel builds a preview for every branch,
+   Dependabot's included, and a preview holding the production secrets can
+   write to the live database.
+
+   Vercel flags the four real secrets as "Needs Attention" — not wrong, just
+   not marked Secret, so anyone with access to the project could read them.
+   Worth converting before anyone else joins the Vercel team.
+
+   **Never regenerate `BETTER_AUTH_SECRET` once it is in use.** It signs every
+   session and encrypts every stored two-factor secret; changing it signs
+   everybody out and breaks every authenticator, the owner's included.
+
+6. **Settings → Functions → Function Region.** The default is **Washington,
+   D.C. (iad1)**, and the regions sit inside collapsed groups, so it is easy
+   to miss. Open **North America**, untick `iad1`; open **Asia Pacific**, tick
+   **Singapore (sin1)**; Save. Hobby allows one region, so it will not let
+   you tick the second before clearing the first. Singapore rather than
+   Mumbai, though Mumbai is nearer Dhaka: a page makes several queries, and
+   each one pays the distance between the function and the database.
+7. Node needs no setting — Vercel honours the `engines` range in
+   `package.json`.
 
 ### The domain
 
-1. **Settings → Domains → Add** `sandhiresearch.org`.
-2. Vercel gives you a record to create. Add it in **Cloudflare → DNS**.
-3. Set that record to **DNS only (grey cloud)**, not proxied. Proxying
-   Cloudflare in front of Vercel doubles the CDN and causes certificate
-   trouble; Vercel terminates TLS itself.
-4. If you do want it proxied later, Cloudflare SSL mode must be
-   **Full (strict)**.
+1. **Settings → Domains → Add Existing** → `sandhiresearch.org`, connected to
+   Production.
+2. **Untick "Redirect apex domains to www".** Vercel ticks it and calls it
+   recommended, and here it breaks sign-in: the site would really live at
+   `www.`, while `BETTER_AUTH_URL` names the bare domain, and auth refuses
+   requests from an origin it does not recognise as its own.
+3. Vercel asks for a **CNAME on `@`**. Add it in **Cloudflare → DNS**, with
+   **Proxy status off** (Cloudflare turns it on by default). DNS rules forbid
+   a CNAME beside other records on the same name, but Cloudflare flattens it,
+   so the root keeps answering mail lookups with the Email Routing MX
+   records. Check both after:
+
+   ```bash
+   dig +short A sandhiresearch.org     # Vercel's addresses
+   dig +short MX sandhiresearch.org    # still route1-3.mx.cloudflare.net
+   ```
+
+4. **Deployments → ⋯ → Redeploy**, build cache unticked. Variables and region
+   apply only to deployments made after they were set; the build already
+   running keeps what it started with.
+
+Uploads need no `*.vercel.app` origin in the R2 CORS rule: sign-in only works
+on the domain `BETTER_AUTH_URL` names, and nothing uploads without it.
 
 ---
 
 ## 5. First run
 
-With the site deployed but empty:
+Three steps against the empty database, each with the **direct** Neon URL.
+Run them in a real terminal: they prompt for input, and `read -rs` keeps the
+URL and password off the screen and out of shell history.
 
 ```bash
-# Use the DIRECT Neon URL here, not the pooled one
+# 1. The schema — 18 migrations
 DATABASE_URL="<direct neon url>" pnpm db:deploy
 
+# 2. The lab's own content: five research themes and their areas, the site
+#    settings, and the founding milestone. Every write is an upsert, so it is
+#    safe to run again, and with no owner details set it leaves accounts alone.
+DATABASE_URL="<direct neon url>" pnpm seed
+
+# 3. The owner account
 SEED_OWNER_NAME="Asif Uddin" \
 SEED_OWNER_EMAIL="you@example.com" \
 SEED_OWNER_PASSWORD="<a strong password you choose>" \
 DATABASE_URL="<direct neon url>" pnpm seed:owner
 ```
+
+`seed:owner` alone creates the account and nothing else — `/research` stays
+empty until step 2 has run.
 
 Then:
 
