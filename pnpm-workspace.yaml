@@ -16,6 +16,18 @@ overrides:
   deepmerge-ts: ^8.0.0
   lodash: ^4.18.1
   mysql2: ^3.23.4
+  # GHSA-6j4f-fj2g-mc7p and its sibling: stack exhaustion from nested brace
+  # groups. Reached only through ESLint's glob matching (minimatch), so only
+  # on a developer's machine and in CI — nothing in the served app. Two
+  # majors are in use, and each is pinned within its own so every tool keeps
+  # the API it was written against.
+  brace-expansion@1: ^1.1.20
+  brace-expansion@5: ^5.0.11
+  # GHSA-hrr3-gc8f-f4qj (moderate): inconsistent host case normalisation via
+  # percent-encoding. Only moderate, so the audit gate passes without it — but
+  # it is reached through better-auth, which compares URLs when it decides
+  # which origins and redirects to trust. One patch release, same major.
+  fast-uri: ^3.1.8
 
 # Advisories left open deliberately, with the reason. Review each one whenever
 # `pnpm audit` changes, and delete the entry the moment a patched release
