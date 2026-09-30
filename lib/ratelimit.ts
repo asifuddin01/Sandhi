@@ -49,6 +49,15 @@ export async function checkRateLimit(
     };
   }
 
+  // Checked before fetch sees it: fetch's own parse error quotes the value, and
+  // a token pasted into the URL variable would then be written to the logs.
+  if (!/^https:\/\/[a-z0-9.-]+$/iu.test(url)) {
+    throw new ServiceConfigurationError(
+      "Upstash",
+      "UPSTASH_REDIS_REST_URL must be the database's https:// address.",
+    );
+  }
+
   const key = `sandhi:public-form:${input.scope}:${input.identifier}`;
   let response: Response;
 

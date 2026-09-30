@@ -194,6 +194,26 @@ describe("public form service guards", () => {
     expect(fetcher).toHaveBeenCalledOnce();
   });
 
+  it("refuses a malformed Upstash URL without echoing it", async () => {
+    const fetcher = vi.fn<typeof fetch>();
+    const pasted = "gQAAAAtokenPastedIntoTheUrlVariable";
+    const attempt = checkRateLimit(
+      { scope: "auth-ip", identifier: "client", limit: 10, windowSeconds: 900 },
+      {
+        env: {
+          NODE_ENV: "production",
+          UPSTASH_REDIS_REST_URL: pasted,
+          UPSTASH_REDIS_REST_TOKEN: "token",
+        } as NodeJS.ProcessEnv,
+        fetcher,
+      },
+    );
+
+    await expect(attempt).rejects.toBeInstanceOf(ServiceConfigurationError);
+    await expect(attempt).rejects.not.toThrow(pasted);
+    expect(fetcher).not.toHaveBeenCalled();
+  });
+
   it("uses a no-send development email adapter and fails closed in production", async () => {
     await expect(
       sendEmail(
