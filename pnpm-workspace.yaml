@@ -28,19 +28,30 @@ overrides:
   # it is reached through better-auth, which compares URLs when it decides
   # which origins and redirects to trust. One patch release, same major.
   fast-uri: ^3.1.8
+  # GHSA-r5fr-rjxr-66jc and GHSA-f23m-r3pf-42rh: lodash-es through
+  # mermaid > chevrotain. These were ignored until 4.18.1 shipped the fix;
+  # same major, so chevrotain keeps its API.
+  lodash-es: ^4.18.1
+  # GHSA-68fv-2mgg-jv7q (high): event-loop denial of service from crafted
+  # source-map offsets. Reached through Prisma's config loader and the build
+  # toolchain. One patch release, same major.
+  source-map-js: ^1.2.2
+  # GHSA-p98j-92pf-mc4p and GHSA-6688-9rhm-gjv2 (low): sanitiser bypasses.
+  # mermaid uses DOMPurify to clean the diagrams members write before they
+  # reach a visitor's browser, so this one is worth having even though it is
+  # rated low. Same major.
+  dompurify: ^3.4.16
 
 # Advisories left open deliberately, with the reason. Review each one whenever
 # `pnpm audit` changes, and delete the entry the moment a patched release
 # exists.
 #
-# GHSA-r5fr-rjxr-66jc (high) and GHSA-f23m-r3pf-42rh (moderate): lodash-es,
-# reached only through mermaid > chevrotain. Both are about `_.template`,
-# `_.unset` and `_.omit`. Chevrotain imports 36 lodash-es functions and none of
-# them is any of those three, so the vulnerable code is not in the bundle and
-# nothing in this application calls it. lodash-es has published no patched
-# release (the advisories ask for >= 4.17.24; 4.17.23 is the latest), so there
-# is nothing to pin to yet.
+# GHSA-vfj7-8cjw-p6xm (high): braces, stack exhaustion from deeply nested
+# patterns. No patched release exists (the advisory lists none; 3.0.3 is the
+# newest). It is reached only through eslint-config-next > fast-glob >
+# micromatch — lint tooling in devDependencies, absent from the production
+# tree — and the patterns it expands are the repository's own lint globs, never
+# input from a visitor.
 auditConfig:
   ignoreGhsas:
-    - GHSA-r5fr-rjxr-66jc
-    - GHSA-f23m-r3pf-42rh
+    - GHSA-vfj7-8cjw-p6xm
