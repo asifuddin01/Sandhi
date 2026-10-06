@@ -25,12 +25,15 @@ export function SubmitButton({
   tone = "primary",
   name,
   value,
+  label,
 }: {
   children: ReactNode;
   pending: string;
   tone?: "primary" | "quiet" | "danger";
   name?: string;
   value?: string;
+  /** The accessible name, when the visible text is too short alone (a table row's "Show"). */
+  label?: string;
 }) {
   const status = useFormStatus();
   const pressed = status.pending && (!name || status.data?.get(name) === value);
@@ -43,6 +46,7 @@ export function SubmitButton({
       type="submit"
       name={name}
       value={value}
+      aria-label={label}
       disabled={status.pending}
     >
       {pressed ? pending : children}

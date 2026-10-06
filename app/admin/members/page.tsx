@@ -13,9 +13,13 @@ import {
   type MemberStatusValue,
 } from "@/lib/admin/members";
 import { requireCapability } from "@/lib/authz";
-import { parseSystemRole } from "@/lib/permissions";
+import { canManageMember, parseSystemRole } from "@/lib/permissions";
 
-import { inviteMemberAction, manageInvitationAction } from "./actions";
+import {
+  inviteMemberAction,
+  manageInvitationAction,
+  setMemberPublicAction,
+} from "./actions";
 
 export const metadata: Metadata = {
   title: "Members",
@@ -45,6 +49,17 @@ export default async function MembersPage({
     ? (statusParam as MemberStatusValue)
     : undefined;
   const { members, invitations } = await getMembersIndex({ query, status });
+  // The same rule the action enforces: yourself, or anyone you may manage, and
+  // only someone who could be shown (or is shown now and can be hidden).
+  const canSetPublic = (member: (typeof members)[number]) =>
+    (member.isPublic ||
+      member.status === "ACTIVE" ||
+      member.status === "ALUMNI") &&
+    (member.user?.id === viewer.userId ||
+      canManageMember(
+        viewer.role,
+        member.user ? parseSystemRole(member.user.role) : "MEMBER",
+      ));
   const now = new Date();
 
   return (
@@ -228,7 +243,31 @@ export default async function MembersPage({
                       · {rankLabels[member.rank]}
                     </td>
                     <td>{statusLabels[member.status]}</td>
-                    <td>{member.isPublic ? "Shown" : "Hidden"}</td>
+                    <td>
+                      {member.isPublic ? "Shown" : "Hidden"}
+                      {canSetPublic(member) ? (
+                        <ActionForm action={setMemberPublicAction}>
+                          <input
+                            type="hidden"
+                            name="memberId"
+                            value={member.id}
+                          />
+                          <SubmitButton
+                            tone="quiet"
+                            name="isPublic"
+                            value={member.isPublic ? "no" : "yes"}
+                            pending="Saving…"
+                            label={
+                              member.isPublic
+                                ? `Hide ${member.name} from People`
+                                : `Show ${member.name} on People`
+                            }
+                          >
+                            {member.isPublic ? "Hide" : "Show"}
+                          </SubmitButton>
+                        </ActionForm>
+                      ) : null}
+                    </td>
                   </tr>
                 ))}
               </tbody>

@@ -50,7 +50,7 @@ export async function getMembersIndex(filters: {
         rank: true,
         status: true,
         isPublic: true,
-        user: { select: { email: true, role: true } },
+        user: { select: { id: true, email: true, role: true } },
       },
     }),
     db.invitation.findMany({

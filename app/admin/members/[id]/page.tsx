@@ -115,14 +115,16 @@ export default async function MemberDetailPage({
           member.status === "ALUMNI" ? (
             <ActionForm action={setMemberPublicAction}>
               <input type="hidden" name="memberId" value={member.id} />
-              <SubmitButton
-                tone="quiet"
-                name="isPublic"
-                value={member.isPublic ? "no" : "yes"}
-                pending="Saving…"
-              >
-                {member.isPublic ? "Hide from People" : "Show on People"}
-              </SubmitButton>
+              <div className={styles.rowActions}>
+                <SubmitButton
+                  tone="quiet"
+                  name="isPublic"
+                  value={member.isPublic ? "no" : "yes"}
+                  pending="Saving…"
+                >
+                  {member.isPublic ? "Hide from People" : "Show on People"}
+                </SubmitButton>
+              </div>
             </ActionForm>
           ) : null}
         </section>

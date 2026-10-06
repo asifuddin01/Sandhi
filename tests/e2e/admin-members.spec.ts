@@ -258,6 +258,21 @@ test("an administrator shows a member on People and hides them again, audited", 
       0,
     );
 
+    // The same choice from the members list, one row at a time.
+    await open(page, "/admin/members");
+    await page
+      .getByRole("button", { name: `Show ${original.name} on People` })
+      .click();
+    await expect(
+      page.getByText(`${original.name} is now shown on the People page.`),
+    ).toBeVisible();
+    await page
+      .getByRole("button", { name: `Hide ${original.name} from People` })
+      .click();
+    await expect(
+      page.getByText(`${original.name} is hidden from the public site.`),
+    ).toBeVisible();
+
     expect(
       await db.auditLog.count({
         where: {
@@ -266,7 +281,7 @@ test("an administrator shows a member on People and hides them again, audited", 
           createdAt: { gte: since },
         },
       }),
-    ).toBe(2);
+    ).toBe(4);
 
     // Publishing your own profile is allowed, unlike changing your own access.
     await open(page, `/admin/members/${adminId}`);
