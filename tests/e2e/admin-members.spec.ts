@@ -216,6 +216,79 @@ test("the Owner is protected and people cannot change their own access", async (
   ).toHaveCount(0);
 });
 
+test("an administrator shows a member on People and hides them again, audited", async ({
+  page,
+}) => {
+  const staffId = await memberIdFor("fixture-staff@sandhi.test");
+  const adminId = await memberIdFor("fixture-admin@sandhi.test");
+  const db = createPrismaClient();
+  const original = await db.member.findUniqueOrThrow({
+    where: { id: staffId },
+    select: { name: true, isPublic: true },
+  });
+  const since = new Date();
+
+  try {
+    await db.member.update({
+      where: { id: staffId },
+      data: { isPublic: false },
+    });
+    await signIn(
+      page,
+      "fixture-admin@sandhi.test",
+      `/admin/members/${staffId}`,
+    );
+
+    await page.getByRole("button", { name: "Show on People" }).click();
+    await expect(
+      page.getByText(`${original.name} is now shown on the People page.`),
+    ).toBeVisible();
+    await open(page, "/people");
+    await expect(
+      page.getByRole("link", { name: original.name }).first(),
+    ).toBeVisible();
+
+    await open(page, `/admin/members/${staffId}`);
+    await page.getByRole("button", { name: "Hide from People" }).click();
+    await expect(
+      page.getByText(`${original.name} is hidden from the public site.`),
+    ).toBeVisible();
+    await open(page, "/people");
+    await expect(page.getByRole("link", { name: original.name })).toHaveCount(
+      0,
+    );
+
+    expect(
+      await db.auditLog.count({
+        where: {
+          action: "member.visibility",
+          entityId: staffId,
+          createdAt: { gte: since },
+        },
+      }),
+    ).toBe(2);
+
+    // Publishing your own profile is allowed, unlike changing your own access.
+    await open(page, `/admin/members/${adminId}`);
+    await expect(
+      page.getByRole("button", { name: /^(Show on|Hide from) People$/u }),
+    ).toBeVisible();
+  } finally {
+    await db.member.update({
+      where: { id: staffId },
+      data: { isPublic: original.isPublic },
+    });
+    await db.auditLog.deleteMany({
+      where: {
+        action: "member.visibility",
+        entityId: staffId,
+        createdAt: { gte: since },
+      },
+    });
+    await db.$disconnect();
+  }
+});
+
 test("suspending a member signs them out at once, and every change is audited", async ({
   browser,
   page,

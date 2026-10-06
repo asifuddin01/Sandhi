@@ -446,6 +446,76 @@ export async function setMemberStatusAction(
   return result;
 }
 
+/**
+ * Showing someone on the People page, or taking them off it. Unlike access
+ * and status this is allowed on your own record: publishing a profile grants
+ * nothing, and a lab with one administrator could otherwise never list them.
+ */
+export async function setMemberPublicAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const memberId = field(formData, "memberId");
+  let slug: string | null = null;
+  const result = await runAdminAction("members:manage", async (viewer) => {
+    const member = await getDb().member.findUnique({
+      where: { id: memberId },
+      select: {
+        id: true,
+        slug: true,
+        name: true,
+        status: true,
+        isPublic: true,
+        user: { select: { id: true, role: true } },
+      },
+    });
+    if (!member) throw new AdminActionError("That member no longer exists.");
+    slug = member.slug;
+
+    const isSelf = member.user?.id === viewer.userId;
+    const role = member.user ? parseSystemRole(member.user.role) : "MEMBER";
+    if (!isSelf && !canManageMember(viewer.role, role)) {
+      throw new AdminActionError("Only the Owner can change the Owner.");
+    }
+    const show = field(formData, "isPublic") === "yes";
+    if (show && member.status !== "ACTIVE" && member.status !== "ALUMNI") {
+      throw new AdminActionError(
+        "Only active and alumni members can be shown publicly.",
+      );
+    }
+    if (member.isPublic === show) {
+      return { status: "success", message: "Nothing changed." };
+    }
+
+    await getDb().$transaction(async (transaction) => {
+      await transaction.member.update({
+        where: { id: member.id },
+        data: { isPublic: show },
+      });
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: "member.visibility",
+        entity: "Member",
+        entityId: member.id,
+        diff: { isPublic: { from: member.isPublic, to: show } },
+      });
+    });
+    invalidate(cacheTags.members, cacheTags.research);
+    return {
+      status: "success",
+      message: show
+        ? `${member.name} is now shown on the People page.`
+        : `${member.name} is hidden from the public site.`,
+    };
+  });
+
+  revalidatePath("/people");
+  if (slug) revalidatePath(`/people/${slug}`);
+  revalidatePath("/admin/members");
+  revalidatePath(`/admin/members/${memberId}`);
+  return result;
+}
+
 export async function removeMemberAction(
   _previous: ActionState,
   formData: FormData,

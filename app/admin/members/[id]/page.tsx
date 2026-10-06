@@ -22,6 +22,7 @@ import { can, canManageMember, parseSystemRole } from "@/lib/permissions";
 import {
   removeMemberAction,
   resetMemberTwoFactorAction,
+  setMemberPublicAction,
   setMemberStatusAction,
   transferOwnershipAction,
   updateMemberAccessAction,
@@ -98,6 +99,34 @@ export default async function MemberDetailPage({
           </dd>
         </div>
       </dl>
+
+      {isSelf || manageable ? (
+        <section className={styles.section} aria-labelledby="public-heading">
+          <h2 id="public-heading">Public profile</h2>
+          <p className={styles.empty}>
+            {member.isPublic
+              ? "Shown on the People page, in search, and beside their work."
+              : member.status === "ACTIVE" || member.status === "ALUMNI"
+                ? "Hidden from the public site. Showing it lists them on the People page with the profile they wrote."
+                : "Hidden. Only active and alumni members can be shown."}
+          </p>
+          {member.isPublic ||
+          member.status === "ACTIVE" ||
+          member.status === "ALUMNI" ? (
+            <ActionForm action={setMemberPublicAction}>
+              <input type="hidden" name="memberId" value={member.id} />
+              <SubmitButton
+                tone="quiet"
+                name="isPublic"
+                value={member.isPublic ? "no" : "yes"}
+                pending="Saving…"
+              >
+                {member.isPublic ? "Hide from People" : "Show on People"}
+              </SubmitButton>
+            </ActionForm>
+          ) : null}
+        </section>
+      ) : null}
 
       {isSelf ? (
         <p className={styles.notice}>
