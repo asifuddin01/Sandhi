@@ -4,6 +4,7 @@
  */
 
 import { isEmailAddress } from "@/lib/email-address";
+import { defaultIntake, parseIntake, type Intake } from "@/lib/intake";
 import {
   defaultMobileAppSettings,
   parseMobileAppSettings,
@@ -36,6 +37,8 @@ export interface SiteSettings {
   location: string | null;
   social: Partial<Record<SocialKey, string>>;
   retentionMonths: number;
+  /** Which kinds of application are being taken; saved from the join page. */
+  intake: Intake;
   features: {
     showEvents: boolean;
     showPartners: boolean;
@@ -51,6 +54,7 @@ export const settingKeys = {
   location: "contact.location",
   social: "social.links",
   retentionMonths: "applications.retentionMonths",
+  intake: "applications.intake",
   showEvents: "features.showEvents",
   showPartners: "features.showPartners",
   showNumbers: "features.showNumbers",
@@ -68,6 +72,7 @@ export const defaultSiteSettings: SiteSettings = {
   location: null,
   social: {},
   retentionMonths: 24,
+  intake: defaultIntake,
   features: { showEvents: true, showPartners: true, showNumbers: false },
   maintenanceBanner: null,
   mobileApp: defaultMobileAppSettings,
@@ -132,6 +137,7 @@ export function parseSiteSettings(
       retention <= MAX_RETENTION_MONTHS
         ? retention
         : defaultSiteSettings.retentionMonths,
+    intake: parseIntake(byKey.get(settingKeys.intake)),
     features: {
       showEvents: flag(settingKeys.showEvents, true),
       showPartners: flag(settingKeys.showPartners, true),

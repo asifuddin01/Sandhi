@@ -115,6 +115,10 @@ export default async function SettingsPage() {
 
         <fieldset className={styles.fieldset}>
           <legend>Applications</legend>
+          <p className={styles.hint}>
+            Which applications are open, and their closing days, are set on the{" "}
+            <a href="/join">Join page</a> itself.
+          </p>
           <div className={styles.field}>
             <label htmlFor="retentionMonths">
               Keep applications for (months)

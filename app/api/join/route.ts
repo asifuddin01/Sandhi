@@ -6,6 +6,7 @@ import {
   requiresProposal,
 } from "@/lib/forms";
 import { getContactAddresses } from "@/lib/forms-contact";
+import { resolveOpenOpportunity } from "@/lib/forms-opportunity";
 import {
   crossSiteResponse,
   isSameOriginRequest,
@@ -15,7 +16,9 @@ import {
 } from "@/lib/forms-http";
 import { requestIdentifier, requestIp } from "@/lib/forms-services";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
+import { intakeStatus } from "@/lib/intake";
 import { checkRateLimit } from "@/lib/ratelimit";
+import { getSiteSettings } from "@/lib/site-settings";
 import { assertPrivateUploadExists } from "@/lib/storage";
 import { verifyTurnstile } from "@/lib/turnstile";
 
@@ -78,6 +81,35 @@ export async function POST(request: Request) {
       );
     }
 
+    const opportunity = data.opportunitySlug
+      ? await resolveOpenOpportunity(data.opportunitySlug)
+      : null;
+    if (data.opportunitySlug && !opportunity) {
+      return Response.json(
+        {
+          message: "That opportunity is no longer open.",
+          errors: {
+            opportunitySlug: "Choose an open opportunity or apply generally.",
+          },
+        },
+        { status: 400, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
+    // A published opening is its own invitation, whatever the general switch
+    // says; every other application of a closed kind is turned away.
+    const closed =
+      opportunity?.type === data.type
+        ? undefined
+        : intakeStatus((await getSiteSettings()).intake, new Date())[data.type]
+            ?.closed;
+    if (closed) {
+      return Response.json(
+        { message: closed },
+        { status: 400, headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
     assertEmailConfigured();
     await Promise.all([
       data.cvKey && data.cvUploadToken
@@ -97,30 +129,6 @@ export async function POST(request: Request) {
     ]);
 
     const db = getDb();
-    let opportunityId: string | null = null;
-    if (data.opportunitySlug) {
-      const opportunity = await db.opportunity.findFirst({
-        where: {
-          slug: data.opportunitySlug,
-          state: "PUBLISHED",
-          OR: [{ deadline: null }, { deadline: { gte: new Date() } }],
-        },
-        select: { id: true },
-      });
-      if (!opportunity) {
-        return Response.json(
-          {
-            message: "That opportunity is no longer open.",
-            errors: {
-              opportunitySlug: "Choose an open opportunity or apply generally.",
-            },
-          },
-          { status: 400, headers: { "Cache-Control": "no-store" } },
-        );
-      }
-      opportunityId = opportunity.id;
-    }
-
     const includeProposal = requiresProposal(data.type);
     const application = await db.application.create({
       data: {
@@ -149,7 +157,7 @@ export async function POST(request: Request) {
         hoursPerWeek:
           typeof data.hoursPerWeek === "number" ? data.hoursPerWeek : null,
         consent: data.consent,
-        opportunityId,
+        opportunityId: opportunity?.id ?? null,
       },
       select: { id: true },
     });

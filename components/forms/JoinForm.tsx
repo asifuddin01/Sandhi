@@ -31,6 +31,7 @@ import {
   type FieldErrors,
   type JoinInterestType,
 } from "@/lib/forms";
+import type { IntakeStatus } from "@/lib/intake";
 
 import styles from "./JoinForm.module.css";
 
@@ -239,10 +240,12 @@ export function JoinForm({
   siteKey,
   opportunity,
   requestedOpportunity,
+  intake,
 }: {
   siteKey?: string;
   opportunity?: JoinOpportunitySelection;
   requestedOpportunity?: string;
+  intake: IntakeStatus;
 }) {
   const initialDraft = useMemo<Draft>(
     () => ({
@@ -252,7 +255,9 @@ export function JoinForm({
     [opportunity],
   );
   const [draft, setDraft] = useState<Draft>(initialDraft);
-  const [step, setStep] = useState<JoinStep>(1);
+  const [reachedStep, setStep] = useState<JoinStep>(1);
+  // A draft whose kind has since closed starts again from the choice.
+  const step: JoinStep = draft.type ? reachedStep : 1;
   const [hydrated, setHydrated] = useState(false);
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [proposalFile, setProposalFile] = useState<File | null>(null);
@@ -275,12 +280,15 @@ export function JoinForm({
     } catch {
       sessionStorage.removeItem(storageKey);
     }
+    if (restored.type && intake[restored.type]?.closed) {
+      restored = { ...restored, type: "" };
+    }
 
     queueMicrotask(() => {
       setDraft(restored);
       setHydrated(true);
     });
-  }, [initialDraft]);
+  }, [initialDraft, intake]);
 
   useEffect(() => {
     if (!hydrated || submitted) return;
@@ -568,6 +576,9 @@ export function JoinForm({
             <p className={styles.pathIndicator}>
               You’re completing the <strong>{selectedInterest.label}</strong>{" "}
               application.
+              {intake[selectedInterest.value]?.deadline ? (
+                <> {intake[selectedInterest.value]?.deadline}.</>
+              ) : null}
             </p>
           ) : null}
 
@@ -575,25 +586,34 @@ export function JoinForm({
             <fieldset className={styles.fieldset} disabled={!hydrated}>
               <legend>What would you like to do?</legend>
               <div id="type" className={styles.optionList} tabIndex={-1}>
-                {joinInterestTypes.map(({ value, label, description }) => (
-                  <label
-                    key={value}
-                    className={styles.option}
-                    data-selected={draft.type === value}
-                  >
-                    <input
-                      type="radio"
-                      name="type"
-                      value={value}
-                      checked={draft.type === value}
-                      onChange={() => update("type", value)}
-                    />
-                    <span className={styles.optionCopy}>
-                      <strong>{label}</strong>
-                      <small>{description}</small>
-                    </span>
-                  </label>
-                ))}
+                {joinInterestTypes.map(({ value, label, description }) => {
+                  const { closed, deadline } = intake[value] ?? {};
+                  return (
+                    <label
+                      key={value}
+                      className={styles.option}
+                      data-selected={draft.type === value}
+                      data-closed={closed ? "true" : undefined}
+                    >
+                      <input
+                        type="radio"
+                        name="type"
+                        value={value}
+                        checked={draft.type === value}
+                        disabled={Boolean(closed)}
+                        onChange={() => update("type", value)}
+                      />
+                      <span className={styles.optionCopy}>
+                        <strong>
+                          {label}
+                          {closed ? <em>Closed</em> : null}
+                        </strong>
+                        <small>{closed ?? description}</small>
+                        {deadline ? <b>{deadline}</b> : null}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
               <FieldError
                 id="type"

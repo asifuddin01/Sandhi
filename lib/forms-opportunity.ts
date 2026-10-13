@@ -17,11 +17,12 @@ export async function resolveOpenOpportunity(slug: string) {
       state: "PUBLISHED",
       OR: [{ deadline: null }, { deadline: { gte: new Date() } }],
     },
-    select: { slug: true, title: true, kind: true },
+    select: { id: true, slug: true, title: true, kind: true },
   });
 
   if (!opportunity) return null;
   return {
+    id: opportunity.id,
     slug: opportunity.slug,
     title: opportunity.title,
     type: kindToApplication[opportunity.kind] ?? "RESEARCHER",

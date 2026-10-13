@@ -6,6 +6,7 @@ const mocks = vi.hoisted(() => ({
   opportunityFindFirst: vi.fn(),
   assertPrivateUploadExists: vi.fn(),
   sendApplicationEmails: vi.fn(),
+  intake: vi.fn(),
 }));
 
 vi.mock("@/lib/db", () => ({
@@ -40,6 +41,10 @@ vi.mock("@/lib/ratelimit", () => ({
   }),
 }));
 
+vi.mock("@/lib/site-settings", () => ({
+  getSiteSettings: async () => ({ intake: mocks.intake() }),
+}));
+
 vi.mock("@/lib/storage", () => ({
   assertPrivateUploadExists: mocks.assertPrivateUploadExists,
 }));
@@ -52,6 +57,7 @@ vi.mock("@/lib/turnstile", () => ({
 }));
 
 import { POST } from "@/app/api/join/route";
+import { defaultIntake } from "@/lib/intake";
 
 const motivation =
   "Research at a genuine disciplinary junction matters to me. ".repeat(4);
@@ -66,6 +72,39 @@ describe("join submission route", () => {
       { id: "admin-email", mode: "resend" },
     ]);
     mocks.assertPrivateUploadExists.mockResolvedValue(undefined);
+    mocks.intake.mockReturnValue(defaultIntake);
+  });
+
+  it("turns away a kind that is switched off, storing nothing", async () => {
+    mocks.intake.mockReturnValue({
+      ...defaultIntake,
+      RESEARCHER: { open: false, deadline: null },
+    });
+    const response = await POST(
+      new Request("http://localhost/api/join", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "RESEARCHER",
+          name: "Fixture Applicant",
+          email: "applicant@example.org",
+          phone: "",
+          institution: "Fixture University",
+          currentRole: "Researcher",
+          interests: ["computer-vision"],
+          motivation,
+          consent: true,
+          cvKey:
+            "applications/pending/00000000-0000-4000-8000-000000000000/cv.pdf",
+          cvUploadToken: "x".repeat(32),
+          turnstileToken: "verified-token",
+        }),
+      }),
+    );
+
+    expect(response.status).toBe(400);
+    expect((await response.json()).message).toContain("not taking");
+    expect(mocks.applicationCreate).not.toHaveBeenCalled();
   });
 
   it("refuses a cross-site submission before doing any work", async () => {
