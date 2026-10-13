@@ -23,7 +23,26 @@ import { fromDhakaInput } from "@/lib/dhaka-time";
  * was created from a public page, where the person stays on that page.
  */
 export function openCreated(formData: FormData, editorPath: string): void {
-  if (formData.get("onPage") !== "1") redirect(editorPath);
+  if (!formData.has("onPage")) redirect(editorPath);
+}
+
+/**
+ * After a save made on the record's own public page (the form sends the
+ * address it was opened at), when the record is no longer at that page: a
+ * changed address is followed, and a record taken off the site goes back to
+ * its list, whose bar still offers it. Either beats "not found".
+ */
+export function followOnPage(
+  formData: FormData,
+  result: ActionState,
+  list: string,
+  prefix = `${list}/`,
+): void {
+  const openedAt = field(formData, "onPage");
+  if (result.status !== "success" || !openedAt) return;
+  if (field(formData, "state") !== "PUBLISHED") redirect(list);
+  const slug = field(formData, "slug").trim();
+  if (slug !== openedAt) redirect(prefix + slug);
 }
 
 /** Reading and checking the fields every content editor shares. */

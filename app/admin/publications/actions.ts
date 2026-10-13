@@ -17,6 +17,7 @@ import {
   changes,
   checkbox,
   field,
+  followOnPage,
   isUniqueConflict,
   openCreated,
   optionalHttpsUrl,
@@ -390,6 +391,7 @@ export async function savePublicationAction(
   if (createdId)
     openCreated(formData, `/admin/publications/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/publications/${id}`);
+  followOnPage(formData, result, "/publications");
   return result;
 }
 

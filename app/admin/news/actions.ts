@@ -14,6 +14,7 @@ import {
   changes,
   dhakaTime,
   field,
+  followOnPage,
   isUniqueConflict,
   markdownText,
   openCreated,
@@ -146,6 +147,7 @@ export async function saveNewsAction(
   revalidatePath("/admin/news");
   if (createdId) openCreated(formData, `/admin/news/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/news/${id}`);
+  followOnPage(formData, result, "/news");
   return result;
 }
 

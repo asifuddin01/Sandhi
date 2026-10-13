@@ -23,11 +23,15 @@ export type AdminAction = (
 const idle: ActionState = { status: "idle" };
 
 /**
- * Set around an editor that is adding a record from a public page. The form
- * then tells its action so (the action leaves the person on the page instead
- * of opening the record in administration) and calls this once it is saved.
+ * Set around an editor opened on a public page. The form then tells its
+ * action so: `own` is the address of the record the page is about (empty for
+ * any other record), which lets the action follow it if the address changes.
+ * `added` is called once a new record is saved.
  */
-export const AddedOnPage = createContext<(() => void) | null>(null);
+export const OnPage = createContext<{
+  own: string;
+  added: (() => void) | null;
+} | null>(null);
 
 /**
  * With `name` and `value`, several buttons can share one form (one per row or
@@ -98,13 +102,14 @@ export function ActionForm({
 }) {
   const form = useRef<HTMLFormElement>(null);
   const { state, formAction, onSubmit } = useFormAction(action, idle);
-  const addedOnPage = useContext(AddedOnPage);
+  const onPage = useContext(OnPage);
+  const added = onPage?.added;
 
   useEffect(() => {
     if (state.status !== "success") return;
     if (resetOnSuccess) form.current?.reset();
-    addedOnPage?.();
-  }, [resetOnSuccess, state, addedOnPage]);
+    added?.();
+  }, [resetOnSuccess, state, added]);
 
   return (
     <form
@@ -113,7 +118,7 @@ export function ActionForm({
       action={formAction}
       onSubmit={onSubmit}
     >
-      {addedOnPage ? <input type="hidden" name="onPage" value="1" /> : null}
+      {onPage ? <input type="hidden" name="onPage" value={onPage.own} /> : null}
       {children}
       <ActionMessage state={state} />
     </form>

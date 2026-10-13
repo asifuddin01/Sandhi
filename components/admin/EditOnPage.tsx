@@ -313,11 +313,19 @@ export async function EditOnPage({ actions }: { actions: OnPageAction[] }) {
         })),
       ),
   );
+  const offered = [
+    // Only what the page itself named is "this page's record".
+    ...allowed.map((action) => ({ ...action, own: action.key ?? "" })),
+    ...waiting
+      .flat()
+      .map((action) => ({ ...action, label: action.label, own: "" })),
+  ];
   const editors = await Promise.all(
-    [...allowed, ...waiting.flat()].map(async ({ kind, key, label }) => ({
+    offered.map(async ({ kind, key, label, own }) => ({
       label: label ?? (key ? kinds[kind].edit : kinds[kind].add),
       editor: await kinds[kind].editor(key),
       adding: !key,
+      own,
     })),
   );
   const shown = editors.filter(({ editor }) => editor !== null);

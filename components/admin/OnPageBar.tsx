@@ -1,8 +1,8 @@
 "use client";
 
-import { useCallback, useRef, useState, type ReactNode } from "react";
+import { useCallback, useMemo, useRef, useState, type ReactNode } from "react";
 
-import { AddedOnPage } from "./AdminForms";
+import { OnPage } from "./AdminForms";
 import styles from "./Admin.module.css";
 
 /**
@@ -12,7 +12,13 @@ import styles from "./Admin.module.css";
 export function OnPageBar({
   actions,
 }: {
-  actions: Array<{ label: string; editor: ReactNode; adding: boolean }>;
+  actions: Array<{
+    label: string;
+    editor: ReactNode;
+    adding: boolean;
+    /** The address of the record this page is about, when that is what is edited. */
+    own: string;
+  }>;
 }) {
   const [open, setOpen] = useState<number | null>(null);
   const [added, setAdded] = useState(false);
@@ -26,6 +32,13 @@ export function OnPageBar({
     bar.current?.scrollIntoView({ block: "start" });
   }, []);
   const opened = open === null ? undefined : actions[open];
+  const where = useMemo(
+    () => ({
+      own: opened?.own ?? "",
+      added: opened?.adding ? onAdded : null,
+    }),
+    [opened?.own, opened?.adding, onAdded],
+  );
 
   return (
     <aside
@@ -57,9 +70,7 @@ export function OnPageBar({
       </p>
       {opened ? (
         <div key={open} className={styles.onPageEditor}>
-          <AddedOnPage value={opened.adding ? onAdded : null}>
-            {opened.editor}
-          </AddedOnPage>
+          <OnPage value={where}>{opened.editor}</OnPage>
         </div>
       ) : null}
     </aside>

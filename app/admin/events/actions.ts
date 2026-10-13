@@ -15,6 +15,7 @@ import {
   checkbox,
   dhakaTime,
   field,
+  followOnPage,
   isUniqueConflict,
   lines,
   markdownText,
@@ -136,6 +137,7 @@ export async function saveEventAction(
   revalidatePath("/admin/events");
   if (createdId) openCreated(formData, `/admin/events/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/events/${id}`);
+  followOnPage(formData, result, "/events");
   return result;
 }
 

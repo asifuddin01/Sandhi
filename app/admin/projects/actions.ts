@@ -14,6 +14,7 @@ import {
   changes,
   checkbox,
   field,
+  followOnPage,
   isUniqueConflict,
   oneOf,
   openCreated,
@@ -274,6 +275,7 @@ export async function saveProjectAction(
   if (createdId)
     openCreated(formData, `/admin/projects/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/projects/${id}`);
+  followOnPage(formData, result, "/projects");
   return result;
 }
 

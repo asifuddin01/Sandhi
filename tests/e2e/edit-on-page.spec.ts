@@ -99,3 +99,58 @@ test("a record added from a page keeps its author on that page, and is offered t
     await db.$disconnect();
   }
 });
+
+test("a record moved or taken off the site from its own page is followed, not lost", async ({
+  page,
+}) => {
+  test.slow();
+  await signIn(page, "fixture-admin@sandhi.test", AREA);
+  const bar = page.getByLabel("Administration", { exact: true });
+  const save = async (label: string, change: () => Promise<unknown>) => {
+    await bar.getByRole("button", { name: label }).click();
+    await change();
+    await bar.getByRole("button", { name: "Save changes" }).click();
+  };
+
+  try {
+    await save("Edit this area", () =>
+      bar.getByLabel("Address").fill("ai-for-science-moved"),
+    );
+    await expect(page).toHaveURL(/\/research\/areas\/ai-for-science-moved$/u, {
+      timeout: 15_000,
+    });
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
+      "AI for Science",
+    );
+
+    await save("Edit this area", () =>
+      bar.getByLabel("State").selectOption("DRAFT"),
+    );
+    // Its page is gone, so the list it belongs to is where it is offered.
+    await expect(page).toHaveURL(/\/research$/u, { timeout: 15_000 });
+    await expect(
+      bar.getByRole("button", { name: "Not on the site: AI for Science" }),
+    ).toBeVisible();
+  } finally {
+    // Back through the editor, so the cached public pages are put back too.
+    await page.goto("/research");
+    const hidden = bar.getByRole("button", {
+      name: "Not on the site: AI for Science",
+    });
+    if (await hidden.count()) {
+      await save("Not on the site: AI for Science", async () => {
+        await bar.getByLabel("Address").fill("ai-for-science");
+        await bar.getByLabel("State").selectOption("PUBLISHED");
+      });
+      await expect(hidden).toHaveCount(0, { timeout: 15_000 });
+    } else {
+      await page.goto("/research/areas/ai-for-science-moved");
+      if (await bar.getByRole("button", { name: "Edit this area" }).count()) {
+        await save("Edit this area", () =>
+          bar.getByLabel("Address").fill("ai-for-science"),
+        );
+        await expect(page).toHaveURL(/ai-for-science$/u, { timeout: 15_000 });
+      }
+    }
+  }
+});

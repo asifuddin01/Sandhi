@@ -13,6 +13,7 @@ import {
 import {
   changes,
   field,
+  followOnPage,
   isUniqueConflict,
   markdownText,
   oneOf,
@@ -191,6 +192,7 @@ export async function saveResourceAction(
   if (createdId)
     openCreated(formData, `/admin/resources/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/resources/${id}`);
+  followOnPage(formData, result, "/resources");
   return result;
 }
 
