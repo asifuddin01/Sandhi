@@ -95,9 +95,12 @@ export function ThemeEditor({ theme }: { theme?: Theme }) {
 export function AreaEditor({
   area,
   themes,
+  inTheme = "",
 }: {
   area?: Area;
   themes: ThemeOptions;
+  /** The theme a new area starts in: the one whose page it is added from. */
+  inTheme?: string;
 }) {
   return (
     <ActionForm action={saveAreaAction}>
@@ -113,7 +116,7 @@ export function AreaEditor({
         <select
           id="themeId"
           name="themeId"
-          defaultValue={area?.themeId ?? ""}
+          defaultValue={area?.themeId ?? inTheme}
           required
         >
           <option value="" disabled>

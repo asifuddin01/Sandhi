@@ -36,7 +36,16 @@ test.afterAll(async () => {
         createdAt: { gte: SINCE },
         OR: [
           { action: "area.update", entityId: area?.id ?? "" },
-          { action: "member.visibility", entityId: person?.id ?? "" },
+          {
+            action: {
+              in: [
+                "member.visibility",
+                "member.area_assigned",
+                "member.area_removed",
+              ],
+            },
+            entityId: person?.id ?? "",
+          },
           { action: { in: ["milestone.create", "milestone.delete"] } },
           { action: "settings.update" },
         ],
@@ -52,7 +61,7 @@ test.afterAll(async () => {
 });
 const QUESTION = `Fixture question ${Date.now()}?`;
 
-test("an administrator corrects a page where it is read, and nobody else is offered to", async ({
+test("each section of an area is added to and edited in that section, by those who may", async ({
   page,
   browser,
 }) => {
@@ -62,40 +71,83 @@ test("an administrator corrects a page where it is read, and nobody else is offe
     where: { slug: "ai-for-science" },
     select: { questions: true },
   });
+  await signIn(page, "fixture-admin@sandhi.test", AREA);
+  const main = page.getByRole("main");
+  const questions = main.getByRole("textbox", { name: "Open questions" });
+  const editQuestions = main.getByRole("button", {
+    name: /^(Add|Edit) open questions$/u,
+  });
+  const researcher = main.getByRole("link", { name: /Fixture Researcher A/u });
 
   try {
-    await signIn(page, "fixture-admin@sandhi.test", AREA);
-    const bar = page.getByLabel("Administration", { exact: true });
-    await bar.getByRole("button", { name: "Edit this area" }).click();
-    await bar.getByLabel("Open questions").fill(QUESTION);
-    await bar.getByRole("button", { name: "Save changes" }).click();
-    await expect(bar.getByText("Saved.")).toBeVisible({ timeout: 15_000 });
-    // The page below the editor is the public one, already showing the change.
+    // What an area is called and where it sits is fixed: no form offers it.
     await expect(
-      page.getByRole("listitem").filter({ hasText: QUESTION }),
-    ).toBeVisible();
+      page.getByLabel("Administration", { exact: true }),
+    ).toHaveCount(0);
+    for (const section of [
+      "overview",
+      "projects",
+      "publications",
+      "researchers",
+      "resources",
+    ]) {
+      await expect(
+        main.getByRole("button", {
+          name: new RegExp(`^(Add|Edit) ${section}$`, "u"),
+        }),
+      ).toBeVisible();
+    }
+
+    await editQuestions.click();
+    await expect(main.getByLabel("Address")).toHaveCount(0);
+    await questions.fill(QUESTION);
+    await main.getByRole("button", { name: "Save questions" }).click();
+    // The form closes; the section under it is the confirmation.
+    await expect(
+      main.getByRole("listitem").filter({ hasText: QUESTION }),
+    ).toBeVisible({ timeout: 15_000 });
+    await expect(questions).toHaveCount(0);
+
+    // Opening another section's form closes this one: they share field ids.
+    await editQuestions.click();
+    await main.getByRole("button", { name: "Add researchers" }).click();
+    await expect(questions).toHaveCount(0);
+    await main
+      .getByRole("combobox", { name: "Researcher" })
+      .selectOption({ label: "Fixture Researcher A" });
+    await main.getByRole("button", { name: "Add to this area" }).click();
+    await expect(researcher.first()).toBeVisible({ timeout: 15_000 });
 
     const visitor = await (await browser.newContext()).newPage();
     await visitor.goto(AREA);
     await expect(visitor.getByText(QUESTION)).toBeVisible();
     await expect(
-      visitor.getByLabel("Administration", { exact: true }),
+      visitor.getByRole("button", { name: /^(Add|Edit) /u }),
     ).toHaveCount(0);
     await visitor.context().close();
 
     const member = await (await browser.newContext()).newPage();
     await signIn(member, "fixture-member@sandhi.test", AREA);
     await expect(
-      member.getByLabel("Administration", { exact: true }),
+      member.getByRole("button", { name: /^(Add|Edit) /u }),
     ).toHaveCount(0);
     await member.context().close();
   } finally {
-    // Put back through the editor, so the cached public page is put back too.
-    const bar = page.getByLabel("Administration", { exact: true });
-    await bar.getByLabel("Open questions").fill(before.questions.join("\n"));
-    await bar.getByRole("button", { name: "Save changes" }).click();
+    // Put back through the page, so whatever is cached is put back too.
+    await page.goto(AREA);
+    const remove = main.getByRole("button", {
+      name: "Remove Fixture Researcher A from this area",
+    });
+    await main.getByRole("button", { name: "Add researchers" }).click();
+    if (await remove.count()) {
+      await remove.click();
+      await expect(researcher).toHaveCount(0, { timeout: 15_000 });
+    }
+    await editQuestions.click();
+    await questions.fill(before.questions.join("\n"));
+    await main.getByRole("button", { name: "Save questions" }).click();
     await expect(
-      page.getByRole("listitem").filter({ hasText: QUESTION }),
+      main.getByRole("listitem").filter({ hasText: QUESTION }),
     ).toHaveCount(0, { timeout: 15_000 });
     await db.$disconnect();
   }
@@ -144,54 +196,46 @@ test("a record moved or taken off the site from its own page is followed, not lo
   page,
 }) => {
   test.slow();
-  await signIn(page, "fixture-admin@sandhi.test", AREA);
+  const title = `Fixture moving post ${Date.now()}`;
+  const slug = title.toLowerCase().replaceAll(" ", "-");
+  const db = createPrismaClient();
+  const post = await db.newsPost.create({
+    data: {
+      slug,
+      title,
+      excerpt: "A post that will be moved.",
+      body: "The body.",
+      category: "RESEARCH",
+      state: "PUBLISHED",
+    },
+    select: { id: true },
+  });
   const bar = page.getByLabel("Administration", { exact: true });
-  const save = async (label: string, change: () => Promise<unknown>) => {
-    await bar.getByRole("button", { name: label }).click();
+  const save = async (change: () => Promise<unknown>) => {
+    await bar.getByRole("button", { name: "Edit this post" }).click();
     await change();
     await bar.getByRole("button", { name: "Save changes" }).click();
   };
 
   try {
-    await save("Edit this area", () =>
-      bar.getByLabel("Address").fill("ai-for-science-moved"),
-    );
-    await expect(page).toHaveURL(/\/research\/areas\/ai-for-science-moved$/u, {
+    await signIn(page, "fixture-admin@sandhi.test", `/news/${slug}`);
+    await save(() => bar.getByLabel("Address").fill(`${slug}-moved`));
+    await expect(page).toHaveURL(new RegExp(`/news/${slug}-moved$`, "u"), {
       timeout: 15_000,
     });
-    await expect(page.getByRole("heading", { level: 1 })).toHaveText(
-      "AI for Science",
-    );
+    await expect(page.getByRole("heading", { level: 1 })).toHaveText(title);
 
-    await save("Edit this area", () =>
-      bar.getByLabel("State").selectOption("DRAFT"),
-    );
+    await save(() => bar.getByLabel("State").selectOption("DRAFT"));
     // Its page is gone, so the list it belongs to is where it is offered.
-    await expect(page).toHaveURL(/\/research$/u, { timeout: 15_000 });
+    await expect(page).toHaveURL(/\/news$/u, { timeout: 15_000 });
     await expect(
-      bar.getByRole("button", { name: "Not on the site: AI for Science" }),
+      bar.getByRole("button", { name: `Not on the site: ${title}` }),
     ).toBeVisible();
   } finally {
-    // Back through the editor, so the cached public pages are put back too.
-    await page.goto("/research");
-    const hidden = bar.getByRole("button", {
-      name: "Not on the site: AI for Science",
-    });
-    if (await hidden.count()) {
-      await save("Not on the site: AI for Science", async () => {
-        await bar.getByLabel("Address").fill("ai-for-science");
-        await bar.getByLabel("State").selectOption("PUBLISHED");
-      });
-      await expect(hidden).toHaveCount(0, { timeout: 15_000 });
-    } else {
-      await page.goto("/research/areas/ai-for-science-moved");
-      if (await bar.getByRole("button", { name: "Edit this area" }).count()) {
-        await save("Edit this area", () =>
-          bar.getByLabel("Address").fill("ai-for-science"),
-        );
-        await expect(page).toHaveURL(/ai-for-science$/u, { timeout: 15_000 });
-      }
-    }
+    // It was unpublished through the editor, so no cached list still has it.
+    await db.auditLog.deleteMany({ where: { entityId: post.id } });
+    await db.newsPost.deleteMany({ where: { id: post.id } });
+    await db.$disconnect();
   }
 });
 

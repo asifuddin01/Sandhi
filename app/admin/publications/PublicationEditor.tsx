@@ -114,11 +114,16 @@ function applyImport(
 export function PublicationEditor({
   publication,
   options,
+  inAreas = [],
 }: {
   publication?: PublicationDraft;
   options: EditorOptions;
+  /** Areas a new publication starts in: the one whose page it is added from. */
+  inAreas?: string[];
 }) {
-  const [draft, setDraft] = useState(publication ?? emptyDraft);
+  const [draft, setDraft] = useState(
+    publication ?? { ...emptyDraft, areaIds: inAreas },
+  );
   // An import replaces the form, so the fields are remounted with new
   // defaults rather than each one being held in state.
   const [revision, setRevision] = useState(0);

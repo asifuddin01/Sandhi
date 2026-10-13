@@ -28,11 +28,16 @@ const links = [
 export function ResourceEditor({
   resource,
   options,
+  inAreas = [],
 }: {
   resource?: ResourceRecord;
   options: Options;
+  /** Areas a new resource starts in: the one whose page it is added from. */
+  inAreas?: string[];
 }) {
-  const chosen = new Set(resource?.areas.map(({ areaId }) => areaId));
+  const chosen = new Set(
+    resource?.areas.map(({ areaId }) => areaId) ?? inAreas,
+  );
   return (
     <ActionForm action={saveResourceAction}>
       {resource ? <input type="hidden" name="id" value={resource.id} /> : null}

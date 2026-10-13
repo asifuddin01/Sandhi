@@ -770,3 +770,64 @@
   margin: 0.75rem 0 0.25rem;
   font-size: 1.2rem;
 }
+
+/* "Add" or "Edit" in a section's heading on a public page, and the form it
+   opens on a row of its own under that heading (see SectionControl). */
+.sectionControl {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-inline-start: auto;
+}
+
+.sectionControl .actionMessage {
+  min-height: 0;
+}
+
+.sectionControl button {
+  /* Clear of the fixed site header when it is scrolled back to. */
+  scroll-margin-block-start: 7rem;
+}
+
+.sectionPanel {
+  display: grid;
+  flex: 0 0 100%;
+  min-width: 0;
+  gap: 1.5rem;
+  padding: 1.25rem;
+  border: 1px dashed var(--ink-line);
+  border-radius: var(--radius-control);
+}
+
+.sectionPanel h3 {
+  margin: 0 0 0.5rem;
+  color: var(--moonstone);
+  font-family: var(--font-interface);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.sectionPanel summary {
+  color: var(--moonstone);
+  cursor: pointer;
+  font-family: var(--font-interface);
+  font-size: var(--text-body);
+  font-weight: 600;
+}
+
+.sectionPanel details[open] > summary {
+  margin-block-end: 1.25rem;
+}
+
+/* The one-line forms in a panel: "an existing project", "a researcher". */
+.sectionPanel > form > select {
+  min-height: 2.25rem;
+  max-width: 100%;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid var(--ink-line);
+  border-radius: var(--radius-control);
+  background: var(--ink-raised);
+  color: var(--moonstone);
+  font: inherit;
+  font-size: var(--text-ui);
+}

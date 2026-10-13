@@ -4,14 +4,24 @@ import { PersonEntry } from "@/components/entries/PersonEntry";
 import { ProjectEntry } from "@/components/entries/ProjectEntry";
 import { PublicationEntries } from "@/components/entries/PublicationEntries";
 import { ConnectionsMini } from "@/components/graph/ConnectionsMini";
+import type { AreaControls } from "@/components/admin/ResearchOnPage";
 import { EmptyState } from "@/components/public/EmptyState";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
 import { Prose } from "@/components/Prose";
 import type { AreaDetailData } from "@/lib/public-research";
 
-/** As visitors see it; the admin preview renders it too. */
-export function AreaDetail({ area }: { area: AreaDetailData }) {
+/**
+ * As visitors see it; the admin preview renders it too. `controls` are the
+ * "Add" and "Edit" each section offers whoever may change it.
+ */
+export function AreaDetail({
+  area,
+  controls = {},
+}: {
+  area: AreaDetailData;
+  controls?: AreaControls;
+}) {
   return (
     <div className={styles.page}>
       <PageIntro title={area.name} lead={area.summary} />
@@ -58,6 +68,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       <section className={styles.section} aria-labelledby="overview-heading">
         <div className={styles.sectionHeader}>
           <h2 id="overview-heading">Overview</h2>
+          {controls.overview}
         </div>
         {area.overview ? (
           <Prose className={styles.prose}>{area.overview}</Prose>
@@ -69,6 +80,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       <section className={styles.section} aria-labelledby="questions-heading">
         <div className={styles.sectionHeader}>
           <h2 id="questions-heading">Open questions</h2>
+          {controls.questions}
         </div>
         {area.questions.length > 0 ? (
           <ol className={styles.questionList}>
@@ -86,6 +98,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       <section className={styles.section} aria-labelledby="projects-heading">
         <div className={styles.sectionHeader}>
           <h2 id="projects-heading">Current projects</h2>
+          {controls.projects}
         </div>
         {area.projects.length > 0 ? (
           <div className={styles.entryList}>
@@ -110,6 +123,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       >
         <div className={styles.sectionHeader}>
           <h2 id="publications-heading">Publications</h2>
+          {controls.publications}
         </div>
         {area.publications.length > 0 ? (
           <PublicationEntries publications={area.publications} />
@@ -121,6 +135,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       <section className={styles.section} aria-labelledby="researchers-heading">
         <div className={styles.sectionHeader}>
           <h2 id="researchers-heading">Researchers</h2>
+          {controls.researchers}
         </div>
         {area.researchers.length > 0 ? (
           <div className={styles.personGrid}>
@@ -138,6 +153,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
       <section className={styles.section} aria-labelledby="resources-heading">
         <div className={styles.sectionHeader}>
           <h2 id="resources-heading">Resources</h2>
+          {controls.resources}
         </div>
         {area.resources.length > 0 ? (
           <ul className={styles.resourceList}>
@@ -170,6 +186,7 @@ export function AreaDetail({ area }: { area: AreaDetailData }) {
               {area.theme.name}
             </Link>
           </p>
+          {controls.related}
         </div>
         {area.relatedAreas.length > 0 ? (
           <ol className={styles.relatedThreads}>

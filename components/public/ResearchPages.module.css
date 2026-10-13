@@ -40,20 +40,23 @@
   border-block-start: 0;
 }
 
+/* Wraps, and styles only its own children: an administrator's form can open
+   inside it, on a row of its own (see SectionControl). */
 .sectionHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
   gap: 1.5rem;
   margin-block-end: 2.25rem;
 }
 
-.sectionHeader h2,
-.sectionHeader p {
+.sectionHeader > h2,
+.sectionHeader > p {
   margin: 0;
 }
 
-.sectionHeader p {
+.sectionHeader > p {
   color: var(--mist);
   font-size: var(--text-meta);
 }

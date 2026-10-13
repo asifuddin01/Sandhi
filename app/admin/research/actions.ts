@@ -285,3 +285,189 @@ export async function bulkAreasAction(
   revalidatePath("/admin/research/areas");
   return result;
 }
+
+/**
+ * One part of a theme or an area, saved from its own section of the public
+ * page. What a theme or an area is called, and where it sits, is not changed
+ * from there; that is `saveThemeAction` and `saveAreaAction`.
+ */
+export async function saveResearchPartAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const id = field(formData, "id");
+  const onTheme = field(formData, "kind") === "theme";
+  const part = field(formData, "part");
+
+  return runAdminAction("research:manage", async (viewer) => {
+    const db = getDb();
+    const before = onTheme
+      ? await db.researchTheme.findUnique({ where: { id } })
+      : await db.researchArea.findUnique({ where: { id } });
+    if (!before) throw new AdminActionError("That page no longer exists.");
+
+    let data: { overview: string | null } | { questions: string[] };
+    if (part === "overview") {
+      const overview = field(formData, "overview");
+      if (overview.length > 50_000) {
+        throw new AdminActionError("The overview is too long to save.");
+      }
+      data = { overview: overview.trim() ? overview : null };
+    } else if (part === "questions" && !onTheme) {
+      data = { questions: lines(formData, "questions", "open questions") };
+    } else {
+      throw new AdminActionError("There is nothing here to save.");
+    }
+
+    const diff = changes(before, data, ["overview"]);
+    if (Object.keys(diff).length === 0) {
+      return { status: "success", message: "Nothing changed." };
+    }
+    await db.$transaction(async (transaction) => {
+      if (onTheme) {
+        await transaction.researchTheme.update({ where: { id }, data });
+      } else {
+        await transaction.researchArea.update({ where: { id }, data });
+      }
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: onTheme ? "theme.update" : "area.update",
+        entity: onTheme ? "ResearchTheme" : "ResearchArea",
+        entityId: id,
+        diff: diff as Prisma.InputJsonValue,
+      });
+    });
+    invalidate(cacheTags.research);
+    return { status: "success", message: "Saved." };
+  });
+}
+
+/**
+ * What can be placed in a research area from the area's own page, and who
+ * may: the capability each kind's own editor asks for.
+ */
+const placeable = {
+  project: {
+    capability: "projects:manage",
+    tag: cacheTags.projects,
+    entity: "Project",
+    title: async (id: string) =>
+      (
+        await getDb().project.findUnique({
+          where: { id },
+          select: { title: true },
+        })
+      )?.title,
+    add: (transaction: Prisma.TransactionClient, id: string, areaId: string) =>
+      transaction.projectArea.upsert({
+        where: { projectId_areaId: { projectId: id, areaId } },
+        update: {},
+        create: { projectId: id, areaId },
+      }),
+    remove: (
+      transaction: Prisma.TransactionClient,
+      id: string,
+      areaId: string,
+    ) =>
+      transaction.projectArea.deleteMany({
+        where: { projectId: id, areaId },
+      }),
+  },
+  publication: {
+    capability: "publications:publish",
+    tag: cacheTags.publications,
+    entity: "Publication",
+    title: async (id: string) =>
+      (
+        await getDb().publication.findUnique({
+          where: { id },
+          select: { title: true },
+        })
+      )?.title,
+    add: (transaction: Prisma.TransactionClient, id: string, areaId: string) =>
+      transaction.publicationArea.upsert({
+        where: { publicationId_areaId: { publicationId: id, areaId } },
+        update: {},
+        create: { publicationId: id, areaId },
+      }),
+    remove: (
+      transaction: Prisma.TransactionClient,
+      id: string,
+      areaId: string,
+    ) =>
+      transaction.publicationArea.deleteMany({
+        where: { publicationId: id, areaId },
+      }),
+  },
+  resource: {
+    capability: "content:manage",
+    tag: cacheTags.resources,
+    entity: "Resource",
+    title: async (id: string) =>
+      (
+        await getDb().resource.findUnique({
+          where: { id },
+          select: { name: true },
+        })
+      )?.name,
+    add: (transaction: Prisma.TransactionClient, id: string, areaId: string) =>
+      transaction.resourceArea.upsert({
+        where: { resourceId_areaId: { resourceId: id, areaId } },
+        update: {},
+        create: { resourceId: id, areaId },
+      }),
+    remove: (
+      transaction: Prisma.TransactionClient,
+      id: string,
+      areaId: string,
+    ) =>
+      transaction.resourceArea.deleteMany({
+        where: { resourceId: id, areaId },
+      }),
+  },
+} as const;
+
+/** Puts an existing project, publication or resource in an area, or takes it out. */
+export async function placeInAreaAction(
+  _previous: ActionState,
+  formData: FormData,
+): Promise<ActionState> {
+  const kind = field(formData, "kind");
+  if (!(kind in placeable)) {
+    return { status: "error", message: "Choose what to add." };
+  }
+  const place = placeable[kind as keyof typeof placeable];
+  const id = field(formData, "recordId");
+  const areaId = field(formData, "areaId");
+  const remove = field(formData, "remove") === "yes";
+
+  return runAdminAction(place.capability, async (viewer) => {
+    const [title, area] = await Promise.all([
+      place.title(id),
+      getDb().researchArea.findUnique({
+        where: { id: areaId },
+        select: { name: true },
+      }),
+    ]);
+    if (!title) throw new AdminActionError("Choose one from the list.");
+    if (!area) throw new AdminActionError("That area no longer exists.");
+
+    await getDb().$transaction(async (transaction) => {
+      await (remove ? place.remove : place.add)(transaction, id, areaId);
+      await recordAudit(transaction, {
+        actorId: viewer.userId,
+        action: `${kind}.${remove ? "area_removed" : "area_assigned"}`,
+        entity: place.entity,
+        entityId: id,
+        diff: { area: area.name },
+      });
+    });
+    invalidate(cacheTags.research, place.tag);
+    return {
+      status: "success",
+      message: remove
+        ? `“${title}” is out of ${area.name}.`
+        : `“${title}” is in ${area.name}.`,
+    };
+  });
+}

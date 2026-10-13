@@ -38,11 +38,14 @@ function dateValue(date: Date | null | undefined): string {
 export function ProjectEditor({
   project,
   options,
+  inAreas = [],
 }: {
   project?: ProjectRecord;
   options: Options;
+  /** Areas a new project starts in: the one whose page it is added from. */
+  inAreas?: string[];
 }) {
-  const areas = new Set(project?.areas.map(({ areaId }) => areaId));
+  const areas = new Set(project?.areas.map(({ areaId }) => areaId) ?? inAreas);
   const related = new Set(project?.relatedFrom.map(({ toId }) => toId));
 
   return (
