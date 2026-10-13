@@ -98,5 +98,8 @@ export async function decideInsightAction(
   });
 
   revalidatePath("/admin/insights");
-  return result;
+  // Withdrawn from its own page, which is gone now: back to the list.
+  return result.status === "success" && field(formData, "onPage")
+    ? { ...result, go: "/insights" }
+    : result;
 }

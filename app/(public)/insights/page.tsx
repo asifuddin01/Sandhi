@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { InsightsOnPage } from "@/components/admin/InsightsOnPage";
 import { InsightEntry } from "@/components/entries/InsightEntry";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
 import { INSIGHT_KIND_LABELS, INSIGHT_KINDS } from "@/lib/insight-content";
@@ -41,48 +42,53 @@ export default async function InsightsPage({
   const insights = await getPublicInsights(kind);
 
   return (
-    <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <h1>Insights</h1>
-        <p className={styles.lead}>
-          Not every useful result is a paper. Research notes, explanations, and
-          reproducibility reports from the lab.
-        </p>
-      </header>
+    <>
+      <InsightsOnPage />
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <h1>Insights</h1>
+          <p className={styles.lead}>
+            Not every useful result is a paper. Research notes, explanations,
+            and reproducibility reports from the lab.
+          </p>
+        </header>
 
-      <nav className={styles.categoryNav} aria-label="Insight kinds">
-        <Link href="/insights" data-active={!kind}>
-          All
-        </Link>
-        {INSIGHT_KINDS.map((item) => (
-          <Link
-            href={`/insights?kind=${item}`}
-            data-active={kind === item}
-            key={item}
-          >
-            {INSIGHT_KIND_LABELS[item]}
+        <nav className={styles.categoryNav} aria-label="Insight kinds">
+          <Link href="/insights" data-active={!kind}>
+            All
           </Link>
-        ))}
-      </nav>
-
-      {insights.length > 0 ? (
-        <div aria-label="Published insights">
-          {insights.map((insight) => (
-            <InsightEntry insight={insight} key={insight.id} />
+          {INSIGHT_KINDS.map((item) => (
+            <Link
+              href={`/insights?kind=${item}`}
+              data-active={kind === item}
+              key={item}
+            >
+              {INSIGHT_KIND_LABELS[item]}
+            </Link>
           ))}
-        </div>
-      ) : (
-        <ContentEmptyState
-          message={
-            kind
-              ? `No public ${INSIGHT_KIND_LABELS[kind].toLocaleLowerCase("en")} notes are available.`
-              : "Research notes from the lab will appear here."
-          }
-          action={
-            kind ? { href: "/insights", label: "View all insights" } : undefined
-          }
-        />
-      )}
-    </div>
+        </nav>
+
+        {insights.length > 0 ? (
+          <div aria-label="Published insights">
+            {insights.map((insight) => (
+              <InsightEntry insight={insight} key={insight.id} />
+            ))}
+          </div>
+        ) : (
+          <ContentEmptyState
+            message={
+              kind
+                ? `No public ${INSIGHT_KIND_LABELS[kind].toLocaleLowerCase("en")} notes are available.`
+                : "Research notes from the lab will appear here."
+            }
+            action={
+              kind
+                ? { href: "/insights", label: "View all insights" }
+                : undefined
+            }
+          />
+        )}
+      </div>
+    </>
   );
 }

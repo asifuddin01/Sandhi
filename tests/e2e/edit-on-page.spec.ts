@@ -189,3 +189,55 @@ test("who is on People is chosen on People, and from a profile", async ({
     }
   }
 });
+
+test("a reviewer publishes a note from Insights and withdraws it from its own page", async ({
+  page,
+}) => {
+  test.slow();
+  const title = `Fixture on-page note ${Date.now()}`;
+  const slug = title.toLowerCase().replaceAll(" ", "-");
+  const db = createPrismaClient();
+  const author = await db.member.findUniqueOrThrow({
+    where: { slug: "fixture-member" },
+    select: { id: true },
+  });
+  const note = await db.insight.create({
+    data: {
+      slug,
+      title,
+      summary: "Handed over and waiting to be read.",
+      body: "The body of the note.",
+      kind: "FINDING",
+      state: "IN_REVIEW",
+      authors: { create: [{ memberId: author.id, position: 0 }] },
+    },
+    select: { id: true },
+  });
+
+  try {
+    await signIn(page, "fixture-admin@sandhi.test", "/insights");
+    const bar = page.getByLabel("Administration", { exact: true });
+    const listed = page.getByRole("main").getByRole("link", { name: title });
+    await bar
+      .getByRole("button", { name: /^Review notes \(\d+ waiting\)$/u })
+      .click();
+    await bar
+      .getByRole("region", { name: title })
+      .getByRole("button", { name: "Publish it" })
+      .click();
+    await expect(listed).not.toHaveCount(0, { timeout: 15_000 });
+
+    await listed.first().click();
+    await expect(page).toHaveURL(new RegExp(`/insights/${slug}$`, "u"));
+    await bar.getByRole("button", { name: "Withdraw this note" }).click();
+    await bar.getByRole("button", { name: "Withdraw it" }).click();
+    // Its page is gone, so the reviewer is back on the list, without it.
+    await expect(page).toHaveURL(/\/insights$/u, { timeout: 15_000 });
+    await expect(listed).toHaveCount(0);
+  } finally {
+    // Withdrawn through the action above, so no cached list still shows it.
+    await db.auditLog.deleteMany({ where: { entityId: note.id } });
+    await db.insight.delete({ where: { id: note.id } });
+    await db.$disconnect();
+  }
+});

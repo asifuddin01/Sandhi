@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { InsightsOnPage } from "@/components/admin/InsightsOnPage";
 import { InsightCitation } from "@/components/entries/InsightCitation";
 import { Prose } from "@/components/Prose";
 import {
@@ -115,69 +116,74 @@ export default async function InsightPage({ params }: PageProps) {
   };
 
   return (
-    <article className={styles.page}>
-      <script
-        id="insight-json-ld"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
-      />
-      <script
-        id="insight-breadcrumb-json-ld"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: serializeJsonLd(breadcrumbsJsonLd) }}
-      />
+    <>
+      <InsightsOnPage slug={slug} />
+      <article className={styles.page}>
+        <script
+          id="insight-json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(articleJsonLd) }}
+        />
+        <script
+          id="insight-breadcrumb-json-ld"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: serializeJsonLd(breadcrumbsJsonLd),
+          }}
+        />
 
-      <nav className={contentStyles.breadcrumbs} aria-label="Breadcrumb">
-        <ol>
-          <li>
-            <Link href="/insights">Insights</Link>
-          </li>
-          <li aria-current="page">{insight.title}</li>
-        </ol>
-      </nav>
+        <nav className={contentStyles.breadcrumbs} aria-label="Breadcrumb">
+          <ol>
+            <li>
+              <Link href="/insights">Insights</Link>
+            </li>
+            <li aria-current="page">{insight.title}</li>
+          </ol>
+        </nav>
 
-      <header className={styles.header}>
-        <h1>{insight.title}</h1>
-        <p className={styles.summary}>{insight.summary}</p>
-        <div className={styles.meta}>
-          <span>{INSIGHT_KIND_LABELS[insight.kind]}</span>
-          <time dateTime={publishedAt.toISOString()}>
-            {dateFormatter.format(publishedAt)}
-          </time>
-          <span>{insight.readingMinutes} min read</span>
-        </div>
-        {insight.authors.length > 0 ? (
-          <p className={styles.authors}>
-            By{" "}
-            {insight.authors.map((author, index) => (
-              <span key={author.slug}>
-                {index > 0 ? ", " : null}
-                <Link href={`/people/${author.slug}`}>{author.name}</Link>
-              </span>
-            ))}
-          </p>
-        ) : null}
-      </header>
-
-      <div className={styles.readingGrid}>
-        {insight.headings.length > 0 ? (
-          <nav className={styles.toc} aria-label="On this page">
-            <p>On this page</p>
-            <ol>
-              {insight.headings.map((heading) => (
-                <li data-depth={heading.depth} key={heading.id}>
-                  <a href={`#${heading.id}`}>{heading.label}</a>
-                </li>
+        <header className={styles.header}>
+          <h1>{insight.title}</h1>
+          <p className={styles.summary}>{insight.summary}</p>
+          <div className={styles.meta}>
+            <span>{INSIGHT_KIND_LABELS[insight.kind]}</span>
+            <time dateTime={publishedAt.toISOString()}>
+              {dateFormatter.format(publishedAt)}
+            </time>
+            <span>{insight.readingMinutes} min read</span>
+          </div>
+          {insight.authors.length > 0 ? (
+            <p className={styles.authors}>
+              By{" "}
+              {insight.authors.map((author, index) => (
+                <span key={author.slug}>
+                  {index > 0 ? ", " : null}
+                  <Link href={`/people/${author.slug}`}>{author.name}</Link>
+                </span>
               ))}
-            </ol>
-          </nav>
-        ) : null}
+            </p>
+          ) : null}
+        </header>
 
-        <div className={styles.body}>
-          <Prose>{insight.body}</Prose>
-          <InsightCitation bibtex={bibtex} />
+        <div className={styles.readingGrid}>
+          {insight.headings.length > 0 ? (
+            <nav className={styles.toc} aria-label="On this page">
+              <p>On this page</p>
+              <ol>
+                {insight.headings.map((heading) => (
+                  <li data-depth={heading.depth} key={heading.id}>
+                    <a href={`#${heading.id}`}>{heading.label}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          ) : null}
+
+          <div className={styles.body}>
+            <Prose>{insight.body}</Prose>
+            <InsightCitation bibtex={bibtex} />
+          </div>
         </div>
-      </div>
-    </article>
+      </article>
+    </>
   );
 }
