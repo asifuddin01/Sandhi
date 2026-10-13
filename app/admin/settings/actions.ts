@@ -17,7 +17,9 @@ import {
   parseSiteSettings,
   readSettingsForm,
   settingKeys,
+  settingsGroups,
   storedSettingValues,
+  type SettingsGroup,
 } from "@/lib/site-settings-schema";
 
 export async function updateSettingsAction(
@@ -25,12 +27,16 @@ export async function updateSettingsAction(
   formData: FormData,
 ): Promise<ActionState> {
   const result = await runAdminAction("settings:manage", async (viewer) => {
+    const group = formData.get("group");
     const { values, problems } = readSettingsForm(
       (name) => {
         const value = formData.get(name);
         return typeof value === "string" ? value : "";
       },
       (name) => formData.get(name) === "on",
+      typeof group === "string" && group in settingsGroups
+        ? (group as SettingsGroup)
+        : undefined,
     );
     if (problems.length > 0) {
       throw new AdminActionError(

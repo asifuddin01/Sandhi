@@ -10,6 +10,46 @@ test.skip(
 );
 
 const AREA = "/research/areas/ai-for-science";
+const SINCE = new Date();
+
+/**
+ * Everything here is put back through the page, which records it. Other
+ * specs count audit entries (the settings one expects exactly its own), so
+ * the entries these tests caused are taken out again.
+ */
+test.afterAll(async () => {
+  const db = createPrismaClient();
+  try {
+    const [area, person] = await Promise.all([
+      db.researchArea.findUnique({
+        where: { slug: "ai-for-science" },
+        select: { id: true },
+      }),
+      db.member.findUnique({
+        where: { slug: "fixture-researcher-a" },
+        select: { id: true },
+      }),
+    ]);
+    // Narrow on purpose: other specs run beside this one and audit too.
+    await db.auditLog.deleteMany({
+      where: {
+        createdAt: { gte: SINCE },
+        OR: [
+          { action: "area.update", entityId: area?.id ?? "" },
+          { action: "member.visibility", entityId: person?.id ?? "" },
+          { action: { in: ["milestone.create", "milestone.delete"] } },
+          { action: "settings.update" },
+        ],
+      },
+    });
+    // Saved as empty by the Contact test; it was not stored at all before.
+    await db.siteSetting.deleteMany({
+      where: { key: "contact.location", value: { equals: "" } },
+    });
+  } finally {
+    await db.$disconnect();
+  }
+});
 const QUESTION = `Fixture question ${Date.now()}?`;
 
 test("an administrator corrects a page where it is read, and nobody else is offered to", async ({
@@ -238,6 +278,70 @@ test("a reviewer publishes a note from Insights and withdraws it from its own pa
     // Withdrawn through the action above, so no cached list still shows it.
     await db.auditLog.deleteMany({ where: { entityId: note.id } });
     await db.insight.delete({ where: { id: note.id } });
+    await db.$disconnect();
+  }
+});
+
+test("Contact, the home page and About carry their own controls", async ({
+  page,
+  browser,
+}) => {
+  test.slow();
+  const milestone = `Fixture milestone ${Date.now()}`;
+  const db = createPrismaClient();
+  await signIn(page, "fixture-admin@sandhi.test", "/contact");
+  const bar = page.getByLabel("Administration", { exact: true });
+  const main = page.getByRole("main");
+
+  try {
+    await bar.getByRole("button", { name: "Edit contact details" }).click();
+    const location = bar.getByLabel("Location");
+    const before = await location.inputValue();
+    await location.fill("Fixture Lane, Dhaka");
+    await bar.getByRole("button", { name: "Save" }).click();
+    await expect(main.getByText("Fixture Lane, Dhaka")).toBeVisible({
+      timeout: 15_000,
+    });
+    await location.fill(before);
+    await bar.getByRole("button", { name: "Save" }).click();
+    await expect(main.getByText("Fixture Lane, Dhaka")).toHaveCount(0, {
+      timeout: 15_000,
+    });
+
+    // The notice shows on every page, so it is only opened here, not saved.
+    await page.goto("/");
+    await bar.getByRole("button", { name: "Site notice and sections" }).click();
+    await expect(bar.getByLabel("Notice text")).toBeVisible();
+    await expect(bar.getByLabel("Show Events")).toBeVisible();
+
+    await page.goto("/about");
+    await bar.getByRole("button", { name: "Add to the timeline" }).click();
+    await bar.getByLabel("Date").fill("2031-03-01");
+    await bar.getByLabel("What happened").fill(milestone);
+    await bar
+      .getByRole("button", { name: "Add to the timeline" })
+      .last()
+      .click();
+    await expect(main.getByRole("heading", { name: milestone })).toBeVisible({
+      timeout: 15_000,
+    });
+    await bar.getByRole("button", { name: "Remove from the timeline" }).click();
+    await bar.getByRole("button", { name: `Remove ${milestone}` }).click();
+    await expect(main.getByRole("heading", { name: milestone })).toHaveCount(
+      0,
+      { timeout: 15_000 },
+    );
+
+    const member = await (await browser.newContext()).newPage();
+    for (const path of ["/contact", "/", "/about"]) {
+      await signIn(member, "fixture-member@sandhi.test", path);
+      await expect(
+        member.getByLabel("Administration", { exact: true }),
+      ).toHaveCount(0);
+    }
+    await member.context().close();
+  } finally {
+    await db.milestone.deleteMany({ where: { title: milestone } });
     await db.$disconnect();
   }
 });

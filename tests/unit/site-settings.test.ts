@@ -199,6 +199,49 @@ describe("readSettingsForm", () => {
     });
   });
 
+  it("reads one group alone when a public page sends only that group", () => {
+    const form: Record<string, string> = {
+      "contact.general": "hello@example.org",
+      "contact.research": "research@example.org",
+      "contact.collaborations": "collaborate@example.org",
+      "contact.applications": "not-an-address",
+      location: "Dhaka",
+    };
+    const { values, problems } = readSettingsForm(
+      (name) => form[name] ?? "",
+      () => false,
+      "contact",
+    );
+
+    // Retention, the banner and the app were not on the form: nothing is
+    // stored for them, and their absence is not a mistake.
+    expect(Object.keys(values).sort()).toEqual([
+      "contact.applications",
+      "contact.collaborations",
+      "contact.general",
+      "contact.location",
+      "contact.research",
+      "social.links",
+    ]);
+    expect(problems.map(({ field }) => field)).toEqual([
+      "contact.applications",
+    ]);
+    expect(
+      Object.keys(
+        readSettingsForm(
+          () => "",
+          () => true,
+          "site",
+        ).values,
+      ).sort(),
+    ).toEqual([
+      "features.showEvents",
+      "features.showNumbers",
+      "features.showPartners",
+      "site.maintenanceBanner",
+    ]);
+  });
+
   it("rejects fractional and non-numeric retention", () => {
     expect(read({ retentionMonths: "1.5" }).problems).toHaveLength(1);
     expect(read({ retentionMonths: "abc" }).problems).toHaveLength(1);

@@ -201,10 +201,29 @@ export function isPathHidden(path: string, hidden: string[]): boolean {
 
 export type SettingsProblem = { field: string; message: string };
 
-/** Validates the admin form and returns the values to store, key by key. */
+/**
+ * The groups a public page shows and saves by itself: which stored keys each
+ * owns, and which form fields can be wrong in it.
+ */
+export const settingsGroups = {
+  contact: {
+    keys: /^(?:contact|social)\./u,
+    fields: /^(?:contact\.|social\.|location$)/u,
+  },
+  site: { keys: /^(?:site|features)\./u, fields: /^maintenanceBanner$/u },
+} as const;
+
+export type SettingsGroup = keyof typeof settingsGroups;
+
+/**
+ * Validates the admin form and returns the values to store, key by key. With
+ * a `group`, only that group's fields were on the form: the rest is neither
+ * stored nor complained about.
+ */
 export function readSettingsForm(
   form: (name: string) => string,
   flags: (name: string) => boolean,
+  group?: SettingsGroup,
 ): { values: Record<string, unknown>; problems: SettingsProblem[] } {
   const problems: SettingsProblem[] = [];
   const values: Record<string, unknown> = {};
@@ -277,5 +296,12 @@ export function readSettingsForm(
   problems.push(...mobile.problems);
   values[settingKeys.mobileApp] = mobile.value;
 
-  return { values, problems };
+  if (!group) return { values, problems };
+  const { keys, fields } = settingsGroups[group];
+  return {
+    values: Object.fromEntries(
+      Object.entries(values).filter(([key]) => keys.test(key)),
+    ),
+    problems: problems.filter(({ field }) => fields.test(field)),
+  };
 }

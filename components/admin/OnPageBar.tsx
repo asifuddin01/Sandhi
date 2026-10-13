@@ -65,7 +65,7 @@ export function OnPageBar({
       </div>
       <p className={styles.actionMessage} data-tone="success" role="status">
         {added
-          ? "Added. Whatever is not on the site yet stays listed in this bar."
+          ? "Added. If it is not on the site yet, it is listed in this bar."
           : ""}
       </p>
       {opened ? (
