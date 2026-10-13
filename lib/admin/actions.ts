@@ -10,6 +10,8 @@ import type { Capability } from "@/lib/permissions";
 export type ActionState = {
   status: "idle" | "success" | "error";
   message?: string;
+  /** Where a form on a public page should take its reader next (see `followOnPage`). */
+  go?: string;
 };
 
 export const idleActionState: ActionState = { status: "idle" };

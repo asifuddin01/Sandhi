@@ -146,8 +146,7 @@ export async function saveOpportunityAction(
   if (createdId)
     openCreated(formData, `/admin/opportunities/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/opportunities/${id}`);
-  followOnPage(formData, result, "/opportunities");
-  return result;
+  return followOnPage(formData, result, "/opportunities");
 }
 
 export async function bulkOpportunitiesAction(

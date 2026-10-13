@@ -31,18 +31,22 @@ export function openCreated(formData: FormData, editorPath: string): void {
  * address it was opened at), when the record is no longer at that page: a
  * changed address is followed, and a record taken off the site goes back to
  * its list, whose bar still offers it. Either beats "not found".
+ *
+ * The form is told where to go and goes once the save has landed. A
+ * `redirect()` from here would be rendered inside the saving request, and
+ * that render was seen to show the list as it stood before the change.
  */
 export function followOnPage(
   formData: FormData,
   result: ActionState,
   list: string,
   prefix = `${list}/`,
-): void {
+): ActionState {
   const openedAt = field(formData, "onPage");
-  if (result.status !== "success" || !openedAt) return;
-  if (field(formData, "state") !== "PUBLISHED") redirect(list);
+  if (result.status !== "success" || !openedAt) return result;
+  if (field(formData, "state") !== "PUBLISHED") return { ...result, go: list };
   const slug = field(formData, "slug").trim();
-  if (slug !== openedAt) redirect(prefix + slug);
+  return slug === openedAt ? result : { ...result, go: prefix + slug };
 }
 
 /** Reading and checking the fields every content editor shares. */

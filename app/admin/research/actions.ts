@@ -121,8 +121,7 @@ export async function saveThemeAction(
   if (createdId)
     openCreated(formData, `/admin/research/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/research/${id}`);
-  followOnPage(formData, result, "/research");
-  return result;
+  return followOnPage(formData, result, "/research");
 }
 
 export async function saveAreaAction(
@@ -210,8 +209,7 @@ export async function saveAreaAction(
   if (createdId)
     openCreated(formData, `/admin/research/areas/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/research/areas/${id}`);
-  followOnPage(formData, result, "/research", "/research/areas/");
-  return result;
+  return followOnPage(formData, result, "/research", "/research/areas/");
 }
 
 export async function bulkThemesAction(

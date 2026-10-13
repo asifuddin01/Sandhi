@@ -1,8 +1,10 @@
 import "server-only";
 
 import type { Prisma } from "@/generated/prisma/client";
+import type { Viewer } from "@/lib/authz";
 import { getDb } from "@/lib/db";
 import type { MemberStatusValue } from "@/lib/member-rank";
+import { canManageMember, parseSystemRole } from "@/lib/permissions";
 
 export {
   memberRanks,
@@ -20,6 +22,31 @@ export const roleLabels = {
   REVIEWER: "Reviewer",
   MEMBER: "Member",
 } as const;
+
+/**
+ * Whether the viewer is offered Show/Hide for a member — the rule
+ * `setMemberPublicAction` enforces: yourself, or anyone you may manage, and
+ * only someone who could be shown (or is shown now and can be hidden).
+ */
+export function canSetPublic(
+  viewer: Viewer,
+  member: {
+    isPublic: boolean;
+    status: string;
+    user: { id: string; role: string } | null;
+  },
+): boolean {
+  return (
+    (member.isPublic ||
+      member.status === "ACTIVE" ||
+      member.status === "ALUMNI") &&
+    (member.user?.id === viewer.userId ||
+      canManageMember(
+        viewer.role,
+        member.user ? parseSystemRole(member.user.role) : "MEMBER",
+      ))
+  );
+}
 
 export async function getMembersIndex(filters: {
   query?: string;

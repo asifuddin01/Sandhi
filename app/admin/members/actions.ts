@@ -17,6 +17,7 @@ import {
   scholarlyRecordSize,
   type MemberRankValue,
 } from "@/lib/admin/members";
+import { followOnPage } from "@/lib/admin/content-actions";
 import { logUndeliveredLink } from "@/lib/auth";
 import type { Viewer } from "@/lib/authz";
 import { cacheTags } from "@/lib/cache-tags";
@@ -513,7 +514,8 @@ export async function setMemberPublicAction(
   if (slug) revalidatePath(`/people/${slug}`);
   revalidatePath("/admin/members");
   revalidatePath(`/admin/members/${memberId}`);
-  return result;
+  // Hidden from their own profile: that page is gone, so back to the list.
+  return followOnPage(formData, result, "/people");
 }
 
 export async function removeMemberAction(

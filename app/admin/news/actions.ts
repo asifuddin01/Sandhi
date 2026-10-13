@@ -147,8 +147,7 @@ export async function saveNewsAction(
   revalidatePath("/admin/news");
   if (createdId) openCreated(formData, `/admin/news/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/news/${id}`);
-  followOnPage(formData, result, "/news");
-  return result;
+  return followOnPage(formData, result, "/news");
 }
 
 export async function bulkNewsAction(

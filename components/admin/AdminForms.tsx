@@ -1,7 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import {
   createContext,
+  useCallback,
   useContext,
   useEffect,
   useRef,
@@ -101,8 +103,23 @@ export function ActionForm({
   resetOnSuccess?: boolean;
 }) {
   const form = useRef<HTMLFormElement>(null);
-  const { state, formAction, onSubmit } = useFormAction(action, idle);
   const onPage = useContext(OnPage);
+  const router = useRouter();
+  // On a public page a save can leave the page behind (see `followOnPage`).
+  // Going there from inside the action still works when the save unmounts
+  // this form, which an effect on the result would not survive.
+  const andFollow = useCallback<AdminAction>(
+    async (previous, formData) => {
+      const result = await action(previous, formData);
+      if (result.go) router.push(result.go);
+      return result;
+    },
+    [action, router],
+  );
+  const { state, formAction, onSubmit } = useFormAction(
+    onPage ? andFollow : action,
+    idle,
+  );
   const added = onPage?.added;
 
   useEffect(() => {

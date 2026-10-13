@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 
 import { MemberAdminBar } from "@/components/entries/MemberAdminBar";
 import { PersonPortrait } from "@/components/entries/PersonEntry";
+import { canSetPublic } from "@/lib/admin/members";
 import { getViewer } from "@/lib/authz";
 import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { rankLabel } from "@/lib/member-rank";
@@ -74,6 +75,7 @@ export default async function PersonPage({ params }: PersonPageProps) {
     manages && isDatabaseConfigured()
       ? await managementData(person.slug)
       : null;
+  const shown = management?.member;
 
   return (
     <div className={styles.page}>
@@ -91,6 +93,9 @@ export default async function PersonPage({ params }: PersonPageProps) {
           rank={person.rank}
           areas={management.areas}
           allAreas={management.allAreas}
+          hideId={
+            viewer && shown && canSetPublic(viewer, shown) ? shown.id : null
+          }
         />
       ) : null}
 
@@ -247,6 +252,10 @@ async function managementData(slug: string) {
     db.member.findUnique({
       where: { slug },
       select: {
+        id: true,
+        isPublic: true,
+        status: true,
+        user: { select: { id: true, role: true } },
         areas: {
           orderBy: { area: { sortOrder: "asc" } },
           select: {
@@ -264,6 +273,7 @@ async function managementData(slug: string) {
   ]);
 
   return {
+    member,
     areas: (member?.areas ?? []).map((held) => ({
       slug: held.area.slug,
       name: held.area.name,

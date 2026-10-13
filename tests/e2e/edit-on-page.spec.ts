@@ -154,3 +154,38 @@ test("a record moved or taken off the site from its own page is followed, not lo
     }
   }
 });
+
+test("who is on People is chosen on People, and from a profile", async ({
+  page,
+}) => {
+  test.slow();
+  const name = "Fixture Researcher A";
+  await signIn(page, "fixture-admin@sandhi.test", "/people");
+  const bar = page.getByLabel("Administration", { exact: true });
+  const card = page.getByRole("main").getByRole("link", { name });
+  const show = bar.getByRole("button", { name: `Show ${name} on People` });
+
+  try {
+    await bar.getByRole("button", { name: "Invite someone" }).click();
+    await expect(bar.getByLabel("Email")).toBeVisible();
+
+    await bar.getByRole("button", { name: "Choose who is shown" }).click();
+    await bar.getByRole("button", { name: `Hide ${name} from People` }).click();
+    await expect(card).toHaveCount(0, { timeout: 15_000 });
+    await show.click();
+    await expect(card).not.toHaveCount(0, { timeout: 15_000 });
+
+    // Hidden from their own profile, which then no longer exists.
+    await card.first().click();
+    await page.getByRole("button", { name: "Hide from People" }).click();
+    await expect(page).toHaveURL(/\/people$/u, { timeout: 15_000 });
+    await expect(card).toHaveCount(0);
+  } finally {
+    await page.goto("/people");
+    await bar.getByRole("button", { name: "Choose who is shown" }).click();
+    if (await show.count()) {
+      await show.click();
+      await expect(card).not.toHaveCount(0, { timeout: 15_000 });
+    }
+  }
+});

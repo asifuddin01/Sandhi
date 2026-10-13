@@ -391,8 +391,7 @@ export async function savePublicationAction(
   if (createdId)
     openCreated(formData, `/admin/publications/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/publications/${id}`);
-  followOnPage(formData, result, "/publications");
-  return result;
+  return followOnPage(formData, result, "/publications");
 }
 
 export async function bulkPublicationsAction(

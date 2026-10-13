@@ -4,8 +4,8 @@ import Link from "next/link";
 import styles from "@/components/admin/Admin.module.css";
 import { ActionForm, SubmitButton } from "@/components/admin/AdminForms";
 import {
+  canSetPublic,
   getMembersIndex,
-  memberRanks,
   memberStatuses,
   rankLabels,
   roleLabels,
@@ -13,13 +13,10 @@ import {
   type MemberStatusValue,
 } from "@/lib/admin/members";
 import { requireCapability } from "@/lib/authz";
-import { canManageMember, parseSystemRole } from "@/lib/permissions";
+import { parseSystemRole } from "@/lib/permissions";
 
-import {
-  inviteMemberAction,
-  manageInvitationAction,
-  setMemberPublicAction,
-} from "./actions";
+import { manageInvitationAction } from "./actions";
+import { InviteForm, ShownToggle } from "./MemberForms";
 
 export const metadata: Metadata = {
   title: "Members",
@@ -49,17 +46,6 @@ export default async function MembersPage({
     ? (statusParam as MemberStatusValue)
     : undefined;
   const { members, invitations } = await getMembersIndex({ query, status });
-  // The same rule the action enforces: yourself, or anyone you may manage, and
-  // only someone who could be shown (or is shown now and can be hidden).
-  const canSetPublic = (member: (typeof members)[number]) =>
-    (member.isPublic ||
-      member.status === "ACTIVE" ||
-      member.status === "ALUMNI") &&
-    (member.user?.id === viewer.userId ||
-      canManageMember(
-        viewer.role,
-        member.user ? parseSystemRole(member.user.role) : "MEMBER",
-      ));
   const now = new Date();
 
   return (
@@ -73,42 +59,7 @@ export default async function MembersPage({
 
       <section className={styles.section} aria-labelledby="invite-heading">
         <h2 id="invite-heading">Invite someone</h2>
-        <ActionForm action={inviteMemberAction} resetOnSuccess>
-          <div className={styles.fieldRow}>
-            <div className={styles.field}>
-              <label htmlFor="invite-email">Email</label>
-              <input
-                id="invite-email"
-                name="email"
-                type="email"
-                autoComplete="off"
-                required
-              />
-            </div>
-            <div className={styles.field}>
-              <label htmlFor="invite-role">Role</label>
-              <select id="invite-role" name="role" defaultValue="MEMBER">
-                <option value="MEMBER">{roleLabels.MEMBER}</option>
-                <option value="REVIEWER">{roleLabels.REVIEWER}</option>
-                <option value="ADMIN">{roleLabels.ADMIN}</option>
-              </select>
-            </div>
-            <div className={styles.field}>
-              <label htmlFor="invite-rank">Rank</label>
-              <select id="invite-rank" name="rank" defaultValue="RESEARCHER">
-                {memberRanks.map((rank) => (
-                  <option key={rank} value={rank}>
-                    {rankLabels[rank]}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-          <p className={styles.hint}>
-            The invitation link works for seven days and only for this address.
-          </p>
-          <SubmitButton pending="Sending…">Send invitation</SubmitButton>
-        </ActionForm>
+        <InviteForm />
       </section>
 
       <section className={styles.section} aria-labelledby="pending-heading">
@@ -245,27 +196,8 @@ export default async function MembersPage({
                     <td>{statusLabels[member.status]}</td>
                     <td>
                       {member.isPublic ? "Shown" : "Hidden"}
-                      {canSetPublic(member) ? (
-                        <ActionForm action={setMemberPublicAction}>
-                          <input
-                            type="hidden"
-                            name="memberId"
-                            value={member.id}
-                          />
-                          <SubmitButton
-                            tone="quiet"
-                            name="isPublic"
-                            value={member.isPublic ? "no" : "yes"}
-                            pending="Saving…"
-                            label={
-                              member.isPublic
-                                ? `Hide ${member.name} from People`
-                                : `Show ${member.name} on People`
-                            }
-                          >
-                            {member.isPublic ? "Hide" : "Show"}
-                          </SubmitButton>
-                        </ActionForm>
+                      {canSetPublic(viewer, member) ? (
+                        <ShownToggle member={member} />
                       ) : null}
                     </td>
                   </tr>

@@ -192,8 +192,7 @@ export async function saveResourceAction(
   if (createdId)
     openCreated(formData, `/admin/resources/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/resources/${id}`);
-  followOnPage(formData, result, "/resources");
-  return result;
+  return followOnPage(formData, result, "/resources");
 }
 
 export async function bulkResourcesAction(

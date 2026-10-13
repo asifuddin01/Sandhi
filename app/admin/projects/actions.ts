@@ -275,8 +275,7 @@ export async function saveProjectAction(
   if (createdId)
     openCreated(formData, `/admin/projects/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/projects/${id}`);
-  followOnPage(formData, result, "/projects");
-  return result;
+  return followOnPage(formData, result, "/projects");
 }
 
 export async function bulkProjectsAction(
