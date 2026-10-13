@@ -3,7 +3,6 @@
 import { createHash } from "node:crypto";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 import { after } from "next/server";
 
 import { Prisma } from "@/generated/prisma/client";
@@ -19,6 +18,7 @@ import {
   checkbox,
   field,
   isUniqueConflict,
+  openCreated,
   optionalHttpsUrl,
   optionalText,
   requiredText,
@@ -387,7 +387,8 @@ export async function savePublicationAction(
   );
 
   revalidatePath("/admin/publications");
-  if (createdId) redirect(`/admin/publications/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/publications/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/publications/${id}`);
   return result;
 }

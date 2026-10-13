@@ -60,3 +60,42 @@ test("an administrator corrects a page where it is read, and nobody else is offe
     await db.$disconnect();
   }
 });
+
+test("a record added from a page keeps its author on that page, and is offered there until it is published", async ({
+  page,
+}) => {
+  test.slow();
+  const title = `Fixture on-page post ${Date.now()}`;
+  const db = createPrismaClient();
+
+  try {
+    await signIn(page, "fixture-admin@sandhi.test", "/news");
+    const bar = page.getByLabel("Administration", { exact: true });
+    await bar.getByRole("button", { name: "Add news" }).click();
+    await bar.getByLabel("Title").fill(title);
+    await bar.getByLabel("Summary").fill("Made from the news page itself.");
+    await bar.getByLabel("Article", { exact: true }).fill("The body.");
+    await bar.getByRole("button", { name: "Create post" }).click();
+
+    await expect(bar.getByText(/^Added\./u)).toBeVisible({ timeout: 15_000 });
+    await expect(page).toHaveURL(/\/news$/u);
+    // The form is gone, so pressing Create twice cannot make two posts.
+    await expect(bar.locator("form")).toHaveCount(0);
+    await expect(page.getByRole("link", { name: title })).toHaveCount(0);
+    await bar
+      .getByRole("button", { name: `Not on the site: ${title}` })
+      .click();
+    await expect(bar.getByLabel("Title")).toHaveValue(title);
+  } finally {
+    // A draft was never in a cached public list, so the row can simply go.
+    const posts = await db.newsPost.findMany({
+      where: { title },
+      select: { id: true },
+    });
+    await db.auditLog.deleteMany({
+      where: { entityId: { in: posts.map(({ id }) => id) } },
+    });
+    await db.newsPost.deleteMany({ where: { title } });
+    await db.$disconnect();
+  }
+});

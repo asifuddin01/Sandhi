@@ -1,5 +1,7 @@
 import "server-only";
 
+import { redirect } from "next/navigation";
+
 import { Prisma } from "@/generated/prisma/client";
 import {
   AdminActionError,
@@ -15,6 +17,14 @@ import {
 } from "@/lib/content-state";
 import { getDb } from "@/lib/db";
 import { fromDhakaInput } from "@/lib/dhaka-time";
+
+/**
+ * After a record is created, opens its editor in administration — unless it
+ * was created from a public page, where the person stays on that page.
+ */
+export function openCreated(formData: FormData, editorPath: string): void {
+  if (formData.get("onPage") !== "1") redirect(editorPath);
+}
 
 /** Reading and checking the fields every content editor shares. */
 export function field(formData: FormData, name: string): string {

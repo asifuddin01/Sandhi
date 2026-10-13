@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -17,6 +16,7 @@ import {
   field,
   isUniqueConflict,
   oneOf,
+  openCreated,
   optionalHttpsUrl,
   requiredText,
   runBulk,
@@ -271,7 +271,8 @@ export async function saveProjectAction(
   });
 
   revalidatePath("/admin/projects");
-  if (createdId) redirect(`/admin/projects/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/projects/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/projects/${id}`);
   return result;
 }

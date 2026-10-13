@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -17,6 +16,7 @@ import {
   isUniqueConflict,
   markdownText,
   oneOf,
+  openCreated,
   optionalHttpsUrl,
   optionalText,
   requiredText,
@@ -188,7 +188,8 @@ export async function saveResourceAction(
   });
 
   revalidatePath("/admin/resources");
-  if (createdId) redirect(`/admin/resources/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/resources/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/resources/${id}`);
   return result;
 }

@@ -714,6 +714,8 @@
 /* The administration bar on a public page (see EditOnPage). */
 .onPage {
   margin-block: 1.5rem;
+  /* Clear of the fixed site header when it is scrolled back to. */
+  scroll-margin-block-start: 6.5rem;
 }
 
 .onPageBar {
@@ -741,4 +743,12 @@
 
 .onPageEditor {
   padding: 1.5rem 1rem 0;
+}
+
+.onPage > .actionMessage {
+  margin-block-start: 0.75rem;
+}
+
+.onPage > .actionMessage:empty {
+  display: none;
 }

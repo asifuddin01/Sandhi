@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -15,6 +14,7 @@ import {
   changes,
   field,
   oneOf,
+  openCreated,
   optionalHttpsUrl,
   optionalText,
   requiredText,
@@ -101,7 +101,8 @@ export async function savePartnerAction(
   });
 
   revalidatePath("/admin/partners");
-  if (createdId) redirect(`/admin/partners/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/partners/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/partners/${id}`);
   return result;
 }

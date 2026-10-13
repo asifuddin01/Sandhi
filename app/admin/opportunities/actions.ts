@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -20,6 +19,7 @@ import {
   lines,
   markdownText,
   oneOf,
+  openCreated,
   optionalText,
   requiredText,
   runBulk,
@@ -142,7 +142,8 @@ export async function saveOpportunityAction(
   );
 
   revalidatePath("/admin/opportunities");
-  if (createdId) redirect(`/admin/opportunities/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/opportunities/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/opportunities/${id}`);
   return result;
 }

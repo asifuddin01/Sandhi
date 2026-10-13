@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -20,6 +19,7 @@ import {
   lines,
   markdownText,
   oneOf,
+  openCreated,
   optionalHttpsUrl,
   optionalText,
   requiredText,
@@ -134,7 +134,7 @@ export async function saveEventAction(
   });
 
   revalidatePath("/admin/events");
-  if (createdId) redirect(`/admin/events/${createdId}?created=1`);
+  if (createdId) openCreated(formData, `/admin/events/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/events/${id}`);
   return result;
 }

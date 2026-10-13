@@ -1,7 +1,6 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 import type { Prisma } from "@/generated/prisma/client";
 import {
@@ -17,6 +16,7 @@ import {
   isUniqueConflict,
   lines,
   oneOf,
+  openCreated,
   requiredText,
   runBulk,
 } from "@/lib/admin/content-actions";
@@ -117,7 +117,8 @@ export async function saveThemeAction(
   });
 
   revalidatePath("/admin/research");
-  if (createdId) redirect(`/admin/research/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/research/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/research/${id}`);
   return result;
 }
@@ -204,7 +205,8 @@ export async function saveAreaAction(
   });
 
   revalidatePath("/admin/research/areas");
-  if (createdId) redirect(`/admin/research/areas/${createdId}?created=1`);
+  if (createdId)
+    openCreated(formData, `/admin/research/areas/${createdId}?created=1`);
   if (id) revalidatePath(`/admin/research/areas/${id}`);
   return result;
 }

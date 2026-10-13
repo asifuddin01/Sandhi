@@ -1,6 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { useFormStatus } from "react-dom";
 
 import { useFormAction } from "@/components/forms/useFormAction";
@@ -14,6 +21,13 @@ export type AdminAction = (
 ) => Promise<ActionState>;
 
 const idle: ActionState = { status: "idle" };
+
+/**
+ * Set around an editor that is adding a record from a public page. The form
+ * then tells its action so (the action leaves the person on the page instead
+ * of opening the record in administration) and calls this once it is saved.
+ */
+export const AddedOnPage = createContext<(() => void) | null>(null);
 
 /**
  * With `name` and `value`, several buttons can share one form (one per row or
@@ -84,10 +98,13 @@ export function ActionForm({
 }) {
   const form = useRef<HTMLFormElement>(null);
   const { state, formAction, onSubmit } = useFormAction(action, idle);
+  const addedOnPage = useContext(AddedOnPage);
 
   useEffect(() => {
-    if (resetOnSuccess && state.status === "success") form.current?.reset();
-  }, [resetOnSuccess, state]);
+    if (state.status !== "success") return;
+    if (resetOnSuccess) form.current?.reset();
+    addedOnPage?.();
+  }, [resetOnSuccess, state, addedOnPage]);
 
   return (
     <form
@@ -96,6 +113,7 @@ export function ActionForm({
       action={formAction}
       onSubmit={onSubmit}
     >
+      {addedOnPage ? <input type="hidden" name="onPage" value="1" /> : null}
       {children}
       <ActionMessage state={state} />
     </form>
