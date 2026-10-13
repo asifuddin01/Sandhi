@@ -6,6 +6,7 @@ import styles from "@/components/admin/Admin.module.css";
 import {
   getPublicationForEdit,
   getPublicationLinkOptions,
+  publicationDraft,
 } from "@/lib/admin/publications";
 import { requireCapability } from "@/lib/authz";
 import { publicationStageLabels } from "@/lib/publications";
@@ -15,10 +16,6 @@ import { PublicationEditor } from "../PublicationEditor";
 import { ReviewPanel } from "../ReviewPanel";
 
 export const metadata: Metadata = { title: "Edit publication" };
-
-function dateInput(value: Date | null): string {
-  return value ? value.toISOString().slice(0, 10) : "";
-}
 
 export default async function EditPublicationPage({
   params,
@@ -78,31 +75,7 @@ export default async function EditPublicationPage({
 
       <PublicationEditor
         options={options}
-        publication={{
-          id: publication.id,
-          title: publication.title,
-          slug: publication.slug,
-          abstract: publication.abstract,
-          type: publication.type,
-          stage: publication.stage,
-          state: publication.state,
-          venueName: publication.venueName ?? "",
-          venueShort: publication.venueShort ?? "",
-          year: publication.year ? String(publication.year) : "",
-          publishedAt: dateInput(publication.publishedAt),
-          doi: publication.doi ?? "",
-          arxivId: publication.arxivId ?? "",
-          pdfUrl: publication.pdfUrl ?? "",
-          codeUrl: publication.codeUrl ?? "",
-          datasetUrl: publication.datasetUrl ?? "",
-          pageUrl: publication.pageUrl ?? "",
-          bibtexOverride: publication.bibtexOverride ?? "",
-          award: publication.award ?? "",
-          featured: publication.featured,
-          projectId: publication.projectId ?? "",
-          areaIds: publication.areaIds,
-          authors: publication.authors,
-        }}
+        publication={publicationDraft(publication)}
       />
 
       <ReviewPanel

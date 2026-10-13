@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { PublicationDetail } from "@/components/entries/PublicationDetail";
 import { getPublicPublicationBySlug } from "@/lib/public-content";
 
@@ -80,5 +81,10 @@ export default async function PublicationPage({ params }: PageProps) {
   const { slug } = await params;
   const publication = await getPublicPublicationBySlug(slug);
   if (!publication) notFound();
-  return <PublicationDetail publication={publication} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "publication", key: slug }]} />
+      <PublicationDetail publication={publication} />
+    </>
+  );
 }

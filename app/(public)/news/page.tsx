@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
 import { MemberNotices } from "@/components/entries/MemberNotices";
 import { NewsEntry } from "@/components/entries/NewsEntry";
@@ -50,50 +51,53 @@ export default async function NewsPage({
   const announcements = viewer ? await getMemberAnnouncements(viewer, 5) : [];
 
   return (
-    <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <h1>News</h1>
-        <p className={styles.lead}>
-          Research updates, publication announcements, events, and notes from
-          the team.
-        </p>
-      </header>
+    <>
+      <EditOnPage actions={[{ kind: "news" }]} />
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <h1>News</h1>
+          <p className={styles.lead}>
+            Research updates, publication announcements, events, and notes from
+            the team.
+          </p>
+        </header>
 
-      <MemberNotices announcements={announcements} />
+        <MemberNotices announcements={announcements} />
 
-      <nav className={styles.categoryNav} aria-label="News categories">
-        <Link href="/news" data-active={!category}>
-          All
-        </Link>
-        {NEWS_CATEGORIES.map((item) => (
-          <Link
-            href={`/news?category=${item}`}
-            data-active={category === item}
-            key={item}
-          >
-            {humanizeEnum(item)}
+        <nav className={styles.categoryNav} aria-label="News categories">
+          <Link href="/news" data-active={!category}>
+            All
           </Link>
-        ))}
-      </nav>
-
-      {posts.length > 0 ? (
-        <div aria-label="News articles">
-          {posts.map((post) => (
-            <NewsEntry key={post.id} post={post} />
+          {NEWS_CATEGORIES.map((item) => (
+            <Link
+              href={`/news?category=${item}`}
+              data-active={category === item}
+              key={item}
+            >
+              {humanizeEnum(item)}
+            </Link>
           ))}
-        </div>
-      ) : (
-        <ContentEmptyState
-          message={
-            category
-              ? `No public ${humanizeEnum(category).toLowerCase()} news is available.`
-              : "News from the lab will appear here."
-          }
-          action={
-            category ? { href: "/news", label: "View all news" } : undefined
-          }
-        />
-      )}
-    </div>
+        </nav>
+
+        {posts.length > 0 ? (
+          <div aria-label="News articles">
+            {posts.map((post) => (
+              <NewsEntry key={post.id} post={post} />
+            ))}
+          </div>
+        ) : (
+          <ContentEmptyState
+            message={
+              category
+                ? `No public ${humanizeEnum(category).toLowerCase()} news is available.`
+                : "News from the lab will appear here."
+            }
+            action={
+              category ? { href: "/news", label: "View all news" } : undefined
+            }
+          />
+        )}
+      </div>
+    </>
   );
 }

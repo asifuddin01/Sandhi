@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
 import { PublicationFilterForm } from "@/components/entries/PublicationFilterForm";
 import { PublicationEntry } from "@/components/entries/PublicationEntry";
@@ -115,170 +116,189 @@ export default async function PublicationsPage({
   )}`;
 
   return (
-    <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <h1>Publications</h1>
-        <p className={styles.lead}>
-          Papers, preprints, reports, and other scholarly outputs from the lab.
-        </p>
-      </header>
+    <>
+      <EditOnPage actions={[{ kind: "publication" }]} />
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <h1>Publications</h1>
+          <p className={styles.lead}>
+            Papers, preprints, reports, and other scholarly outputs from the
+            lab.
+          </p>
+        </header>
 
-      <PublicationFilterForm className={styles.filterForm}>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-search">Search publications</label>
-          <input
-            id="publication-search"
-            name="q"
-            type="search"
-            defaultValue={filters.q}
-            placeholder="Title, abstract, author, or venue"
-          />
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-year">Year</label>
-          <select id="publication-year" name="year" defaultValue={filters.year}>
-            <option value="">All years</option>
-            {facets.years.map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-type">Type</label>
-          <select id="publication-type" name="type" defaultValue={filters.type}>
-            <option value="">All types</option>
-            {facets.types.map((type) => (
-              <option key={type} value={type}>
-                {typeLabels[type]}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-theme">Theme</label>
-          <select
-            id="publication-theme"
-            name="theme"
-            defaultValue={filters.theme}
-          >
-            <option value="">All themes</option>
-            {facets.themes.map((theme) => (
-              <option key={theme.slug} value={theme.slug}>
-                {theme.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-area">Area</label>
-          <select id="publication-area" name="area" defaultValue={filters.area}>
-            <option value="">All areas</option>
-            {facets.areas.map((area) => (
-              <option key={area.slug} value={area.slug}>
-                {area.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-researcher">Researcher</label>
-          <select
-            id="publication-researcher"
-            name="researcher"
-            defaultValue={filters.researcher}
-          >
-            <option value="">All researchers</option>
-            {facets.researchers.map((researcher) => (
-              <option key={researcher.slug} value={researcher.slug}>
-                {researcher.name}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-venue">Venue</label>
-          <select
-            id="publication-venue"
-            name="venue"
-            defaultValue={filters.venue}
-          >
-            <option value="">All venues</option>
-            {facets.venues.map((venue) => (
-              <option key={venue} value={venue}>
-                {venue}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div className={styles.filterField}>
-          <label htmlFor="publication-sort">Sort</label>
-          <select id="publication-sort" name="sort" defaultValue={sort}>
-            <option value="newest">Newest</option>
-            <option value="title">Title</option>
-          </select>
-        </div>
-        <div className={styles.filterActions}>
-          <button type="submit">Apply filters</button>
-          {hasFilters ? (
-            <Link href="/publications" transitionTypes={["publication-filter"]}>
-              Clear
-            </Link>
-          ) : null}
-        </div>
-      </PublicationFilterForm>
-
-      {publications.length > 0 ? (
-        <>
-          <div className={styles.resultHeader}>
-            <p>
-              {publications.length} public{" "}
-              {publications.length === 1 ? "entry" : "entries"}
-            </p>
-            <a
-              className={styles.exportLink}
-              href={exportHref}
-              download="sandhi-publications.bib"
-            >
-              Export BibTeX
-            </a>
+        <PublicationFilterForm className={styles.filterForm}>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-search">Search publications</label>
+            <input
+              id="publication-search"
+              name="q"
+              type="search"
+              defaultValue={filters.q}
+              placeholder="Title, abstract, author, or venue"
+            />
           </div>
-          {groups.map((group) => (
-            <section
-              className={styles.yearGroup}
-              key={group.year ?? "undated"}
-              aria-labelledby={`publications-${group.year ?? "undated"}`}
+          <div className={styles.filterField}>
+            <label htmlFor="publication-year">Year</label>
+            <select
+              id="publication-year"
+              name="year"
+              defaultValue={filters.year}
             >
-              <h2
-                className={styles.yearHeading}
-                id={`publications-${group.year ?? "undated"}`}
-              >
-                {group.year ?? "Undated"}
-              </h2>
-              {group.items.map((publication) => (
-                <PublicationEntry
-                  key={publication.id}
-                  publication={publication}
-                />
+              <option value="">All years</option>
+              {facets.years.map((year) => (
+                <option key={year} value={year}>
+                  {year}
+                </option>
               ))}
-            </section>
-          ))}
-        </>
-      ) : (
-        <ContentEmptyState
-          message={
-            hasFilters
-              ? "No public publications match these filters."
-              : "Our first papers are in progress."
-          }
-          action={
-            hasFilters
-              ? { href: "/publications", label: "Clear filters" }
-              : undefined
-          }
-        />
-      )}
-    </div>
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-type">Type</label>
+            <select
+              id="publication-type"
+              name="type"
+              defaultValue={filters.type}
+            >
+              <option value="">All types</option>
+              {facets.types.map((type) => (
+                <option key={type} value={type}>
+                  {typeLabels[type]}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-theme">Theme</label>
+            <select
+              id="publication-theme"
+              name="theme"
+              defaultValue={filters.theme}
+            >
+              <option value="">All themes</option>
+              {facets.themes.map((theme) => (
+                <option key={theme.slug} value={theme.slug}>
+                  {theme.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-area">Area</label>
+            <select
+              id="publication-area"
+              name="area"
+              defaultValue={filters.area}
+            >
+              <option value="">All areas</option>
+              {facets.areas.map((area) => (
+                <option key={area.slug} value={area.slug}>
+                  {area.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-researcher">Researcher</label>
+            <select
+              id="publication-researcher"
+              name="researcher"
+              defaultValue={filters.researcher}
+            >
+              <option value="">All researchers</option>
+              {facets.researchers.map((researcher) => (
+                <option key={researcher.slug} value={researcher.slug}>
+                  {researcher.name}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-venue">Venue</label>
+            <select
+              id="publication-venue"
+              name="venue"
+              defaultValue={filters.venue}
+            >
+              <option value="">All venues</option>
+              {facets.venues.map((venue) => (
+                <option key={venue} value={venue}>
+                  {venue}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className={styles.filterField}>
+            <label htmlFor="publication-sort">Sort</label>
+            <select id="publication-sort" name="sort" defaultValue={sort}>
+              <option value="newest">Newest</option>
+              <option value="title">Title</option>
+            </select>
+          </div>
+          <div className={styles.filterActions}>
+            <button type="submit">Apply filters</button>
+            {hasFilters ? (
+              <Link
+                href="/publications"
+                transitionTypes={["publication-filter"]}
+              >
+                Clear
+              </Link>
+            ) : null}
+          </div>
+        </PublicationFilterForm>
+
+        {publications.length > 0 ? (
+          <>
+            <div className={styles.resultHeader}>
+              <p>
+                {publications.length} public{" "}
+                {publications.length === 1 ? "entry" : "entries"}
+              </p>
+              <a
+                className={styles.exportLink}
+                href={exportHref}
+                download="sandhi-publications.bib"
+              >
+                Export BibTeX
+              </a>
+            </div>
+            {groups.map((group) => (
+              <section
+                className={styles.yearGroup}
+                key={group.year ?? "undated"}
+                aria-labelledby={`publications-${group.year ?? "undated"}`}
+              >
+                <h2
+                  className={styles.yearHeading}
+                  id={`publications-${group.year ?? "undated"}`}
+                >
+                  {group.year ?? "Undated"}
+                </h2>
+                {group.items.map((publication) => (
+                  <PublicationEntry
+                    key={publication.id}
+                    publication={publication}
+                  />
+                ))}
+              </section>
+            ))}
+          </>
+        ) : (
+          <ContentEmptyState
+            message={
+              hasFilters
+                ? "No public publications match these filters."
+                : "Our first papers are in progress."
+            }
+            action={
+              hasFilters
+                ? { href: "/publications", label: "Clear filters" }
+                : undefined
+            }
+          />
+        )}
+      </div>
+    </>
   );
 }

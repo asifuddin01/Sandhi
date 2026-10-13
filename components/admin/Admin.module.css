@@ -710,3 +710,35 @@
   font-size: var(--text-meta);
   font-weight: 550;
 }
+
+/* The administration bar on a public page (see EditOnPage). */
+.onPage {
+  margin-block: 1.5rem;
+}
+
+.onPageBar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.9rem;
+  padding: 0.75rem 1rem;
+  border: 1px dashed var(--ink-line);
+  border-radius: var(--radius-control);
+}
+
+.onPageBar p {
+  margin: 0;
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.onPageBar button[aria-expanded="true"] {
+  border-color: var(--lamplight);
+}
+
+.onPageEditor {
+  padding: 1.5rem 1rem 0;
+}

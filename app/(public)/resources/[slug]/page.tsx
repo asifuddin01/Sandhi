@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { ResourceDetail } from "@/components/entries/ResourceDetail";
 import { getPublicResourceBySlug } from "@/lib/public-resources";
 
@@ -38,5 +39,10 @@ export default async function ResourcePage({ params }: PageProps) {
   const { slug } = await params;
   const resource = await getPublicResourceBySlug(slug);
   if (!resource) notFound();
-  return <ResourceDetail resource={resource} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "resource", key: slug }]} />
+      <ResourceDetail resource={resource} />
+    </>
+  );
 }

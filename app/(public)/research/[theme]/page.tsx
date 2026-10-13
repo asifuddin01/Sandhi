@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { ThemeDetail } from "@/components/entries/ThemeDetail";
 import { getThemeBySlug } from "@/lib/public-research";
 
@@ -30,5 +31,10 @@ export default async function ThemePage({ params }: ThemePageProps) {
   const theme = await getThemeBySlug(slug);
   if (!theme) notFound();
 
-  return <ThemeDetail theme={theme} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "theme", key: slug }, { kind: "area" }]} />
+      <ThemeDetail theme={theme} />
+    </>
+  );
 }

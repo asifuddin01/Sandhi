@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { OpportunityDetail } from "@/components/entries/OpportunityDetail";
 import { getPublicOpportunityBySlug } from "@/lib/public-opportunities";
 
@@ -33,5 +34,10 @@ export default async function OpportunityPage({ params }: PageProps) {
   const { slug } = await params;
   const opportunity = await getPublicOpportunityBySlug(slug);
   if (!opportunity) notFound();
-  return <OpportunityDetail opportunity={opportunity} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "opportunity", key: slug }]} />
+      <OpportunityDetail opportunity={opportunity} />
+    </>
+  );
 }

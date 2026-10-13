@@ -158,3 +158,36 @@ export async function getPublicationLinkOptions() {
   ]);
   return { members, projects, areas };
 }
+
+/** A stored publication as the editor's form takes it. */
+export function publicationDraft(
+  publication: NonNullable<Awaited<ReturnType<typeof getPublicationForEdit>>>,
+) {
+  const dateInput = (value: Date | null) =>
+    value ? value.toISOString().slice(0, 10) : "";
+  return {
+    id: publication.id,
+    title: publication.title,
+    slug: publication.slug,
+    abstract: publication.abstract,
+    type: publication.type,
+    stage: publication.stage,
+    state: publication.state,
+    venueName: publication.venueName ?? "",
+    venueShort: publication.venueShort ?? "",
+    year: publication.year ? String(publication.year) : "",
+    publishedAt: dateInput(publication.publishedAt),
+    doi: publication.doi ?? "",
+    arxivId: publication.arxivId ?? "",
+    pdfUrl: publication.pdfUrl ?? "",
+    codeUrl: publication.codeUrl ?? "",
+    datasetUrl: publication.datasetUrl ?? "",
+    pageUrl: publication.pageUrl ?? "",
+    bibtexOverride: publication.bibtexOverride ?? "",
+    award: publication.award ?? "",
+    featured: publication.featured,
+    projectId: publication.projectId ?? "",
+    areaIds: publication.areaIds,
+    authors: publication.authors,
+  };
+}

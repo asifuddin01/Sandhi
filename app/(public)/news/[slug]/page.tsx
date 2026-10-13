@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { NewsArticle } from "@/components/entries/NewsArticle";
 import { getPublicNewsBySlug } from "@/lib/public-content";
 
@@ -57,5 +58,10 @@ export default async function NewsArticlePage({ params }: PageProps) {
   const { slug } = await params;
   const post = await getPublicNewsBySlug(slug);
   if (!post) notFound();
-  return <NewsArticle post={post} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "news", key: slug }]} />
+      <NewsArticle post={post} />
+    </>
+  );
 }

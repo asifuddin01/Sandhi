@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { AreaDetail } from "@/components/entries/AreaDetail";
 import { getAreaBySlug } from "@/lib/public-research";
 
@@ -30,5 +31,10 @@ export default async function AreaPage({ params }: AreaPageProps) {
   const area = await getAreaBySlug(slug);
   if (!area) notFound();
 
-  return <AreaDetail area={area} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "area", key: slug }]} />
+      <AreaDetail area={area} />
+    </>
+  );
 }

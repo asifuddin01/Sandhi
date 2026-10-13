@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { EventDetail } from "@/components/events/EventDetail";
 import { getPublicEventBySlug } from "@/lib/public-events";
 import { isSectionEnabled } from "@/lib/site-settings";
@@ -47,5 +48,10 @@ export default async function EventPage({ params }: PageProps) {
   const { slug } = await params;
   const event = await getPublicEventBySlug(slug);
   if (!event) notFound();
-  return <EventDetail event={event} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "event", key: slug }]} />
+      <EventDetail event={event} />
+    </>
+  );
 }

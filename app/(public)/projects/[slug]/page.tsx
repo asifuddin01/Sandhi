@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { ProjectDetail } from "@/components/entries/ProjectDetail";
 import { getViewer } from "@/lib/authz";
 import { membershipOf } from "@/lib/portal/progress";
@@ -36,5 +37,10 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   // they were already reading. Everyone else is not told the controls exist.
   const membership = await membershipOf(await getViewer(), slug);
 
-  return <ProjectDetail project={project} membership={membership} />;
+  return (
+    <>
+      <EditOnPage actions={[{ kind: "project", key: slug }]} />
+      <ProjectDetail project={project} membership={membership} />
+    </>
+  );
 }

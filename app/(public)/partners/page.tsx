@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { PartnerDirectory } from "@/components/partners/PartnerDirectory";
 import { PageIntro } from "@/components/public/PageIntro";
 import styles from "@/components/public/ResearchPages.module.css";
@@ -21,9 +22,21 @@ export default async function PartnersPage() {
   const partners = await getPublicPartners();
 
   return (
-    <div className={styles.page}>
-      <PageIntro title="Partners" />
-      <PartnerDirectory partners={partners} />
-    </div>
+    <>
+      <EditOnPage
+        actions={[
+          { kind: "partner" },
+          ...partners.map(({ id, name }) => ({
+            kind: "partner" as const,
+            key: id,
+            label: `Edit ${name}`,
+          })),
+        ]}
+      />
+      <div className={styles.page}>
+        <PageIntro title="Partners" />
+        <PartnerDirectory partners={partners} />
+      </div>
+    </>
   );
 }

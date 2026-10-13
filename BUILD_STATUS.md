@@ -275,6 +275,12 @@ Tests added: layout unit suite (8), legacy-link schema test, Join history, reloa
 - Tests: settings parsing and validation unit tests; end-to-end invitation and withdrawal, Owner protection, suspension signing a member out, removal by name, settings changing the public site at once and being audited, and Members and Reviewers failing to invite, promote, or change settings even by posting harvested server-action references directly.
 - The settings end-to-end tests change every public page, so Playwright runs them alone after the rest of the suite (`chrome-site-wide` project).
 
+### Administration on the public pages (committed)
+
+- `components/admin/EditOnPage.tsx` puts the administration editors on the page they change: "Edit this …" on a theme, area, project, publication, news post, event, opportunity or resource, and "Add …" on each list (partners are edited from their list). They are the same editors and actions as `/admin`, so the capability check and the audit entry are unchanged; nothing is drawn or loaded for a viewer without the capability. Only the opened editor is mounted, because the editors share field ids.
+- `/join` carries its own switches (`lib/intake.ts`, stored as the `applications.intake` setting): researcher, internship and research collaboration can each be closed or given a closing day, which closes the kind when that day ends in Dhaka. `/api/join` applies the same rule. Project proposals and the two partnerships are always open, and a published opportunity stays open whatever the switch says.
+- Not yet on the page: a new record still lands on its `/admin` editor after it is created, and changing a record's address from its own page leaves the old page not found.
+
 ### Milestone 5 slice 3 — content framework and News (committed)
 
 - Shared publishing rules (`lib/content-state.ts`): the five states, slugs, scheduling, bulk actions, and which states may be deleted. Scheduled news goes live on its own once its time passes (`publicNewsWhere` now includes `SCHEDULED` with a past `publishAt`); no cron flips states. Admin forms read and show times in Dhaka time (`lib/dhaka-time.ts`).

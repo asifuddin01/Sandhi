@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { EditOnPage } from "@/components/admin/EditOnPage";
 import { EventTime } from "@/components/events/EventTime";
 import { ContentEmptyState } from "@/components/entries/ContentEmptyState";
 import { emptyStateCopy } from "@/content/strings";
@@ -95,41 +96,47 @@ export default async function EventsPage() {
   const hasEvents = upcoming.length > 0 || past.length > 0;
 
   return (
-    <div className={styles.page}>
-      <header className={styles.pageHeader}>
-        <h1>Events</h1>
-        <p className={styles.lead}>
-          Public conversations where researchers meet around an open question.
-        </p>
-      </header>
+    <>
+      <EditOnPage actions={[{ kind: "event" }]} />
+      <div className={styles.page}>
+        <header className={styles.pageHeader}>
+          <h1>Events</h1>
+          <p className={styles.lead}>
+            Public conversations where researchers meet around an open question.
+          </p>
+        </header>
 
-      {!hasEvents ? (
-        <ContentEmptyState message={emptyStateCopy.events} />
-      ) : (
-        <>
-          <section className={styles.section} aria-labelledby="upcoming-events">
-            <header className={styles.sectionHeader}>
-              <h2 id="upcoming-events">Upcoming</h2>
-            </header>
-            {upcoming.length > 0 ? (
-              <EventList events={upcoming} past={false} />
-            ) : (
-              <p className={styles.emptySection}>
-                No upcoming events are scheduled.
-              </p>
-            )}
-          </section>
-
-          {past.length > 0 ? (
-            <section className={styles.section} aria-labelledby="past-events">
+        {!hasEvents ? (
+          <ContentEmptyState message={emptyStateCopy.events} />
+        ) : (
+          <>
+            <section
+              className={styles.section}
+              aria-labelledby="upcoming-events"
+            >
               <header className={styles.sectionHeader}>
-                <h2 id="past-events">Past</h2>
+                <h2 id="upcoming-events">Upcoming</h2>
               </header>
-              <EventList events={past} past />
+              {upcoming.length > 0 ? (
+                <EventList events={upcoming} past={false} />
+              ) : (
+                <p className={styles.emptySection}>
+                  No upcoming events are scheduled.
+                </p>
+              )}
             </section>
-          ) : null}
-        </>
-      )}
-    </div>
+
+            {past.length > 0 ? (
+              <section className={styles.section} aria-labelledby="past-events">
+                <header className={styles.sectionHeader}>
+                  <h2 id="past-events">Past</h2>
+                </header>
+                <EventList events={past} past />
+              </section>
+            ) : null}
+          </>
+        )}
+      </div>
+    </>
   );
 }
