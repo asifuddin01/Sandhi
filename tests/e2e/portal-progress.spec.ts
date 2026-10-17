@@ -59,6 +59,22 @@ async function forgetUpdates(prefix: string) {
   }
 }
 
+/** The update as the app's home screen receives it, if it is there at all. */
+async function homeUpdate(page: Page, title: string) {
+  const response = await page.request.get("/api/v1/home");
+  expect(response.ok()).toBe(true);
+  const { data } = (await response.json()) as {
+    data: {
+      updates: Array<{
+        title: string;
+        summary: string;
+        project: { slug: string };
+      }>;
+    };
+  };
+  return data.updates.find((update) => update.title === title);
+}
+
 /**
  * Server actions answer the POST that carried them, so waiting for that
  * response is what makes "the save finished" true rather than hopeful.
@@ -115,6 +131,7 @@ test("a team writes an update, publishes it, and the public page shows it", asyn
     // until someone publishes it deliberately.
     await page.goto(`/projects/${PROJECT}`);
     await expect(page.getByText(title)).toHaveCount(0);
+    expect(await homeUpdate(page, title)).toBeUndefined();
 
     await page.goto(`/portal/projects/${PROJECT}`);
     await submit(page, "Publish this update");
@@ -132,6 +149,11 @@ test("a team writes an update, publishes it, and the public page shows it", asyn
     ).toBeVisible();
     // The author keeps no public profile, so the update is not attributed.
     await expect(page.getByText("Fixture Member")).toHaveCount(0);
+    // The app's home screen carries it too, its Markdown flattened to text.
+    expect(await homeUpdate(page, title)).toMatchObject({
+      project: { slug: PROJECT },
+      summary: expect.stringContaining("The pilot round is done"),
+    });
 
     // A table in the body is how a team reports numbers.
     await page.goto(`/portal/projects/${PROJECT}`);
@@ -153,6 +175,7 @@ test("a team writes an update, publishes it, and the public page shows it", asyn
     await submit(page, "Make internal");
     await page.goto(`/projects/${PROJECT}`);
     await expect(page.getByText(title)).toHaveCount(0);
+    expect(await homeUpdate(page, title)).toBeUndefined();
   } finally {
     await forgetUpdates("Fixture update ");
   }

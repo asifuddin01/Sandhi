@@ -4,11 +4,13 @@ import { getDb, isDatabaseConfigured } from "@/lib/db";
 import { shouldShowPublicMetrics } from "@/lib/public-metrics";
 import { cachedPublicRead } from "@/lib/cache";
 import { cacheTags } from "@/lib/cache-tags";
+import { markdownPreview } from "@/lib/markdown-preview";
 import {
   isNewsPublic,
   NEWS_PUBLISHABLE_STATES,
   publicAreaWhere,
   publicMemberWhere,
+  publicProjectUpdateWhere,
   publicProjectWhere,
   publicPublicationWhere,
 } from "@/lib/visibility";
@@ -40,6 +42,16 @@ export type HomeNews = {
   date: Date;
 };
 
+/** A published progress update from a public project, newest first. */
+export type HomeUpdate = {
+  id: string;
+  title: string;
+  /** The update's opening as plain text (see `markdownPreview`). */
+  summary: string;
+  postedAt: string;
+  project: { slug: string; title: string };
+};
+
 /**
  * A post before the clock has been consulted. Never leaves this module, and
  * carries its times as ISO strings because the cache stores JSON — a `Date`
@@ -58,6 +70,7 @@ export type HomeData = {
   projects: HomeProject[];
   publications: HomePublication[];
   news: HomeNews[];
+  updates: HomeUpdate[];
   metrics: {
     visible: boolean;
     researchers: number;
@@ -71,6 +84,7 @@ const emptyHomeData: HomeData = {
   projects: [],
   publications: [],
   news: [],
+  updates: [],
   metrics: {
     visible: false,
     researchers: 0,
@@ -114,7 +128,7 @@ async function readHomeData(): Promise<HomeReadData> {
   if (!isDatabaseConfigured()) return { ...emptyHomeData, news: [] };
 
   const db = getDb();
-  const [projects, publications, news, setting, counts] = await Promise.all([
+  const [projects, publications, news, updates, setting, counts] = await Promise.all([
     db.project.findMany({
       where: {
         ...publicProjectWhere,
@@ -190,6 +204,20 @@ async function readHomeData(): Promise<HomeReadData> {
         createdAt: true,
       },
     }),
+    // Both halves of the rule the project pages use: the team published the
+    // update, and its project is public.
+    db.projectUpdate.findMany({
+      where: publicProjectUpdateWhere,
+      orderBy: { createdAt: "desc" },
+      take: 3,
+      select: {
+        id: true,
+        title: true,
+        body: true,
+        createdAt: true,
+        project: { select: { slug: true, title: true } },
+      },
+    }),
     db.siteSetting.findUnique({
       where: { key: "features.showNumbers" },
       select: { value: true },
@@ -258,6 +286,13 @@ async function readHomeData(): Promise<HomeReadData> {
         links,
       };
     }),
+    updates: updates.map((update) => ({
+      id: update.id,
+      title: update.title,
+      summary: markdownPreview(update.body),
+      postedAt: update.createdAt.toISOString(),
+      project: update.project,
+    })),
     // Carried with their state and time so the clock can be applied after
     // the cache; `getHomeData` trims them to the three that are due.
     news: news.map((post) => ({

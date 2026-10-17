@@ -141,21 +141,8 @@ export function greeting(now: Date): string {
   return "Good evening";
 }
 
-export const PREVIEW_LIMIT = 160;
-
-/**
- * An announcement's opening, as text. The body is Markdown, and rendering it
- * on the dashboard would drop a heading or a list into what should be one
- * quiet line — so the marks come out and the words stay words.
- */
-export function announcementPreview(body: string): string {
-  const text = body
-    .replace(/```[\s\S]*?```/gu, " ")
-    .replace(/!?\[([^\]]*)\]\([^)]*\)/gu, "$1")
-    .replace(/[#*_`>~[\]]/gu, "")
-    .replace(/\s+/gu, " ")
-    .trim();
-  return text.length > PREVIEW_LIMIT
-    ? `${text.slice(0, PREVIEW_LIMIT).trimEnd()}…`
-    : text;
-}
+/** An announcement's opening, as text — see `markdownPreview`. */
+export {
+  markdownPreview as announcementPreview,
+  PREVIEW_LIMIT,
+} from "@/lib/markdown-preview";
