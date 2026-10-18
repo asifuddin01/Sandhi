@@ -78,7 +78,7 @@ export default async function AppDownloadPage() {
 
               <dl className={page.facts}>
                 <dt>Download</dt>
-                <dd>Signed APK, from this site</dd>
+                <dd>Signed APK, from {new URL(android.downloadUrl).host}</dd>
                 {android.sizeBytes ? (
                   <>
                     <dt>Size</dt>
