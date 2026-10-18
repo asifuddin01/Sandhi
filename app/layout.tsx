@@ -59,6 +59,17 @@ export const metadata: Metadata = {
   description:
     "An independent research lab exploring artificial intelligence and computational science.",
   alternates: { canonical: "/" },
+  // Pages that set no Open Graph of their own share these; app/opengraph-image
+  // supplies the picture.
+  openGraph: {
+    type: "website",
+    siteName: siteIdentity.name,
+    title: siteIdentity.name,
+    description:
+      "An independent research lab exploring artificial intelligence and computational science.",
+    locale: "en_US",
+  },
+  twitter: { card: "summary_large_image" },
 };
 
 export const viewport: Viewport = {

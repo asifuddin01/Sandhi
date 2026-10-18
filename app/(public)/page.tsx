@@ -8,6 +8,8 @@ import { ThreadDivider } from "@/components/motion/ThreadDivider";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { homeCopy, researchThemes, siteIdentity } from "@/content/strings";
 import { getHomeData } from "@/lib/public-home";
+import { getSiteSettings } from "@/lib/site-settings";
+import { labStructuredData } from "@/lib/structured-data";
 
 // Home lists scheduled news and live counts, so it must not be frozen at build
 // time; this also keeps it compatible with the per-request CSP nonce.
@@ -35,10 +37,23 @@ function ExternalOrInternalLink({
 }
 
 export default async function HomePage() {
-  const data = await getHomeData();
+  // Settings are read once per request; the layout has already asked.
+  const [data, settings] = await Promise.all([
+    getHomeData(),
+    getSiteSettings(),
+  ]);
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(labStructuredData(settings)).replaceAll(
+            "<",
+            "\\u003c",
+          ),
+        }}
+      />
       <SettingsOnPage group="site" />
       <div className="home-page">
         <MarginThread />
