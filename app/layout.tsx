@@ -133,6 +133,7 @@ export default async function RootLayout({
           hiddenPaths={hiddenPaths}
           social={settings.social}
           signedIn={Boolean(viewer)}
+          appPublished={settings.mobileApp.enabled}
         />
       </body>
     </html>

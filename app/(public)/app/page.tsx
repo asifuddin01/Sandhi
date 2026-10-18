@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image, { type StaticImageData } from "next/image";
 import { notFound } from "next/navigation";
 
 import { EmptyState } from "@/components/public/EmptyState";
@@ -8,13 +9,42 @@ import { formatBytes, IOS_DISTRIBUTIONS } from "@/lib/mobile-app";
 import { getSiteSettings } from "@/lib/site-settings";
 
 import page from "./AppPage.module.css";
+import homeScreen from "./screens/home.png";
+import personScreen from "./screens/person.png";
+import researchScreen from "./screens/research.png";
+import signInScreen from "./screens/sign-in.png";
 
 export const metadata: Metadata = {
   title: "SANDHI app",
   description:
-    "Install the SANDHI app for Android or iOS. It signs in with the same account as the website and shows the same research, projects, and announcements.",
+    "Install the SANDHI app for Android. Follow the lab's research, projects, papers, and news; members sign in with the same account as the website.",
   alternates: { canonical: "/app" },
 };
+
+/** Taken from the app itself, reading this site. Refresh them when the screens change. */
+const screens: Array<{ image: StaticImageData; caption: string; alt: string }> =
+  [
+    {
+      image: homeScreen,
+      caption: "Home: the lab at a glance, with news and project updates.",
+      alt: "The app's home screen: SANDHI Research Lab, its tagline, and sections for research, projects, papers, and news.",
+    },
+    {
+      image: researchScreen,
+      caption: "The research map: each theme and the areas beneath it.",
+      alt: "The research screen listing the lab's themes, such as Perception and Language, with their areas.",
+    },
+    {
+      image: personScreen,
+      caption: "People: every public profile, with interests and links.",
+      alt: "A researcher's profile in the app, with photo, role, research interests, and biography.",
+    },
+    {
+      image: signInScreen,
+      caption: "Members sign in with their SANDHI account.",
+      alt: "The sign-in screen, asking for an email address and password.",
+    },
+  ];
 
 const distributionLabel = (key: string) =>
   IOS_DISTRIBUTIONS.find((item) => item.key === key)?.label ?? "Private";
@@ -30,7 +60,7 @@ export default async function AppDownloadPage() {
     <div className={`${styles.page} ${styles.narrow}`}>
       <PageIntro
         title="SANDHI app"
-        lead="The app signs in with your SANDHI account and reads the same research, projects, announcements, and documents as the website. Anything you change in one appears in the other."
+        lead="Follow the lab's research, projects, papers, and news on your phone. Members sign in with their SANDHI account to see their projects, announcements, and documents, the same as on the website."
       />
 
       <section className={styles.section} aria-labelledby="install">
@@ -88,8 +118,8 @@ export default async function AppDownloadPage() {
                   </li>
                 ) : null}
                 <li>
-                  Open the app and sign in with your SANDHI email address and
-                  password.
+                  Open the app. Members can sign in with their SANDHI email
+                  address and password.
                 </li>
               </ol>
 
@@ -147,12 +177,49 @@ export default async function AppDownloadPage() {
                 </div>
               ) : null}
             </article>
-          ) : null}
+          ) : (
+            // Until an iOS release is published in settings, say where it stands.
+            <article className={page.platform} aria-labelledby="ios">
+              <div className={page.platformHeader}>
+                <h3 id="ios">iPhone and iPad</h3>
+                <p className={page.version}>After funding</p>
+              </div>
+              <div className={styles.prose}>
+                <p>
+                  The iOS app is built and tested on iPhone. It will be released
+                  on the App Store after funding. Until then, this website works
+                  in any iPhone browser.
+                </p>
+              </div>
+            </article>
+          )}
         </div>
 
         {!android && !ios ? (
           <EmptyState>The app will be available here soon.</EmptyState>
         ) : null}
+      </section>
+
+      <section className={styles.section} aria-labelledby="screens">
+        <div className={styles.sectionHeader}>
+          <h2 id="screens">Inside the app</h2>
+        </div>
+        <ul className={page.screens}>
+          {screens.map((screen) => (
+            <li key={screen.caption}>
+              <figure className={page.screen}>
+                <div className={page.phone}>
+                  <Image
+                    src={screen.image}
+                    alt={screen.alt}
+                    sizes="(width < 34rem) 45vw, 10rem"
+                  />
+                </div>
+                <figcaption>{screen.caption}</figcaption>
+              </figure>
+            </li>
+          ))}
+        </ul>
       </section>
 
       <section className={styles.section} aria-labelledby="accounts">

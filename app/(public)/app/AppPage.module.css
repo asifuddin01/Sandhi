@@ -86,3 +86,48 @@
     margin-block-end: 0.6rem;
   }
 }
+
+.screens {
+  display: grid;
+  /* Four in a row reads as one tour; two by two on a phone. */
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 1.75rem 1.25rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.screen {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+}
+
+.screen figcaption {
+  color: var(--mist);
+  font-family: var(--font-interface);
+  font-size: var(--text-meta);
+  line-height: 1.5;
+}
+
+/* A plain phone outline; the top band stands where the status bar would be. */
+.phone {
+  overflow: hidden;
+  padding-block-start: 1.1rem;
+  border: 0.4rem solid #0b0f1c;
+  border-radius: 1.6rem;
+  background: #141a2e;
+  box-shadow: 0 0 0 1px var(--ink-line);
+}
+
+.phone img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+@media (width < 34rem) {
+  .screens {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

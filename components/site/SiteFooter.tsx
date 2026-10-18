@@ -13,12 +13,15 @@ export function SiteFooter({
   hiddenPaths = [],
   social = {},
   signedIn = false,
+  appPublished = false,
 }: {
   /** Sections switched off in site settings. */
   hiddenPaths?: string[];
   social?: SiteSettings["social"];
   /** Whether this request carries a member's session. */
   signedIn?: boolean;
+  /** Whether /app exists: it is a 404 until a release is published. */
+  appPublished?: boolean;
 }) {
   const socialLinks = socialPlatforms.flatMap(({ key, label }) => {
     const href = social[key];
@@ -49,6 +52,11 @@ export function SiteFooter({
                       <Link href={item.href}>{item.label}</Link>
                     </li>
                   ))}
+                {group.heading === "Connect" && appPublished ? (
+                  <li>
+                    <Link href="/app">The app</Link>
+                  </li>
+                ) : null}
                 {group.heading === "Connect"
                   ? socialLinks.map((item) => (
                       <li key={item.href}>

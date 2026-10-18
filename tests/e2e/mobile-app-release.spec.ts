@@ -110,6 +110,20 @@ test("an administrator publishes the app, and the site and API follow", async ({
 
     await page.goto("/app");
     await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
+    // No iOS release yet, so the page says where it stands instead.
+    await expect(
+      page.getByRole("heading", { name: "iPhone and iPad" }),
+    ).toBeVisible();
+    await expect(
+      page.getByText("on the App Store after funding"),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("region", { name: "Inside the app" }).getByRole("img"),
+    ).toHaveCount(4);
+    // Every page now points at it.
+    await expect(
+      page.getByRole("contentinfo").getByRole("link", { name: "The app" }),
+    ).toBeVisible();
     const { violations } = await new AxeBuilder({ page })
       .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"])
       .analyze();
@@ -153,4 +167,8 @@ test("an administrator publishes the app, and the site and API follow", async ({
 
   expect((await request.get("/app")).status()).toBe(404);
   expect((await request.get("/api/v1/home")).status()).toBe(200);
+  await page.goto("/");
+  await expect(
+    page.getByRole("contentinfo").getByRole("link", { name: "The app" }),
+  ).toHaveCount(0);
 });
