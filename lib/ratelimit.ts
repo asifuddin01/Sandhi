@@ -17,7 +17,7 @@ export type RateLimitDecision = {
 type UpstashResult = { result?: number | string | null; error?: string };
 
 /** A dashboard copy often keeps the .env quotes or a trailing newline. */
-function pasted(value: string | undefined): string | undefined {
+export function pasted(value: string | undefined): string | undefined {
   return value
     ?.trim()
     .replace(/^(["'])(.*)\1$/su, "$2")

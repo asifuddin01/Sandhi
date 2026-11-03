@@ -47,7 +47,7 @@ The current default elsewhere is 25, which is out of range and fails the build.
 | `R2_*` (six of them) | Cloudflare R2. Until these are set, portrait and attachment uploads are disabled rather than broken |
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Upstash Redis. **Required in production** — sign-in and every public form count attempts here, and refuse outright without it rather than run unlimited |
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | Cloudflare Turnstile. **Required in production** for contact, join, proposals and event registration |
-| `CRON_SECRET` | Optional; nothing uses it yet |
+| `CRON_SECRET` | Required for the daily Vercel Upstash health check; use at least 32 random characters |
 
 Never commit any of these. The repository is public, and `.claude/launch.json`
 (which holds the local ones) is git-ignored for the same reason.
