@@ -1,3 +1,4 @@
+import { Analytics, type BeforeSendEvent } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import {
   Hanken_Grotesk,
@@ -97,6 +98,13 @@ const preferenceScript = `(() => {
   } catch {}
 })();`;
 
+function filterPrivateAnalyticsEvents(
+  event: BeforeSendEvent,
+): BeforeSendEvent | null {
+  const pathname = new URL(event.url, siteIdentity.url).pathname;
+  return /^\/(?:portal|admin)(?:\/|$)/u.test(pathname) ? null : event;
+}
+
 export default async function RootLayout({
   children,
 }: {
@@ -146,6 +154,7 @@ export default async function RootLayout({
           signedIn={Boolean(viewer)}
           appPublished={settings.mobileApp.enabled}
         />
+        <Analytics beforeSend={filterPrivateAnalyticsEvents} />
       </body>
     </html>
   );
