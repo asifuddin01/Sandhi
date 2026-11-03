@@ -15,7 +15,7 @@ Set these in Vercel → Project → Settings → Environment Variables, scoped t
 | `TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY`         | Required for the public forms in production.                                                                                                                                                           |
 | `RESEND_API_KEY`, `EMAIL_FROM`                       | Required for invitations, resets, and verification emails.                                                                                                                                             |
 | `R2_*`                                               | Keys scoped to the two SANDHI buckets only (Object Read & Write), not account-wide.                                                                                                                    |
-| `CRON_SECRET`                                        | At least 32 random characters.                                                                                                                                                                         |
+| `CRON_SECRET`                                        | At least 32 random characters; authorizes the daily Vercel Upstash health check.                                                                                                                        |
 
 `SEED_OWNER_PASSWORD` is only for creating the first account. Remove it from every environment after that account exists.
 
