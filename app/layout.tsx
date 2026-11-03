@@ -1,4 +1,3 @@
-import { Analytics, type BeforeSendEvent } from "@vercel/analytics/next";
 import type { Metadata, Viewport } from "next";
 import {
   Hanken_Grotesk,
@@ -9,6 +8,7 @@ import {
 import { headers } from "next/headers";
 import { Suspense, type ReactNode } from "react";
 
+import { WebAnalytics } from "@/components/analytics/WebAnalytics";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { ScrollRestoration } from "@/components/navigation/ScrollRestoration";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -98,13 +98,6 @@ const preferenceScript = `(() => {
   } catch {}
 })();`;
 
-function filterPrivateAnalyticsEvents(
-  event: BeforeSendEvent,
-): BeforeSendEvent | null {
-  const pathname = new URL(event.url, siteIdentity.url).pathname;
-  return /^\/(?:portal|admin)(?:\/|$)/u.test(pathname) ? null : event;
-}
-
 export default async function RootLayout({
   children,
 }: {
@@ -154,7 +147,7 @@ export default async function RootLayout({
           signedIn={Boolean(viewer)}
           appPublished={settings.mobileApp.enabled}
         />
-        <Analytics beforeSend={filterPrivateAnalyticsEvents} />
+        <WebAnalytics />
       </body>
     </html>
   );
